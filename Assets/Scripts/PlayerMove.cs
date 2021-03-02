@@ -7,7 +7,7 @@ public class PlayerMove : MonoBehaviour
 
     [SerializeField] float moveSpeed = 10;
     [SerializeField] float turnSpeed = 10;
-    [SerializeField] LayerMask groundLayer;
+    [SerializeField] LayerMask groundLayer = ~(1 << 2);
     [SerializeField] MoveMode curMoveMode = MoveMode.NONE;
 
     enum MoveMode
@@ -24,7 +24,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float maxDist = 0.5f;
     [SerializeField] float deadzone = 0.1f;
     [SerializeField] float duckThreshold = 0.5f;
-
 
 
     // input
@@ -65,5 +64,8 @@ public class PlayerMove : MonoBehaviour
         {
 
         }
+    }
+    private void OnDrawGizmosSelected() {
+            
     }
 }
