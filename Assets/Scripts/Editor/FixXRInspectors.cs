@@ -17,23 +17,39 @@ public class FixedEditor : Editor
     {
         editorType = typeof(XRBaseInteractableEditor);// this is the editor for the base class
         EnableProps();
-        baseEditor = CreateEditor(target, editorType);
+        // Debug.Log("enabled");
+        if (baseEditor != null)
+        {
+            DestroyImmediate(baseEditor);
+            baseEditor = null;
+        }
+        if (target != null && editorType != null && serializedObject != null)
+        {
+            baseEditor = CreateEditor(target, editorType);
+        }
     }
     private void OnDisable()
     {
-        DestroyImmediate(baseEditor);
+        if (baseEditor)
+        {
+            DestroyImmediate(baseEditor);
+            baseEditor = null;
+        }
     }
     public override void OnInspectorGUI()
     {
         // base.OnInspectorGUI();
-        if (!baseEditor)
+        // if (baseEditor == null && serializedObject != null && editorType != null)
+        // {
+            // baseEditor = CreateEditor(target, editorType);
+        // }
+        if (baseEditor != null && serializedObject != null)
         {
-            return;
+            serializedObject.Update();
+            baseEditor.OnInspectorGUI();
+            DrawPropertiesExcluding(serializedObject, propertiesInBaseClass);
+            serializedObject.ApplyModifiedProperties();
         }
-        baseEditor.OnInspectorGUI();
-        serializedObject.Update();
-        DrawPropertiesExcluding(serializedObject, propertiesInBaseClass);
-        serializedObject.ApplyModifiedProperties();
     }
     public virtual void EnableProps()
     {

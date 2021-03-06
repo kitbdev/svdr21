@@ -26,9 +26,14 @@ public class VRDebug : Singleton<VRDebug>
                 // remove that msg
                 msgs.RemoveAt(i);
                 msgTimeouts.RemoveAt(i);
+                UpdateText();
                 i--;
             }
         }
+    }
+    public static void LogTemp(string msg, bool alsoDebug = true)
+    {
+        Instance.ILog(msg, 2, alsoDebug);
     }
     public static void Log(string msg, float timeout = -1, bool alsoDebug = true)
     {
@@ -59,7 +64,7 @@ public class VRDebug : Singleton<VRDebug>
         if (msgs.Count > maxMsgs)
         {
             msgs.RemoveRange(0, msgs.Count - maxMsgs);
-            msgTimeouts.RemoveRange(0, msgs.Count - maxMsgs);
+            msgTimeouts.RemoveRange(0, msgTimeouts.Count - maxMsgs);
         }
         string fullMsg = "";
         foreach (var msg in msgs)

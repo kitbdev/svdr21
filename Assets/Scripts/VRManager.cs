@@ -58,11 +58,14 @@ public class VRManager : Singleton<VRManager>
 
     IEnumerator Start()
     {
-        Debug.Log("start");
         yield return new WaitForSecondsRealtime(vrTimeout);
         if (!disableVR && !XRSettings.isDeviceActive)
         {
             Debug.LogWarning("No VR detected!");
+        }
+        if (!disableVR && XRSettings.isDeviceActive)
+        {
+            VRDebug.Log("VR detected!", 2);
         }
     }
 

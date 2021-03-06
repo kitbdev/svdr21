@@ -18,7 +18,7 @@ public class BowString : XRBaseInteractable
     protected float pullAmount = 0;
     public float PullAmount => pullAmount;
 
-    BowNotch bowNotch;
+    public BowNotch bowNotch;
     XRBaseInteractor pullingInteractor;
 
     // private void LateUpdate()
@@ -30,7 +30,7 @@ public class BowString : XRBaseInteractable
     // }
     protected override void Awake()
     {
-        bowNotch = GetComponent<BowNotch>();
+        if (!bowNotch) bowNotch = GetComponent<BowNotch>();
     }
     void Start()
     {
@@ -45,6 +45,7 @@ public class BowString : XRBaseInteractable
 
     protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
+        VRDebug.LogTemp("String Grabbed");
         // bowstring grabbed by player
         base.OnSelectEntered(args);
         pullingInteractor = args.interactor;
@@ -53,6 +54,7 @@ public class BowString : XRBaseInteractable
     }
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
+        VRDebug.LogTemp("String released");
         // bowstring released by player
         base.OnSelectExited(args);
         bowNotch.ReleaseArrow();
@@ -89,7 +91,8 @@ public class BowString : XRBaseInteractable
 
             // update string postion
             Vector3 npos = Vector3.Lerp(startPullT.position, endPullT.position, pullAmount);
-            stringGrab.position = npos;
+            transform.position = npos;
+            // stringGrab.position = npos;
             UpdateLine();
         }
     }
@@ -97,5 +100,14 @@ public class BowString : XRBaseInteractable
     {
         // only be selected by hand's direct interactor
         return base.IsSelectableBy(interactor) && interactor is XRDirectInteractor;
+    }
+    private void OnDrawGizmosSelected()
+    {
+        if (startPullT && endPullT)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(startPullT.position, endPullT.position);
+            Gizmos.color = Color.white;
+        }
     }
 }

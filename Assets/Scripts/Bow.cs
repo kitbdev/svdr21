@@ -6,13 +6,22 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// <summary>
 /// handles two hand rotation stuff
 /// </summary>
+[SelectionBase]
 public class Bow : XRGrabInteractable
 {
     [Space]
-    public BowString BowString;
+    public BowString bowString;
     protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
         base.OnSelectEntered(args);
     }
-    // todo no deselect unless switching hands
+    protected override void OnSelectExiting(SelectExitEventArgs args)
+    {
+        // todo no deselect unless switching hands
+        base.OnSelectExiting(args);
+    }
+    public override bool IsSelectableBy(XRBaseInteractor interactor)
+    {
+        return base.IsSelectableBy(interactor) && interactor is XRDirectInteractor;
+    }
 }

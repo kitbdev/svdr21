@@ -14,6 +14,7 @@ public class BowNotch : XRSocketInteractor
     public bool canGrabArrows = true;
     protected bool isArrowArmed;
     protected BaseArrow currentArrow;
+    protected float pullAmount;
 
     public void UpdatePull(float amount)
     {
@@ -21,6 +22,7 @@ public class BowNotch : XRSocketInteractor
         {
             return;
         }
+        pullAmount = amount;
         if (amount >= releaseThreshold)
         {
             if (!isArrowArmed)
@@ -39,30 +41,43 @@ public class BowNotch : XRSocketInteractor
     }
     public void ReleaseArrow()
     {
-        if (isArrowArmed)
+        if (currentArrow != null)
         {
-            Debug.Log("Arrow launched");
-            currentArrow.ArrowLaunched();
-        } else
-        {
-            Debug.Log("Arrow dropped");
-            currentArrow.ArrowDropped();
+            interactionManager.CancelInteractorSelection(this);
+            if (isArrowArmed)
+            {
+                float normPullAmount = Mathf.InverseLerp(releaseThreshold, 1f, pullAmount);
+                VRDebug.Log("Arrow launched " + normPullAmount * 100 + "%", 3);
+                currentArrow.ArrowLaunched(normPullAmount);
+            } else
+            {
+                VRDebug.Log("Arrow dropped", 3);
+                currentArrow.ArrowDropped();
+            }
         }
         isArrowArmed = false;
     }
 
+    protected override void OnSelectEntering(SelectEnterEventArgs args)
+    {
+        // force hand to drop
+
+        // interactionManager.CancelInteractorSelection(args.interactable.selectingInteractor);
+        interactionManager.CancelInteractableSelection(args.interactable);
+        base.OnSelectEntering(args);
+    }
     protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
         base.OnSelectEntered(args);
         currentArrow = args.interactable as BaseArrow;
-        Debug.Log("Arrow entered " + currentArrow.gameObject.name);
+        VRDebug.Log("Arrow entered " + currentArrow.gameObject.name, 3);
         isArrowArmed = false;
         currentArrow.ArrowSet();
     }
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
         base.OnSelectExited(args);
-        Debug.Log("Arrow exited");
+        VRDebug.Log("Arrow exited", 3);
         currentArrow.ArrowUnSet();
         currentArrow = null;
     }

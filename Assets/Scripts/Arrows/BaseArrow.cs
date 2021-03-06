@@ -9,37 +9,52 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class BaseArrow : XRGrabInteractable
 {
     [Header("Arrow Settings")]
-    public float speed = 2000;
+    public float launchForceMin = 2000;
+    public float launchForceMax = 5000;
     public Transform tip;
     public LayerMask ignoreMask = ~Physics.IgnoreRaycastLayer;
 
     protected Vector3 lastPos = Vector3.zero;
     protected bool launched = false;
+    protected float launchPullAmount = 0;
     protected bool stopped = false;
     protected bool isSet = false;
     protected bool isArmed = false;
+
     protected bool inFlight => launched && !stopped;
+    // protected BowNotch launcher;
+
     protected Collider col;
     protected Rigidbody rb;
 
     protected override void Awake()
     {
         base.Awake();
+        rb = GetComponent<Rigidbody>();
+        // col = GetComponent<Collider>();
         launched = false;
         stopped = false;
-        col = GetComponent<Collider>();
-        rb = GetComponent<Rigidbody>();
+        SetPhysicsEnabled(false);
     }
 
     protected override void OnSelectEntering(SelectEnterEventArgs args)
     {
-        // if hands ...
+        if (args.interactor is XRDirectInteractor)
+        {
+            // this is for grabbing a shot arrow
+            SetPhysicsEnabled(false);
+            launched = false;
+            stopped = false;
+        }
         base.OnSelectEntering(args);
     }
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
         base.OnSelectExited(args);
         // launch if notch?
+        // todo hand transition to bow
+        // todo grab string w/o arrow?
+        // bow pos is off
     }
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {
@@ -75,7 +90,7 @@ public class BaseArrow : XRGrabInteractable
             if (Physics.Raycast(lastPos, transform.position, out var hit, dist, ignoreMask))
             {
                 // hit something
-                Debug.Log("Arrow hit " + hit.collider.name);
+                VRDebug.Log("Arrow hit " + hit.collider.name);
                 stopped = true;
                 // remove physics
                 SetPhysicsEnabled(false);
@@ -90,6 +105,20 @@ public class BaseArrow : XRGrabInteractable
     {
         rb.isKinematic = !enabled;
         rb.useGravity = enabled;
+    }
+
+    protected void LaunchForce()
+    {
+        SetPhysicsEnabled(true);
+        float forceAmount = Mathf.Lerp(launchForceMin, launchForceMax, launchPullAmount);
+        rb.AddForce(transform.forward * forceAmount);
+    }
+
+    public override bool IsSelectableBy(XRBaseInteractor interactor)
+    {
+        bool isFree = interactor is XRDirectInteractor && !isSet;
+        bool isNotching = interactor is BowNotch;
+        return base.IsSelectableBy(interactor) && (isFree || isNotching);
     }
 
     /// <summary>
@@ -123,9 +152,11 @@ public class BaseArrow : XRGrabInteractable
     /// <summary>
     /// the arrow is being launched
     /// </summary>
-    public virtual void ArrowLaunched()
+    public virtual void ArrowLaunched(float pullAmount)
     {
         launched = true;
+        launchPullAmount = pullAmount;
+        LaunchForce();
     }
     /// <summary>
     /// the arrow was not launched, but dropped
