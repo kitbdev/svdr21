@@ -3,22 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class Bow : MonoBehaviour
+/// <summary>
+/// handles two hand rotation stuff
+/// </summary>
+public class Bow : XRGrabInteractable
 {
-    public Transform stringGrab;
-    public LineRenderer bowstringLR;
-
-    private void LateUpdate()
+    [Space]
+    public BowString BowString;
+    protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
-        if (stringGrab.hasChanged)
-        {
-            UpdateLine();
-        }
+        base.OnSelectEntered(args);
     }
-    void UpdateLine()
-    {
-        Vector3 centerLoc = bowstringLR.transform.InverseTransformPoint(stringGrab.position);
-        bowstringLR.SetPosition(1, centerLoc);
-
-    }
+    // todo no deselect unless switching hands
 }
