@@ -30,17 +30,21 @@ public class VRDebug : Singleton<VRDebug>
             }
         }
     }
-    public static void Log(string msg, float timeout = -1)
+    public static void Log(string msg, float timeout = -1, bool alsoDebug = true)
     {
-        Instance.ILog(msg, timeout);
+        Instance.ILog(msg, timeout, alsoDebug);
     }
     public static void Clear()
     {
         Instance.IClear();
     }
-    void ILog(string msg, float timeout = -1)
+    void ILog(string msg, float timeout = -1, bool alsoDebug = true)
     {
         msgs.Add(msg);
+        if (alsoDebug)
+        {
+            Debug.Log("VRLOG:" + msg);
+        }
         msgTimeouts.Add(timeout > 0 ? Time.unscaledTime + timeout : -1);
         UpdateText();
     }
