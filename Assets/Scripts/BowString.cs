@@ -45,7 +45,7 @@ public class BowString : XRBaseInteractable
 
     protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
-        VRDebug.LogTemp("String Grabbed");
+        // VRDebug.Log("String Grabbed");
         // bowstring grabbed by player
         base.OnSelectEntered(args);
         pullingInteractor = args.interactor;
@@ -54,7 +54,7 @@ public class BowString : XRBaseInteractable
     }
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
-        VRDebug.LogTemp("String released");
+        // VRDebug.Log("String released");
         // bowstring released by player
         base.OnSelectExited(args);
         bowNotch.ReleaseArrow();

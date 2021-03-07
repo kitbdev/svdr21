@@ -41,7 +41,8 @@ public class BaseArrow : XRGrabInteractable
     {
         if (args.interactor is XRDirectInteractor)
         {
-            // this is for grabbing a shot arrow
+            // arrow was grabbed by player
+            // VRDebug.Log("arrow grabbed");
             SetPhysicsEnabled(false);
             launched = false;
             stopped = false;
@@ -51,10 +52,15 @@ public class BaseArrow : XRGrabInteractable
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
         base.OnSelectExited(args);
-        // launch if notch?
-        // todo hand transition to bow
-        // todo grab string w/o arrow?
-        // bow pos is off
+    }
+    protected override void Drop()
+    {
+        if (!isSet)
+        {
+            // Debug.Log("dropping");
+            base.Drop();
+            SetPhysicsEnabled(true);
+        }
     }
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {
@@ -85,24 +91,26 @@ public class BaseArrow : XRGrabInteractable
     {
         if (inFlight)
         {
-            // todo use tip
+            // todo use tip?
             float dist = Vector3.Distance(transform.position, lastPos);
             if (Physics.Raycast(lastPos, transform.position, out var hit, dist, ignoreMask))
             {
                 // hit something
-                VRDebug.Log("Arrow hit " + hit.collider.name);
+                VRDebug.Log("Arrow hit " + hit.collider.name, 5, this);
                 stopped = true;
                 // remove physics
                 SetPhysicsEnabled(false);
                 // child arrow
                 transform.SetParent(hit.collider.transform);
                 // check hittable
+                //todo
             }
             lastPos = transform.position;
         }
     }
     protected void SetPhysicsEnabled(bool enabled)
     {
+        // VRDebug.Log("arrow phys " + enabled, -1);
         rb.isKinematic = !enabled;
         rb.useGravity = enabled;
     }
@@ -111,14 +119,15 @@ public class BaseArrow : XRGrabInteractable
     {
         SetPhysicsEnabled(true);
         float forceAmount = Mathf.Lerp(launchForceMin, launchForceMax, launchPullAmount);
-        rb.AddForce(transform.forward * forceAmount);
+        VRDebug.Log("Launching at " + forceAmount + " force", debugContext: this);
+        rb.AddForce(transform.forward * forceAmount, ForceMode.Impulse);
     }
 
     public override bool IsSelectableBy(XRBaseInteractor interactor)
     {
-        bool isFree = interactor is XRDirectInteractor && !isSet;
+        bool isGrabbing = interactor is XRDirectInteractor && !isSet;
         bool isNotching = interactor is BowNotch;
-        return base.IsSelectableBy(interactor) && (isFree || isNotching);
+        return base.IsSelectableBy(interactor) && (isGrabbing || isNotching);
     }
 
     /// <summary>
@@ -155,6 +164,7 @@ public class BaseArrow : XRGrabInteractable
     public virtual void ArrowLaunched(float pullAmount)
     {
         launched = true;
+        transform.position = tip.transform.position;
         launchPullAmount = pullAmount;
         LaunchForce();
     }

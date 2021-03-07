@@ -1,8 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-[DefaultExecutionOrder(-5)]
+[DefaultExecutionOrder(-50)]
 public class VRDebug : Singleton<VRDebug>
 {
     public int maxMsgs = 10;
@@ -31,24 +32,35 @@ public class VRDebug : Singleton<VRDebug>
             }
         }
     }
-    public static void LogTemp(string msg, bool alsoDebug = true)
+    public static void Log(string msg, float timeout = -1, Object debugContext = null)
     {
-        Instance.ILog(msg, 2, alsoDebug);
+        LogP(msg, timeout > 0 ? timeout : 2, true, debugContext);
     }
-    public static void Log(string msg, float timeout = -1, bool alsoDebug = true)
+    public static void LogP(string msg, float timeout = -1, bool alsoDebug = true, Object debugContext = null)
     {
-        Instance.ILog(msg, timeout, alsoDebug);
+        Instance.ILog(msg, timeout, alsoDebug, debugContext);
     }
     public static void Clear()
     {
         Instance.IClear();
     }
-    void ILog(string msg, float timeout = -1, bool alsoDebug = true)
+    // protected static IEnumerator waitToLog(string msg, float timeout = -1, bool alsoDebug = true)
+    // {
+    //     yield return new WaitForEndOfFrame();
+    //     Instance.ILog(msg, timeout, alsoDebug);
+    // }
+    void ILog(string msg, float timeout = -1, bool alsoDebug = true, Object debugContext = null)
     {
         msgs.Add(msg);
         if (alsoDebug)
         {
-            Debug.Log("VRLOG:" + msg);
+            if (debugContext != null)
+            {
+                Debug.Log("VRLOG:" + msg, debugContext);
+            } else
+            {
+                Debug.Log("VRLOG:" + msg);
+            }
         }
         msgTimeouts.Add(timeout > 0 ? Time.unscaledTime + timeout : -1);
         UpdateText();

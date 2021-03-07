@@ -47,7 +47,7 @@ public class VRManager : Singleton<VRManager>
 
     void OnDeviceLoad(string name)
     {
-        VRDebug.Log("Device loaded " + name, 2);
+        VRDebug.Log("Device loaded " + name);
         isVRReady = true;
     }
     void OnBoundaryChange()
@@ -65,7 +65,7 @@ public class VRManager : Singleton<VRManager>
         }
         if (!disableVR && XRSettings.isDeviceActive)
         {
-            VRDebug.Log("VR detected!", 2);
+            VRDebug.Log("VR detected!");
         }
     }
 

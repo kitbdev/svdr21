@@ -6,6 +6,7 @@ using UnityEngine;
 ///     Singleton behaviour class, used for components that should only have one instance
 /// </summary>
 /// <typeparam name="T"></typeparam>
+[DefaultExecutionOrder(-50)]
 public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
     public static T Instance { get; private set; }
