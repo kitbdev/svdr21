@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct HitArgs
+[System.Serializable]
+public class HitArgs : ScriptableObject
 {
     public float damage;
     public bool isDirect;

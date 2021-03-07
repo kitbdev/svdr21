@@ -70,6 +70,14 @@ public class VRDebug : Singleton<VRDebug>
     {
         Instance.IClear();
     }
+    /// <summary>
+    /// Simple instance log. For inspector UnityEvents and such
+    /// </summary>
+    /// <param name="msg"></param>
+    public void LogSimple(string msg)
+    {
+        Instance.ILog(msg, 2);
+    }
     // protected static IEnumerator waitToLog(string msg, float timeout = -1, bool alsoDebug = true)
     // {
     //     yield return new WaitForEndOfFrame();
