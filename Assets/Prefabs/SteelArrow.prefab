@@ -216,9 +216,9 @@ MonoBehaviour:
   launchForceMin: 1
   launchForceMax: 10
   tip: {fileID: 979804440848849560}
-  ignoreMask:
+  collisionMask:
     serializedVersion: 2
-    m_Bits: 51
+    m_Bits: 4294967291
 --- !u!1 &7801010339732151608
 GameObject:
   m_ObjectHideFlags: 0

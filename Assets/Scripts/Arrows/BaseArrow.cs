@@ -6,13 +6,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// <summary>
 /// Arrow Projectile
 /// </summary>
+[SelectionBase]
 public class BaseArrow : XRGrabInteractable
 {
     [Header("Arrow Settings")]
     public float launchForceMin = 2000;
     public float launchForceMax = 5000;
     public Transform tip;
-    public LayerMask ignoreMask = ~Physics.IgnoreRaycastLayer;
+    public LayerMask collisionMask = ~Physics.IgnoreRaycastLayer;
 
     protected Vector3 lastPos = Vector3.zero;
     protected bool launched = false;
@@ -36,6 +37,18 @@ public class BaseArrow : XRGrabInteractable
         stopped = false;
         SetPhysicsEnabled(false);
     }
+    [ContextMenu("Set Defaults")]
+    protected void SetDefaults()
+    {
+        interactionLayerMask = ~LayerMask.NameToLayer("Bow") & ~Physics.IgnoreRaycastLayer;
+        colliders.Clear();
+        colliders.Add(GetComponentInChildren<Collider>());
+        movementType = MovementType.Instantaneous;
+        retainTransformParent = false;
+        tip = transform.Find("tip");
+        attachTransform = transform.Find("attach");
+        collisionMask = ~Physics.IgnoreRaycastLayer & ~LayerMask.NameToLayer("Bow") & ~LayerMask.NameToLayer("Arrow");
+    }
 
     protected override void OnSelectEntering(SelectEnterEventArgs args)
     {
@@ -48,10 +61,6 @@ public class BaseArrow : XRGrabInteractable
             stopped = false;
         }
         base.OnSelectEntering(args);
-    }
-    protected override void OnSelectExited(SelectExitEventArgs args)
-    {
-        base.OnSelectExited(args);
     }
     protected override void Drop()
     {
@@ -94,7 +103,7 @@ public class BaseArrow : XRGrabInteractable
             float dist = Vector3.Distance(tip.transform.position, lastPos);
             Vector3 dir = tip.transform.position - lastPos;
             Debug.DrawRay(lastPos, dir);
-            if (Physics.SphereCast(lastPos, 0.05f, dir, out var hit, dist, ignoreMask, QueryTriggerInteraction.Ignore))
+            if (Physics.SphereCast(lastPos, 0.05f, dir, out var hit, dist, collisionMask, QueryTriggerInteraction.Ignore))
             {
                 // hit something
                 VRDebug.Log("Arrow hit " + hit.collider.name, 5, this);
@@ -104,7 +113,14 @@ public class BaseArrow : XRGrabInteractable
                 // child arrow
                 transform.SetParent(hit.collider.transform);
                 // check hittable
-                //todo
+                if (hit.transform.gameObject.TryGetComponent<IHittable>(out var hittable))
+                {
+                    HitArgs args = new HitArgs();
+                    args.isDirect = true;
+                    SetHitArgs(ref args);
+                    hittable.Hit(args);
+                    ArrowHit(hit);
+                }
             }
             lastPos = tip.transform.position;
         }
@@ -114,6 +130,10 @@ public class BaseArrow : XRGrabInteractable
         // VRDebug.Log("arrow phys " + enabled, -1);
         rb.isKinematic = !enabled;
         rb.useGravity = enabled;
+    }
+    protected virtual void SetHitArgs(ref HitArgs hitargs)
+    {
+
     }
 
     protected void LaunchForce()
@@ -127,7 +147,6 @@ public class BaseArrow : XRGrabInteractable
     public override bool IsSelectableBy(XRBaseInteractor interactor)
     {
         bool isGrabbing = interactor is XRDirectInteractor && !isSet;
-        // check bownotch?
         bool isNotching = interactor is BowNotch;
         return base.IsSelectableBy(interactor) && (isGrabbing || isNotching);
     }
@@ -167,6 +186,12 @@ public class BaseArrow : XRGrabInteractable
     /// <summary>
     /// the arrow is being launched
     /// </summary>
+    public virtual void PreviewLaunchForce(float pullAmount)
+    {
+    }
+    /// <summary>
+    /// the arrow is being launched
+    /// </summary>
     public virtual void ArrowLaunched(float pullAmount)
     {
         launched = true;
@@ -186,6 +211,12 @@ public class BaseArrow : XRGrabInteractable
     /// the alt button was hit while the arrow was armed
     /// </summary>
     public virtual void ArrowAlt()
+    {
+    }
+    /// <summary>
+    /// the arrow hit its target
+    /// </summary>
+    public virtual void ArrowHit(RaycastHit hit)
     {
     }
 }
