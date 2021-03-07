@@ -70,6 +70,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4430166367292301320}
   - component: {fileID: 7036517843576244723}
+  - component: {fileID: 3995991532393962745}
   - component: {fileID: 686168913228957206}
   m_Layer: 6
   m_Name: SteelArrow
@@ -111,7 +112,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &686168913228957206
+--- !u!114 &3995991532393962745
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,7 +121,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4430166367292301323}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d16023da06f5219489264d47cca69bc8, type: 3}
+  m_Script: {fileID: 11500000, guid: bf504cbe3113196409c1c34cc796269c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_InteractionManager: {fileID: 0}
@@ -128,7 +129,7 @@ MonoBehaviour:
   - {fileID: 6156688907875918338}
   m_InteractionLayerMask:
     serializedVersion: 2
-    m_Bits: 115
+    m_Bits: 240
   m_CustomReticle: {fileID: 0}
   m_FirstHoverEntered:
     m_PersistentCalls:
@@ -213,12 +214,29 @@ MonoBehaviour:
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
   m_RetainTransformParent: 0
-  launchForceMin: 1
-  launchForceMax: 10
+--- !u!114 &686168913228957206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4430166367292301323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d16023da06f5219489264d47cca69bc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  typeName: Arrow
+  launchForceMin: 5
+  launchForceMax: 20
   tip: {fileID: 979804440848849560}
   collisionMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 51
+  launched: 0
+  stopped: 0
+  isSet: 0
+  isArmed: 0
 --- !u!1 &7801010339732151608
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ public class BowNotch : XRSocketInteractor
     public float releaseThreshold = 0.25f;
     public bool canGrabArrows = true;
     protected bool isArrowArmed;
-    protected BaseArrow currentArrow;
+    protected ArrowInteractable currentArrow;
     protected float pullAmount;
     public BowString bowString;
     public Bow bow;
@@ -83,13 +83,13 @@ public class BowNotch : XRSocketInteractor
         // interactionManager.SelectEnter(bow.offHand, bowString);
         // interactionManager.ForceSelect(bow.offHand, bowString);
 
-        if (!(args.interactable is BaseArrow))
+        if (!(args.interactable is ArrowInteractable))
         {
             VRDebug.Log("wrong interaction " + args.interactable.name, 5);
         }
 
         // get arrow
-        currentArrow = args.interactable as BaseArrow;
+        currentArrow = args.interactable as ArrowInteractable;
         VRDebug.Log("Arrow '" + currentArrow.gameObject.name + "' notched");
         isArrowArmed = false;
         currentArrow.ArrowSet();
@@ -118,7 +118,7 @@ public class BowNotch : XRSocketInteractor
         // check hover for timing stuff - socket recycle time
         // prevents immediate regrabbing arrow
         // must be a base arrow interactable (or inherited) and must be held
-        bool interactableArrow = interactable is BaseArrow && interactable.selectingInteractor != null;
+        bool interactableArrow = interactable is ArrowInteractable && interactable.selectingInteractor != null;
         return base.CanSelect(interactable) && CanHover(interactable) && interactableArrow && canGrabArrows;
     }
     public override XRBaseInteractable.MovementType? selectedInteractableMovementTypeOverride

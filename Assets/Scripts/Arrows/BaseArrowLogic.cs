@@ -4,91 +4,71 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
-/// Arrow Projectile
+/// Arrow Projectile logic
 /// </summary>
 [SelectionBase]
-public class BaseArrow : XRGrabInteractable
+public class BaseArrowLogic : MonoBehaviour
 {
+    [HideInInspector]
+    public string typeName = "Arrow";
     [Header("Arrow Settings")]
-    public float launchForceMin = 2000;
-    public float launchForceMax = 5000;
+    public float launchForceMin = 5;
+    public float launchForceMax = 20;
     public Transform tip;
     public LayerMask collisionMask = ~Physics.IgnoreRaycastLayer;
 
+    [Header("Dynamic")]
+    public bool launched = false;
+    public bool stopped = false;
+    public bool isSet = false;
+    public bool isArmed = false;
     protected Vector3 lastPos = Vector3.zero;
-    protected bool launched = false;
     protected float launchPullAmount = 0;
-    protected bool stopped = false;
-    protected bool isSet = false;
-    protected bool isArmed = false;
 
     protected bool inFlight => launched && !stopped;
-    // protected BowNotch launcher;
+    protected Bow launchBow;
+    protected ArrowInteractable arrowInteractable;
 
-    protected Collider col;
     protected Rigidbody rb;
+    // protected Collider col;
 
-    protected override void Awake()
+    protected virtual void Awake()
     {
-        base.Awake();
+        typeName = "Base Arrow";
         rb = GetComponent<Rigidbody>();
+        arrowInteractable = GetComponent<ArrowInteractable>();
         // col = GetComponent<Collider>();
         launched = false;
         stopped = false;
         SetPhysicsEnabled(false);
     }
-    [ContextMenu("Set Defaults")]
-    protected void SetDefaults()
+    private void Reset()
     {
-        interactionLayerMask = ~LayerMask.NameToLayer("Bow") & ~Physics.IgnoreRaycastLayer;
-        colliders.Clear();
-        colliders.Add(GetComponentInChildren<Collider>());
-        movementType = MovementType.Instantaneous;
-        retainTransformParent = false;
+        launchForceMin = 5;
+        launchForceMax = 20;
         tip = transform.Find("tip");
-        attachTransform = transform.Find("attach");
         collisionMask = ~Physics.IgnoreRaycastLayer & ~LayerMask.NameToLayer("Bow") & ~LayerMask.NameToLayer("Arrow");
     }
+    protected virtual void Update()
+    {
 
-    protected override void OnSelectEntering(SelectEnterEventArgs args)
-    {
-        if (args.interactor is XRDirectInteractor)
-        {
-            // arrow was grabbed by player
-            // VRDebug.Log("arrow grabbed");
-            SetPhysicsEnabled(false);
-            launched = false;
-            stopped = false;
-        }
-        base.OnSelectEntering(args);
     }
-    protected override void Drop()
+    protected virtual void FixedUpdate()
     {
-        if (!isSet)
-        {
-            // Debug.Log("dropping");
-            base.Drop();
-            SetPhysicsEnabled(true);
-        }
-    }
-    public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
-    {
-        base.ProcessInteractable(updatePhase);
         if (inFlight)
         {
-            if (updatePhase == XRInteractionUpdateOrder.UpdatePhase.Dynamic)
-            {
+            SetDirToVel();
 
-            } else if (updatePhase == XRInteractionUpdateOrder.UpdatePhase.Fixed)
-            {
-                SetDirToVel();
-            } else if (updatePhase == XRInteractionUpdateOrder.UpdatePhase.Late)
-            {
-                CheckHit();
-            }
         }
     }
-    protected void SetDirToVel()
+    protected virtual void LateUpdate()
+    {
+        if (inFlight)
+        {
+            CheckHit();
+        }
+    }
+    protected virtual void SetDirToVel()
     {
         if (rb.velocity.z > 0.5f)
         {
@@ -96,7 +76,7 @@ public class BaseArrow : XRGrabInteractable
         }
     }
 
-    protected void CheckHit()
+    protected virtual void CheckHit()
     {
         if (inFlight)
         {
@@ -112,6 +92,7 @@ public class BaseArrow : XRGrabInteractable
                 SetPhysicsEnabled(false);
                 // child arrow
                 transform.SetParent(hit.collider.transform);
+                ArrowHit(hit);
                 // check hittable
                 if (hit.transform.gameObject.TryGetComponent<IHittable>(out var hittable))
                 {
@@ -119,13 +100,12 @@ public class BaseArrow : XRGrabInteractable
                     args.isDirect = true;
                     SetHitArgs(ref args);
                     hittable.Hit(args);
-                    ArrowHit(hit);
                 }
             }
             lastPos = tip.transform.position;
         }
     }
-    protected void SetPhysicsEnabled(bool enabled)
+    public virtual void SetPhysicsEnabled(bool enabled)
     {
         // VRDebug.Log("arrow phys " + enabled, -1);
         rb.isKinematic = !enabled;
@@ -136,7 +116,7 @@ public class BaseArrow : XRGrabInteractable
 
     }
 
-    protected void LaunchForce()
+    protected virtual void LaunchForce()
     {
         SetPhysicsEnabled(true);
         float forceAmount = Mathf.Lerp(launchForceMin, launchForceMax, launchPullAmount);
@@ -144,16 +124,10 @@ public class BaseArrow : XRGrabInteractable
         rb.AddForce(transform.forward * forceAmount, ForceMode.Impulse);
     }
 
-    public override bool IsSelectableBy(XRBaseInteractor interactor)
+    private void OnCollisionEnter(Collision other)
     {
-        bool isGrabbing = interactor is XRDirectInteractor && !isSet;
-        bool isNotching = interactor is BowNotch;
-        return base.IsSelectableBy(interactor) && (isGrabbing || isNotching);
+        VRDebug.Log(other.collider.name + " arrow bump", -1, other.collider);
     }
-    // private void OnCollisionEnter(Collision other)
-    // {
-    // VRDebug.Log(other.collider.name + " arrow col", -1, other.collider);
-    // }
 
     /// <summary>
     /// the arrow was set in the bow
@@ -184,6 +158,17 @@ public class BaseArrow : XRGrabInteractable
         isArmed = false;
     }
     /// <summary>
+    /// the arrow was grabbed by the player
+    /// </summary>
+    public virtual void ArrowGrabbed()
+    {
+        isArmed = false;
+        // VRDebug.Log("arrow grabbed");
+        SetPhysicsEnabled(false);
+        launched = false;
+        stopped = false;
+    }
+    /// <summary>
     /// the arrow is being launched
     /// </summary>
     public virtual void PreviewLaunchForce(float pullAmount)
@@ -205,6 +190,7 @@ public class BaseArrow : XRGrabInteractable
     /// </summary>
     public virtual void ArrowDropped()
     {
+        VRDebug.Log("Arrow dropped ", default, gameObject);
         Destroy(gameObject);
     }
     /// <summary>

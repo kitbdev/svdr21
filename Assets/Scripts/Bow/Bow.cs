@@ -9,15 +9,26 @@ using UnityEngine.XR.Interaction.Toolkit;
 [SelectionBase]
 public class Bow : XRGrabInteractable
 {
-    [Space]
+    [Header("Bow")]
     public BowString bowString;
     public ArrowMenu arrowMenu;
+    public ProjectileLine line;
+    [SerializeField]
+    bool m_showLine = false;
+    public bool showLine { get { return m_showLine; } set { m_showLine = value; line.lineActive = value; } }
+    [Header("Hands")]
     public XRBaseInteractor leftHand;
     public XRBaseInteractor rightHand;
     public bool defaultToLeftHand = true;
     public XRBaseInteractor bowHand { get; protected set; }
     public XRBaseInteractor offHand { get; protected set; }
 
+    protected override void Awake()
+    {
+        base.Awake();
+        if (!arrowMenu) arrowMenu = GetComponentInChildren<ArrowMenu>();
+        if (!line) line = GetComponentInChildren<ProjectileLine>();
+    }
     private void Start()
     {
         SetBowHand(defaultToLeftHand);
@@ -87,8 +98,14 @@ public class Bow : XRGrabInteractable
         {
             arrowMenu.SetSide(true);
         }
+        // line.projectileVelocity = 
     }
-    public void Launched() {
+    public void PreviewLaunch(float val)
+    {
+        
+    }
+    public void Launched()
+    {
         arrowMenu.ShowArrows();
     }
 }

@@ -126,12 +126,12 @@ public class BowInspector : FixedEditor
         editorType = typeof(XRGrabInteractableEditor);
     }
 }
-[CustomEditor(typeof(BaseArrow), true)]
+[CustomEditor(typeof(ArrowInteractable), true)]
 public class ArrowInspector : FixedEditor
 {
     public override void EnableProps()
     {
-        SetProps(typeof(BaseArrow));
+        SetProps(typeof(ArrowInteractable));
         editorType = typeof(XRGrabInteractableEditor);
     }
 }
