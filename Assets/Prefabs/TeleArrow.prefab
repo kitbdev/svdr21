@@ -19,6 +19,8 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 51
+  flightDestroyDelay: 100
+  groundDestroyDelay: 600
   launched: 0
   stopped: 0
   isSet: 0

@@ -16,6 +16,8 @@ public class BaseArrowLogic : MonoBehaviour
     public float launchForceMax = 20;
     public Transform tip;
     public LayerMask collisionMask = ~Physics.IgnoreRaycastLayer;
+    public float flightDestroyDelay = 100;
+    public float groundDestroyDelay = 60 * 10;
 
     [Header("Dynamic")]
     public bool launched = false;
@@ -24,6 +26,8 @@ public class BaseArrowLogic : MonoBehaviour
     public bool isArmed = false;
     protected Vector3 lastPos = Vector3.zero;
     protected float launchPullAmount = 0;
+    protected float launchTime = 0;
+    protected float groundHitTime = 0;
 
     protected bool inFlight => launched && !stopped;
     protected Bow launchBow;
@@ -51,7 +55,15 @@ public class BaseArrowLogic : MonoBehaviour
     }
     protected virtual void Update()
     {
-
+        if (inFlight && Time.time > launchTime + flightDestroyDelay)
+        {
+            // VRDebug.Log("Arrow timeout destroyed in air");
+            Destroy(gameObject);
+        } else if (stopped && Time.time > launchTime + groundDestroyDelay)
+        {
+            // VRDebug.Log("Arrow timeout destroyed on ground");
+            Destroy(gameObject);
+        }
     }
     protected virtual void FixedUpdate()
     {
@@ -92,6 +104,7 @@ public class BaseArrowLogic : MonoBehaviour
                 SetPhysicsEnabled(false);
                 // child arrow
                 transform.SetParent(hit.collider.transform);
+                groundHitTime = Time.time;
                 ArrowHit(hit);
                 // check hittable
                 if (hit.transform.gameObject.TryGetComponent<IHittable>(out var hittable))
@@ -116,10 +129,14 @@ public class BaseArrowLogic : MonoBehaviour
 
     }
 
+    public virtual float GetLaunchForce(float pullAmount)
+    {
+        return Mathf.Lerp(launchForceMin, launchForceMax, pullAmount);
+    }
     protected virtual void LaunchForce()
     {
         SetPhysicsEnabled(true);
-        float forceAmount = Mathf.Lerp(launchForceMin, launchForceMax, launchPullAmount);
+        float forceAmount = GetLaunchForce(launchPullAmount);
         VRDebug.Log("Launching at " + forceAmount + " force", debugContext: this);
         rb.AddForce(transform.forward * forceAmount, ForceMode.Impulse);
     }
@@ -129,6 +146,10 @@ public class BaseArrowLogic : MonoBehaviour
         VRDebug.Log(other.collider.name + " arrow bump", -1, other.collider);
     }
 
+    public virtual void SetBow(Bow bow)
+    {
+        launchBow = bow;
+    }
     /// <summary>
     /// the arrow was set in the bow
     /// </summary>
@@ -173,6 +194,12 @@ public class BaseArrowLogic : MonoBehaviour
     /// </summary>
     public virtual void PreviewLaunchForce(float pullAmount)
     {
+        if (launchBow)
+        {
+            float lf = GetLaunchForce(pullAmount);
+            VRDebug.LogFrame("PreviewForce " + lf);
+            launchBow.PreviewLaunch(lf);
+        }
     }
     /// <summary>
     /// the arrow is being launched
@@ -182,6 +209,7 @@ public class BaseArrowLogic : MonoBehaviour
         launched = true;
         transform.position = tip.transform.position;
         launchPullAmount = pullAmount;
+        launchTime = Time.time;
         LaunchForce();
     }
     /// <summary>

@@ -11,6 +11,7 @@ public class Bow : XRGrabInteractable
 {
     [Header("Bow")]
     public BowString bowString;
+    public BowNotch bowNotch;
     public ArrowMenu arrowMenu;
     public ProjectileLine line;
     [SerializeField]
@@ -28,6 +29,7 @@ public class Bow : XRGrabInteractable
         base.Awake();
         if (!arrowMenu) arrowMenu = GetComponentInChildren<ArrowMenu>();
         if (!line) line = GetComponentInChildren<ProjectileLine>();
+        if (!bowNotch) bowNotch = GetComponentInChildren<BowNotch>();
     }
     private void Start()
     {
@@ -100,12 +102,80 @@ public class Bow : XRGrabInteractable
         }
         // line.projectileVelocity = 
     }
-    public void PreviewLaunch(float val)
+    public void PreviewLaunch(float launchForce)
     {
-        
+        line.projectileVelocity = launchForce;
     }
-    public void Launched()
+    /// <summary>
+    /// arrow was launched or dropped
+    /// </summary>
+    public void ArrowReleased()
     {
         arrowMenu.ShowArrows();
+    }
+    /// <summary>
+    /// the arrow was set in the bow
+    /// </summary>
+    public virtual void ArrowSet()
+    {
+        showLine = false;
+    }
+    /// <summary>
+    /// the arrow was taken out of the bow
+    /// </summary>
+    public virtual void ArrowUnSet()
+    {
+    }
+    /// <summary>
+    /// The arrow was pulled past the launch threshold
+    /// </summary>
+    public virtual void ArrowArmed()
+    {
+        showLine = true;
+    }
+    /// <summary>
+    /// the arrow was put below the launch threshold after being armed
+    /// </summary>
+    public virtual void ArrowUnArmed()
+    {
+        // ? detach line
+        showLine = false;
+    }
+    /// <summary>
+    /// an arrow was grabbed by the player
+    /// </summary>
+    public virtual void ArrowGrabbed()
+    {
+    }
+    /// <summary>
+    /// the arrow is being launched
+    /// </summary>
+    public virtual void PreviewLaunchForce(float pullAmount)
+    {
+    }
+    /// <summary>
+    /// the arrow is being launched
+    /// </summary>
+    public virtual void ArrowLaunched(float pullAmount)
+    {
+    }
+    /// <summary>
+    /// the arrow was not launched, but dropped
+    /// prepare for destruction
+    /// </summary>
+    public virtual void ArrowDropped()
+    {
+    }
+    /// <summary>
+    /// the alt button was hit while the arrow was armed
+    /// </summary>
+    public virtual void ArrowAlt()
+    {
+    }
+    /// <summary>
+    /// the arrow hit its target
+    /// </summary>
+    public virtual void ArrowHit(RaycastHit hit)
+    {
     }
 }

@@ -32,14 +32,40 @@ public class VRDebug : Singleton<VRDebug>
             }
         }
     }
+    /// <summary>
+    /// Log for only a frame
+    /// </summary>
+    /// <param name="msg">message content</param>
+    /// <param name="debugContext">debug log context object</param>
+    public static void LogFrame(string msg, Object debugContext = null)
+    {
+        LogP(msg, 0.01f, true, debugContext);
+    }
+    /// <summary>
+    /// Log a message to the VR canvas
+    /// </summary>
+    /// <param name="msg">message content</param>
+    /// <param name="timeout"> duration to display the message (default:2)</param>
+    /// <param name="debugContext">debug log context object</param>
     public static void Log(string msg, float timeout = -1, Object debugContext = null)
     {
         LogP(msg, timeout > 0 ? timeout : 2, true, debugContext);
     }
+    /// <summary>
+    /// Log a message to the VR canvas default permanent
+    /// </summary>
+    /// <param name="msg">message content</param>
+    /// <param name="timeout"> duration to display the message (default: -1, forever)</param>
+    /// <param name="alsoDebug">Should log to unity console?</param>
+    /// <param name="debugContext">debug log context object (only for unity console)</param>
     public static void LogP(string msg, float timeout = -1, bool alsoDebug = true, Object debugContext = null)
     {
         Instance.ILog(msg, timeout, alsoDebug, debugContext);
     }
+    // todo log warn in bolder color
+    /// <summary>
+    /// Clears the VR log
+    /// </summary>
     public static void Clear()
     {
         Instance.IClear();

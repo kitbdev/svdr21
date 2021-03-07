@@ -13,11 +13,10 @@ public class BowNotch : XRSocketInteractor
     public float releaseThreshold = 0.25f;
     public bool canGrabArrows = true;
     protected bool isArrowArmed;
-    protected ArrowInteractable currentArrow;
+    public ArrowInteractable currentArrow { get; protected set; }
     protected float pullAmount;
     public BowString bowString;
     public Bow bow;
-    XRBaseInteractor offHand;
 
     public void UpdatePull(float amount)
     {
@@ -32,11 +31,13 @@ public class BowNotch : XRSocketInteractor
             {
                 isArrowArmed = true;
                 currentArrow.ArrowArmed();
+                bow.ArrowArmed();
             }
         } else if (isArrowArmed)
         {
             isArrowArmed = false;
             currentArrow.ArrowUnArmed();
+            bow.ArrowUnArmed();
         }
     }
     public void Grabbed()
@@ -55,13 +56,15 @@ public class BowNotch : XRSocketInteractor
                 float normPullAmount = Mathf.InverseLerp(releaseThreshold, 1f, pullAmount);
                 VRDebug.Log("Arrow launched " + normPullAmount * 100 + "%");
                 launchArrow.ArrowLaunched(normPullAmount);
+                bow.ArrowLaunched(normPullAmount);
             } else
             {
                 VRDebug.Log("Arrow dropped");
                 launchArrow.ArrowDropped();
+                bow.ArrowDropped();
             }
         }
-        bow.Launched();
+        bow.ArrowReleased();
         isArrowArmed = false;
     }
 
@@ -93,12 +96,15 @@ public class BowNotch : XRSocketInteractor
         VRDebug.Log("Arrow '" + currentArrow.gameObject.name + "' notched");
         isArrowArmed = false;
         currentArrow.ArrowSet();
+        currentArrow.SetBow(bow);
+        bow.ArrowSet();
     }
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
         base.OnSelectExited(args);
         VRDebug.Log("Arrow exited");
         currentArrow.ArrowUnSet();
+        bow.ArrowUnSet();
         currentArrow = null;
     }
     public override void ProcessInteractor(XRInteractionUpdateOrder.UpdatePhase updatePhase)
@@ -110,6 +116,7 @@ public class BowNotch : XRSocketInteractor
             {
                 float normPullAmount = Mathf.InverseLerp(releaseThreshold, 1f, pullAmount);
                 currentArrow.PreviewLaunchForce(normPullAmount);
+                bow.PreviewLaunchForce(normPullAmount);
             }
         }
     }

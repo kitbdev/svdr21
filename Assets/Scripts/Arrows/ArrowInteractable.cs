@@ -64,6 +64,11 @@ public class ArrowInteractable : XRGrabInteractable
         interactionManager.UnregisterInteractable(this);
     }
 
+    public void SetBow(Bow bow)
+    {
+        arrowLogic.SetBow(bow);
+    }
+
     /// <summary>
     /// the arrow was set in the bow
     /// </summary>
