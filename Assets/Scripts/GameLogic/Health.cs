@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[SelectionBase]
 public class Health : MonoBehaviour
 {
     [Header("Health")]
@@ -28,18 +29,18 @@ public class Health : MonoBehaviour
     /// Seconds after a hit that future hits will be ignored
     /// </summary>
     public float hitInvincibleDur = 0.5f;
-    float lastDamageTime = 0;
+    protected float lastDamageTime = 0;
     [Header("Events")]
     public UnityEvent dieEvent;
     public UnityEvent damageEvent;
     public UnityEvent healthUpdateEvent;
     [HideInInspector]
     public HitArgs lastHitArgs = null;
-    bool manualInvincible = false;
+    public bool manualInvincible = false;
 
     [HideInInspector] [SerializeField] HitBox[] hitBoxes;
 
-    bool isHitInvincible => hitInvincibleDur > 0 && Time.time > lastDamageTime + hitInvincibleDur;
+    bool isHitInvincible => hitInvincibleDur > 0 && Time.time < lastDamageTime + hitInvincibleDur;
     public bool isInvincible => manualInvincible || isHitInvincible;
     // max health negative means true invincibility
     public bool isDead => currentHealth <= 0 && maxHealth >= 0;
@@ -95,13 +96,14 @@ public class Health : MonoBehaviour
     }
     public void TakeDamage(HitArgs args)
     {
+        // VRDebug.Log(name + " hit by " + args.attacker + " for " + args.damage, debugContext: this);
         if (isDead)
         {
-            VRDebug.Log(name + " is already dead");
+            VRDebug.Log(name + " is already dead", debugContext: this);
             return;
         } else if (isInvincible)
         {
-            VRDebug.Log(name + " is invincible");
+            VRDebug.Log(name + " is invincible", debugContext: this);
             return;
         }
         lastHitArgs = args;

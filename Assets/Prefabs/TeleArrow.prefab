@@ -21,6 +21,7 @@ MonoBehaviour:
     m_Bits: 51
   flightDestroyDelay: 100
   groundDestroyDelay: 600
+  damage: 0
   launched: 0
   stopped: 0
   isSet: 0

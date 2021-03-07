@@ -102,7 +102,7 @@ public class BowNotch : XRSocketInteractor
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
         base.OnSelectExited(args);
-        VRDebug.Log("Arrow exited");
+        // VRDebug.Log("Arrow exited");
         currentArrow.ArrowUnSet();
         bow.ArrowUnSet();
         currentArrow = null;

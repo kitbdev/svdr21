@@ -133,13 +133,14 @@ GameObject:
   m_Component:
   - component: {fileID: 820896}
   - component: {fileID: 820897}
-  m_Layer: 0
+  - component: {fileID: 820898}
+  m_Layer: 6
   m_Name: player_hitbox
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &820896
 Transform:
   m_ObjectHideFlags: 0
@@ -168,6 +169,22 @@ CapsuleCollider:
   m_Height: 1.3715694
   m_Direction: 1
   m_Center: {x: 0, y: -0.3142153, z: 0}
+--- !u!114 &820898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89b37c6df5b176948b2797ba6812185a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitScale: 1
+  hitEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &17157077
 GameObject:
   m_ObjectHideFlags: 0
@@ -1913,11 +1930,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  turnSpeed: 10
+  turnSpeed: 50
   isOnGround: 1
   playerDetectionRadius: 20
   playerForgetRadius: 25
-  stopRadius: 1
+  stopRadius: 5
 --- !u!54 &613399011
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1932,7 +1949,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!4 &613399012
 Transform:
@@ -1964,8 +1981,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentHealth: 0
   maxHealth: 3
+  regenRate: -1
+  destroyOnDie: 0
   autoRegisterHitboxes: 1
-  invincibleDur: 0.5
+  hitInvincibleDur: 0.5
   dieEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1976,6 +1995,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   lastHitArgs: {fileID: 0}
+  manualInvincible: 0
   hitBoxes: []
 --- !u!1 &627099327
 GameObject:
@@ -3168,7 +3188,7 @@ GameObject:
   - component: {fileID: 885376448}
   m_Layer: 0
   m_Name: XR Rig
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3359,7 +3379,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1032024458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e988983f96fe1dd48800bcdfc82f23e9, type: 3}
+  m_Script: {fileID: 11500000, guid: c13275306eb2391439bea55dbdd79218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_LineWidth: 0.02
@@ -3447,11 +3467,11 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  m_SmoothMovement: 1
+  m_SmoothMovement: 0
   m_FollowTightness: 10
   m_SnapThresholdDistance: 10
   m_Reticle: {fileID: 0}
-  m_StopLineAtFirstRaycastHit: 0
+  m_StopLineAtFirstRaycastHit: 1
 --- !u!120 &1032024460
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4917,6 +4937,7 @@ MonoBehaviour:
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
   m_RetainTransformParent: 0
+  ownerName: Player
   bowString: {fileID: 1670195947}
   bowNotch: {fileID: 0}
   arrowMenu: {fileID: 1890571642}
@@ -10525,6 +10546,38 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1718970857}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LogSimple
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: VRDebug, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Target down!
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6416393652530445164, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: m_RootOrder
       value: 12

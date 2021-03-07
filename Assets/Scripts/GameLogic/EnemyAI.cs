@@ -17,8 +17,8 @@ public class EnemyAI : MonoBehaviour
     public float playerForgetRadius = 25;
     public float stopRadius = 1;
 
-    bool playerDetected = false;
-    bool stop = false;
+    [ReadOnly] [SerializeField] bool playerDetected = false;
+    [ReadOnly] [SerializeField] bool stop = false;
     protected Transform target;
     protected Rigidbody rb;
     protected Health health;
@@ -27,6 +27,9 @@ public class EnemyAI : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         health = GetComponent<Health>();
+        var sphereCol = gameObject.AddComponent<SphereCollider>();
+        sphereCol.isTrigger = true;
+        sphereCol.radius = playerDetectionRadius;
     }
     private void OnEnable()
     {
@@ -63,6 +66,7 @@ public class EnemyAI : MonoBehaviour
         {
             return;
         }
+        // todo fix
         float rotRate = turnSpeed * Time.deltaTime;
         Quaternion targRot;
         if (isOnGround)

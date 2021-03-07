@@ -19,7 +19,7 @@ public class NonVRInput : MonoBehaviour
     Vector2 inputCam = Vector2.zero;
     Vector2 inputMove = Vector2.zero;
     float inputSelect = 0;
-    bool inputFire = false;
+    // bool inputFire = false;
 
     private void Awake()
     {
@@ -34,8 +34,8 @@ public class NonVRInput : MonoBehaviour
         xrControls.NonVR.AimCamera.canceled += c => inputCam = Vector2.zero;
         xrControls.NonVR.Move.performed += c => inputMove = c.ReadValue<Vector2>();
         xrControls.NonVR.Move.canceled += c => inputMove = Vector2.zero;
-        xrControls.NonVR.ShootBow.performed += c => { inputFire = true; NotchArrow(); };
-        xrControls.NonVR.ShootBow.canceled += c => { inputFire = false; Fire(); };
+        xrControls.NonVR.ShootBow.performed += c => { NotchArrow(); };
+        xrControls.NonVR.ShootBow.canceled += c => { Fire(); };
         xrControls.NonVR.ChooseArrow.performed += c => {
             inputSelect += Mathf.Sign(c.ReadValue<float>());
             inputSelect = Mathf.Clamp(inputSelect, 0, 20);
@@ -66,7 +66,7 @@ public class NonVRInput : MonoBehaviour
     }
     void Fire()
     {
-        Debug.Log("Fire");
+        // Debug.Log("Fire");
         bow.bowNotch.UpdatePull(1f);// max force
         bow.bowNotch.ReleaseArrow();
     }

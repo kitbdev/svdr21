@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class HitArgs : ScriptableObject
+public class HitArgs : Object
 {
     public float damage;
     public bool isDirect;

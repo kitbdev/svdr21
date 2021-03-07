@@ -18,6 +18,7 @@ public class BaseArrowLogic : MonoBehaviour
     public LayerMask collisionMask = ~Physics.IgnoreRaycastLayer;
     public float flightDestroyDelay = 100;
     public float groundDestroyDelay = 60 * 10;
+    public float damage = 0;
 
     [Header("Dynamic")]
     public bool launched = false;
@@ -97,6 +98,7 @@ public class BaseArrowLogic : MonoBehaviour
             Debug.DrawRay(lastPos, dir);
             if (Physics.SphereCast(lastPos, 0.05f, dir, out var hit, dist, collisionMask, QueryTriggerInteraction.Ignore))
             {
+                // todo piercing keep going for range or until hit a non hittable
                 // hit something
                 VRDebug.Log("Arrow hit " + hit.collider.name, 5, this);
                 stopped = true;
@@ -116,6 +118,8 @@ public class BaseArrowLogic : MonoBehaviour
                 {
                     HitArgs args = new HitArgs();
                     args.isDirect = true;
+                    args.damage = damage;
+                    args.attacker = launchBow.ownerName;
                     SetHitArgs(ref args);
                     hittable.Hit(args);
                 }
