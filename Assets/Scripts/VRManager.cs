@@ -5,10 +5,11 @@ using UnityEngine.Events;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 
-[DefaultExecutionOrder(-100)]
+[DefaultExecutionOrder(-30)]
 public class VRManager : Singleton<VRManager>
 {
-
+    public GameObject[] nonvrOnlyGOs = new GameObject[0];
+    public GameObject[] vrOnlyGOs = new GameObject[0];
     // disables on awake
     public bool disableVR = false;
 
@@ -34,6 +35,8 @@ public class VRManager : Singleton<VRManager>
         {
             SetVREnabled(false);
             vrSpaceMode = VRSpaceMode.FLAT;
+        }else {
+            SetVREnabled(true);
         }
     }
     private void OnEnable()
@@ -98,6 +101,14 @@ public class VRManager : Singleton<VRManager>
             {
                 displaysubsys.Stop();
             }
+        }
+        foreach (var nonvrgo in nonvrOnlyGOs)
+        {
+            nonvrgo.SetActive(!enabled);
+        }
+        foreach (var vrgo in vrOnlyGOs)
+        {
+            vrgo.SetActive(enabled);
         }
     }
     void GetTrackingMode()

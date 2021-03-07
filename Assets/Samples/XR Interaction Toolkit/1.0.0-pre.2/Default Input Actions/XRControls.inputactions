@@ -814,6 +814,134 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "NonVR",
+            "id": "22ed62aa-9fef-4da4-8b1b-b2c8516927d3",
+            "actions": [
+                {
+                    "name": "ShootBow",
+                    "type": "Button",
+                    "id": "0eb3c8ec-41fb-409c-9400-e17ff4d24ed7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "AimCamera",
+                    "type": "Value",
+                    "id": "d99594b8-1df8-45b8-86ae-8f337444a41a",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "d1a64c48-8fa3-49e4-80a1-66e0243bbe6e",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "ChooseArrow",
+                    "type": "Value",
+                    "id": "1b122ce8-9592-4183-8ac4-2b8bab6a4f2d",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4ee9394a-506f-4fa8-9df7-516c6563ccce",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "NonVR",
+                    "action": "ShootBow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd7740a9-98fb-4bee-a82c-ed5612a128c4",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "NonVR",
+                    "action": "AimCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "wasd",
+                    "id": "8ab1d829-dca3-4d1f-af13-6f1b24d0ce10",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "3c3c17a1-cfe3-4d52-bbba-d1481bfa13e6",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "NonVR",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "fdd14d6c-960e-4da5-aa83-a74014704adf",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "NonVR",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "f2e78e47-c152-4f83-a8e0-24f5060acc50",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "NonVR",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "1635f3e2-bc02-44f8-862e-6cc296bc1812",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "NonVR",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "85f36b28-8d3b-4091-b5b7-95a16f910f24",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "NonVR",
+                    "action": "ChooseArrow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
@@ -870,6 +998,22 @@
                 },
                 {
                     "devicePath": "<XRController>{RightHand}",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "NonVR",
+            "bindingGroup": "NonVR",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
                     "isOptional": false,
                     "isOR": false
                 }

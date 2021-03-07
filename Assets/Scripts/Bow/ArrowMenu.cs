@@ -49,6 +49,10 @@ public class ArrowMenu : MonoBehaviour
             Destroy(arrowsSpawned[i]);
         }
     }
+    public ArrowInteractable GetArrow(int i)
+    {
+        return arrowsSpawned[i];
+    }
     protected void SpawnArrowAt(int i)
     {
         ArrowInteractable arrowPrefab = (ArrowInteractable)arrowPrefabs[i];

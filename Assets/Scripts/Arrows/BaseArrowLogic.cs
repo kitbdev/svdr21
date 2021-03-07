@@ -102,8 +102,13 @@ public class BaseArrowLogic : MonoBehaviour
                 stopped = true;
                 // remove physics
                 SetPhysicsEnabled(false);
-                // child arrow
-                transform.SetParent(hit.collider.transform);
+                // child arrow to new transform for correct scale
+                Transform newParent = new GameObject(name + " stick").transform;
+                newParent.SetParent(hit.collider.transform, true);
+                newParent.position = hit.point;
+                newParent.rotation = Quaternion.identity;
+                transform.SetParent(newParent, true);
+                // transform.SetParent(hit.collider.transform, true);
                 groundHitTime = Time.time;
                 ArrowHit(hit);
                 // check hittable
