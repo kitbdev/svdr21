@@ -29,6 +29,11 @@ public class ArrowMenu : MonoBehaviour
     {
         isOnRightSide = right;
         sideOffset.x = Mathf.Abs(sideOffset.x) * (right ? 1 : -1);
+        // update existing positions
+        for (int i = 0; i < arrowsSpawned.Count; i++)
+        {
+            arrowsSpawned[i].transform.localPosition = DisplayModelPosFor(i);
+        }
     }
     public void SpawnAllArrows()
     {
@@ -49,12 +54,16 @@ public class ArrowMenu : MonoBehaviour
         BaseArrow arrowPrefab = (BaseArrow)arrowPrefabs[i];
         var arrowGo = Instantiate(arrowPrefab, transform);
         arrowGo.name = arrowPrefab.name + "_" + i;
-        arrowGo.transform.localPosition = sideOffset + i * displaySpacing + dispStartPos;
+        arrowGo.transform.localPosition = DisplayModelPosFor(i);
         arrowGo.transform.localScale = displayModelScale * Vector3.one;
         arrowGo.transform.localRotation = Quaternion.Euler(displayRotation);
         BaseArrow arrow = arrowGo.GetComponent<BaseArrow>();
         arrow.selectEntered.AddListener((args) => { ArrowTaken(i, args); });
         arrowsSpawned.Insert(i, arrow);
+    }
+    protected Vector3 DisplayModelPosFor(int i)
+    {
+        return sideOffset + i * displaySpacing + dispStartPos;
     }
     public void ShowArrows()
     {
@@ -66,6 +75,7 @@ public class ArrowMenu : MonoBehaviour
             for (int i = 0; i < arrowsSpawned.Count; i++)
             {
                 arrowsSpawned[i].transform.localScale = displayModelScale * Vector3.one;
+                arrowsSpawned[i].gameObject.SetActive(true);
             }
         }
     }
@@ -78,7 +88,8 @@ public class ArrowMenu : MonoBehaviour
     {
         for (int i = 0; i < arrowsSpawned.Count; i++)
         {
-            arrowsSpawned[i].transform.localScale = 0.1f * Vector3.one;
+            arrowsSpawned[i].gameObject.SetActive(false);
+            // arrowsSpawned[i].transform.localScale = 0.1f * Vector3.one;
         }
     }
     public void ArrowTaken(int index, SelectEnterEventArgs args)
@@ -90,13 +101,13 @@ public class ArrowMenu : MonoBehaviour
         arrowsSpawned[index].selectEntered.RemoveAllListeners();
         arrowsSpawned.RemoveAt(index);
         SpawnArrowAt(index);
-        // HideArrows();
+        HideArrows();
     }
     private void OnDrawGizmosSelected()
     {
         for (int i = 0; i < arrowPrefabs.Length; i++)
         {
-            Vector3 pos = transform.position + sideOffset + i * displaySpacing + dispStartPos;
+            Vector3 pos = transform.position + DisplayModelPosFor(i);
             // Gizmos.DrawWireSphere(pos, 0.1f);
             Shapes.Draw.Sphere(pos, 0.02f, Color.cyan);
         }

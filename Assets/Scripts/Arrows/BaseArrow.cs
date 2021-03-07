@@ -91,9 +91,10 @@ public class BaseArrow : XRGrabInteractable
     {
         if (inFlight)
         {
-            // todo use tip?
-            float dist = Vector3.Distance(transform.position, lastPos);
-            if (Physics.Raycast(lastPos, transform.position, out var hit, dist, ignoreMask))
+            float dist = Vector3.Distance(tip.transform.position, lastPos);
+            Vector3 dir = tip.transform.position - lastPos;
+            Debug.DrawRay(lastPos, dir);
+            if (Physics.SphereCast(lastPos, 0.05f, dir, out var hit, dist, ignoreMask, QueryTriggerInteraction.Ignore))
             {
                 // hit something
                 VRDebug.Log("Arrow hit " + hit.collider.name, 5, this);
@@ -105,7 +106,7 @@ public class BaseArrow : XRGrabInteractable
                 // check hittable
                 //todo
             }
-            lastPos = transform.position;
+            lastPos = tip.transform.position;
         }
     }
     protected void SetPhysicsEnabled(bool enabled)
@@ -126,9 +127,14 @@ public class BaseArrow : XRGrabInteractable
     public override bool IsSelectableBy(XRBaseInteractor interactor)
     {
         bool isGrabbing = interactor is XRDirectInteractor && !isSet;
+        // check bownotch?
         bool isNotching = interactor is BowNotch;
         return base.IsSelectableBy(interactor) && (isGrabbing || isNotching);
     }
+    // private void OnCollisionEnter(Collision other)
+    // {
+    // VRDebug.Log(other.collider.name + " arrow col", -1, other.collider);
+    // }
 
     /// <summary>
     /// the arrow was set in the bow

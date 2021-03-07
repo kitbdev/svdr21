@@ -15,6 +15,7 @@ public class Bow : XRGrabInteractable
     public XRBaseInteractor leftHand;
     public XRBaseInteractor rightHand;
     public bool defaultToLeftHand = true;
+    public XRBaseInteractor bowHand { get; protected set; }
     public XRBaseInteractor offHand { get; protected set; }
 
     private void Start()
@@ -30,25 +31,21 @@ public class Bow : XRGrabInteractable
     public void SetBowHand(bool left)
     {
         VRDebug.Log("Bow in " + (left ? "left" : "right") + " hand", debugContext: this);
+
         if (left)
         {
-            if (rightHand.isPerformingManualInteraction)
-            {
-                rightHand.EndManualInteraction();
-            }
-            leftHand.StartManualInteraction(this);
-            // interactionManager.ForceSelect(leftHand, this);
+            bowHand = leftHand;
             offHand = rightHand;
         } else
         {
-            if (leftHand.isPerformingManualInteraction)
-            {
-                leftHand.EndManualInteraction();
-            }
-            rightHand.StartManualInteraction(this);
-            // interactionManager.ForceSelect(rightHand, this);
+            bowHand = rightHand;
             offHand = leftHand;
         }
+        if (offHand.isPerformingManualInteraction)
+        {
+            offHand.EndManualInteraction();
+        }
+        bowHand.StartManualInteraction(this);
     }
     [ContextMenu("Drop bow")]
     public void DropBow()
@@ -64,25 +61,25 @@ public class Bow : XRGrabInteractable
         interactionManager.CancelInteractableSelection(this);
         VRDebug.Log("Bow dropped!", debugContext: this);
     }
-    protected override void OnSelectEntered(SelectEnterEventArgs args)
-    {
-        VRDebug.Log("bow selected!");
-        base.OnSelectEntered(args);
-    }
-    protected override void OnSelectExited(SelectExitEventArgs args)
-    {
-        VRDebug.Log("bow deselected!");
-        base.OnSelectExited(args);
-    }
+    // protected override void OnSelectEntered(SelectEnterEventArgs args)
+    // {
+    //     VRDebug.Log("bow selected!");
+    //     base.OnSelectEntered(args);
+    // }
+    // protected override void OnSelectExited(SelectExitEventArgs args)
+    // {
+    //     VRDebug.Log("bow deselected!");
+    //     base.OnSelectExited(args);
+    // }
     public override bool IsSelectableBy(XRBaseInteractor interactor)
     {
         // only force select
-        return interactor is XRDirectInteractor;
+        return interactor is XRDirectInteractor && interactor == bowHand;
     }
     private void Update()
     {
         Vector3 offhandLocal = transform.InverseTransformPoint(offHand.transform.position);
-        float menuSwitchAt = 0.1f;
+        float menuSwitchAt = 0.02f;
         if (arrowMenu.isOnRightSide && offhandLocal.x < -menuSwitchAt)
         {
             arrowMenu.SetSide(false);
@@ -90,5 +87,8 @@ public class Bow : XRGrabInteractable
         {
             arrowMenu.SetSide(true);
         }
+    }
+    public void Launched() {
+        arrowMenu.ShowArrows();
     }
 }
