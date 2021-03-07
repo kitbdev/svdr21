@@ -14,7 +14,7 @@ public class BowNotch : XRSocketInteractor
     public bool canGrabArrows = true;
     protected bool isArrowArmed;
     public ArrowInteractable currentArrow { get; protected set; }
-    protected float pullAmount;
+    [ReadOnly] [SerializeField] protected float pullAmount;
     public BowString bowString;
     public Bow bow;
 

@@ -14,7 +14,7 @@ public class VRManager : Singleton<VRManager>
     public bool disableVR = false;
 
     public bool isVRReady { get; protected set; }
-    float vrTimeout = 2;
+    public float vrTimeout = 2;
 
     public VRSpaceMode vrSpaceMode;
     public enum VRSpaceMode
@@ -35,7 +35,8 @@ public class VRManager : Singleton<VRManager>
         {
             SetVREnabled(false);
             vrSpaceMode = VRSpaceMode.FLAT;
-        }else {
+        } else
+        {
             SetVREnabled(true);
         }
     }

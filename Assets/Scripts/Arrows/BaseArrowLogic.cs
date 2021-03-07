@@ -31,7 +31,7 @@ public class BaseArrowLogic : MonoBehaviour
     protected float groundHitTime = 0;
 
     protected bool inFlight => launched && !stopped;
-    protected Bow launchBow;
+    [ReadOnly] [SerializeField] protected Bow launchBow;
     protected ArrowInteractable arrowInteractable;
 
     protected Rigidbody rb;

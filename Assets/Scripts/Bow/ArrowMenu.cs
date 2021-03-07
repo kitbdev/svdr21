@@ -17,8 +17,8 @@ public class ArrowMenu : MonoBehaviour
     protected Vector3 dispStartPos => -displayLength / 2f;
     // protected Vector3 dispStartPos => displaySpacing * (-(arrowPrefabs.Length - 1) / 2f);
 
-    protected List<ArrowInteractable> arrowsSpawned = new List<ArrowInteractable>();
-    protected bool arrowsShown = false;
+    [ReadOnly] [SerializeField] protected List<ArrowInteractable> arrowsSpawned = new List<ArrowInteractable>();
+    [ReadOnly] [SerializeField] protected bool arrowsShown = false;
     public bool isOnRightSide = true;
 
     private void Awake()

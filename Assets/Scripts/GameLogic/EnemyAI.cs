@@ -13,24 +13,47 @@ public class EnemyAI : MonoBehaviour
     public float accelerationRate = 10;
     // public float deaccelerationRate = 10;
     public float turnSpeed = 100;
-    public bool isGroundBased = true;
     public LayerMask groundLayer = Physics.DefaultRaycastLayers;
-    float curSpeed = 0;
 
+    public MoveMode moveMode = MoveMode.GROUND;
+    public enum MoveMode
+    {
+        STATIONARY,
+        GROUND,
+        FLY,
+    }
+    public enum MovePattern {
+        NONE,
+        FOLLOW_TARGET,
+        CIRCLE,
+        WANDER,
+    }
+    public enum MoveState {
+        IDLE,
+        CHARGING,
+        CHASING,
+        ATTACKING,
+    }
+
+    [Space]
     public float playerDetectionRadius = 20;
     public float playerForgetRadius = 21;
     public float stopRadius = 2;
     public float stopResumeRadius = 2.5f;
+    public float preferedHeight = 10;
     // public float stopResumeDelay = 0.5f;
     // float stopResumeTime = 0;
 
     [ReadOnly] [SerializeField] bool playerDetected = false;
-    [ReadOnly] [SerializeField] bool stop = false;
+    [ReadOnly] [SerializeField] bool stopMoving = false;
     [ReadOnly] [SerializeField] bool isGrounded = false;
-    public Transform target;
+    [ReadOnly] [SerializeField] float curSpeed = 0;
+    [ReadOnly] [SerializeField] bool isBeingKnockedBacked = false;
+
+    [ReadOnly] public Transform target;
+    [HideInInspector] public Health health;
     protected Transform playerT;
     protected Rigidbody rb;
-    protected Health health;
 
 
     void Awake()
@@ -42,7 +65,7 @@ public class EnemyAI : MonoBehaviour
         sphereCol.radius = playerDetectionRadius;
 
         playerT = GameManager.Instance.player;
-        rb.useGravity = isGroundBased;
+        rb.useGravity = moveMode == MoveMode.GROUND;
     }
     private void OnEnable()
     {
@@ -52,28 +75,32 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        if (playerDetected)
+        if (target != null)
         {
             float targetDist = Vector3.Distance(transform.position, target.position);
-            if (targetDist >= playerForgetRadius)
+            if (playerDetected)
             {
-                playerDetected = false;
+                if (targetDist >= playerForgetRadius)
+                {
+                    playerDetected = false;
+                    target = null;
+                    return;
+                }
             }
             if (targetDist <= stopRadius)
             {
-                if (!stop)
+                if (!stopMoving)
                 {
-                    stop = true;
+                    stopMoving = true;
                 }
             } else if (targetDist > stopResumeRadius)
             {
-                if (stop)
+                if (stopMoving)
                 {
-                    stop = false;
+                    stopMoving = false;
                 }
             }
-            // if have a target
-            if (isGroundBased)
+            if (moveMode == MoveMode.GROUND)
             {
                 CheckGrounded();
             }
@@ -102,12 +129,12 @@ public class EnemyAI : MonoBehaviour
     }
     void Move()
     {
-        if (!playerDetected)
+        if (target == null)
         {
-            // todo idle move?
             return;
         }
-        if (isGroundBased && !isGrounded)
+        // todo idle move?
+        if (moveMode == MoveMode.GROUND && !isGrounded)
         {
             // cannot move in air
             return;
@@ -115,15 +142,15 @@ public class EnemyAI : MonoBehaviour
 
         // rotate
         float rotRate = turnSpeed * Time.deltaTime;
-        Quaternion targRot;
+        Quaternion targRot = transform.rotation;
         Vector3 toTarg = target.position - transform.position;
-        if (isGroundBased)
+        if (moveMode == MoveMode.GROUND)
         {
             // only rotate aroun y axis
             Vector3 toFlat = toTarg;
             toFlat.y = 0;
             targRot = Quaternion.LookRotation(toFlat, Vector3.up);
-        } else
+        } else if (moveMode == MoveMode.FLY)
         {
             // rotate freely
             targRot = Quaternion.LookRotation(toTarg.normalized, Vector3.up);
@@ -134,11 +161,24 @@ public class EnemyAI : MonoBehaviour
         transform.rotation = targRot;
 
         // move
-        // todo wait until facing player
-        // rb.AddForce(transform.forward * moveSpeed * Time.deltaTime, ForceMode.VelocityChange);
+        if (moveMode == MoveMode.STATIONARY)
+        {
+            return;
+        } else if (moveMode == MoveMode.GROUND)
+        {
+
+        } else if (moveMode == MoveMode.STATIONARY)
+        {
+
+        }
+        if (isBeingKnockedBacked)
+        {
+            return;
+        }
         var vel = rb.velocity;
+        // wait until facing player
         float facingAmount = Mathf.Clamp01(Vector3.Dot(transform.forward, toTarg.normalized) + 0.3f);
-        float targSpeed = stop ? 0 : moveSpeed * facingAmount;
+        float targSpeed = stopMoving ? 0 : moveSpeed * facingAmount;
         curSpeed = Mathf.Lerp(curSpeed, targSpeed, accelerationRate * Time.deltaTime);
 
         vel = transform.forward * curSpeed;
