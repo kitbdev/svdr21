@@ -109,7 +109,11 @@ public class BaseArrowLogic : MonoBehaviour
                 newParent.SetParent(hit.collider.transform, true);
                 newParent.position = hit.point;
                 newParent.rotation = Quaternion.identity;
-                transform.SetParent(newParent, true);
+                transform.SetParent(newParent, false);
+                transform.localPosition = Vector3.zero;
+
+                // disable collisions
+                rb.detectCollisions = false;
                 // transform.SetParent(hit.collider.transform, true);
                 groundHitTime = Time.time;
                 ArrowHit(hit);
@@ -120,6 +124,8 @@ public class BaseArrowLogic : MonoBehaviour
                     args.isDirect = true;
                     args.damage = damage;
                     args.attacker = launchBow.ownerName;
+                    args.point = hit.point;
+                    args.velocity = rb.velocity;
                     SetHitArgs(ref args);
                     hittable.Hit(args);
                 }

@@ -8,6 +8,8 @@ public class HitArgs : Object
     public float damage;
     public bool isDirect;
     public string attacker;
+    public Vector3 point;
+    public Vector3 velocity;
 }
 public interface IHittable
 {
