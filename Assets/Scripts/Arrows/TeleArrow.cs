@@ -7,7 +7,8 @@ public class TeleArrow : BaseArrowLogic
 {
     [Space]
     [SerializeField] float verticalityThreshold = 0.6f;
-    [SerializeField] float wallOffsetdist = 0.5f;
+    [SerializeField] float wallOffsetDist = 0.5f;
+    [SerializeField] float tpDropDist = 2f;
     /// <summary>
     /// How to orient the rig after teleportation.
     /// </summary>
@@ -37,23 +38,20 @@ public class TeleArrow : BaseArrowLogic
     public override void ArrowHit(RaycastHit hit)
     {
         base.ArrowHit(hit);
-        VRDebug.Log("tp hit");
+        // VRDebug.Log("tp hit");
         if (TryTeleportLocation(hit))
         {
             return;
         } else
         {
             // raycast down to find a good spot
-            Vector3 startPos = hit.point + hit.normal * wallOffsetdist;
-            float maxDist = 1.8f;
-            if (Physics.Raycast(startPos, Vector3.down, out var hit1, maxDist, collisionMask))
+            Vector3 startPos = hit.point + hit.normal * wallOffsetDist;
+            Debug.DrawRay(startPos, Vector3.down * tpDropDist, Color.magenta, 2);
+            if (Physics.Raycast(startPos, Vector3.down, out var hit1, tpDropDist, collisionMask, QueryTriggerInteraction.Ignore))
             {
-                if (TryTeleportLocation(hit))
+                if (TryTeleportLocation(hit1))
                 {
                     return;
-                } else
-                {
-                    // todo try move away from walls?
                 }
             }
         }
@@ -62,20 +60,38 @@ public class TeleArrow : BaseArrowLogic
     }
     protected bool TryTeleportLocation(RaycastHit hit)
     {
-        // todo also check if area is wide enough
+        // check if surface is flat
         float hitDotUp = Vector3.Dot(hit.normal, Vector3.up);
         if (hitDotUp >= verticalityThreshold)
         {
-            TeleportTo(hit.point);
-            return true;
+            // check if area is wide enough
+            bool areaSizeOk = false;
+            float checkDist = 0.1f;
+            var cols = Physics.OverlapSphere(hit.point + (checkDist + 0.01f) * Vector3.up, checkDist, collisionMask, QueryTriggerInteraction.Ignore);
+            if (cols.Length == 0)
+            {
+                areaSizeOk = true;
+            } else
+            {
+                Debug.Log("TP blocked: Cols " + cols.Length);
+                foreach (var col in cols)
+                {
+                    Debug.Log("Col " + col.name);
+                }
+            }
+            if (areaSizeOk)
+            {
+                TeleportTo(hit.point);
+                return true;
+            }
         }
         return false;
     }
     public void TeleportTo(Vector3 pos)
     {
         // todo cool effect
-        
-        VRDebug.Log("teleporting...");
+
+        VRDebug.Log("teleporting to " + pos + "...");
         // world space up doesnt matter
         Quaternion rot = Quaternion.identity;
         var tr = new TeleportRequest {

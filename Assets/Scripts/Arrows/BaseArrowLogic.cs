@@ -25,7 +25,7 @@ public class BaseArrowLogic : MonoBehaviour
     public bool stopped = false;
     public bool isSet = false;
     public bool isArmed = false;
-    protected Vector3 lastPos = Vector3.zero;
+    [ReadOnly] [SerializeField] protected Vector3 lastPos = Vector3.zero;
     protected float launchPullAmount = 0;
     protected float launchTime = 0;
     protected float groundHitTime = 0;
@@ -71,14 +71,14 @@ public class BaseArrowLogic : MonoBehaviour
         if (inFlight)
         {
             SetDirToVel();
-
+            CheckHit();
         }
     }
     protected virtual void LateUpdate()
     {
         if (inFlight)
         {
-            CheckHit();
+            // CheckHit();
         }
     }
     protected virtual void SetDirToVel()
@@ -95,7 +95,7 @@ public class BaseArrowLogic : MonoBehaviour
         {
             float dist = Vector3.Distance(tip.transform.position, lastPos);
             Vector3 dir = tip.transform.position - lastPos;
-            Debug.DrawRay(lastPos, dir);
+            Debug.DrawRay(lastPos, dir, Color.red, 5);
             if (Physics.SphereCast(lastPos, 0.05f, dir, out var hit, dist, collisionMask, QueryTriggerInteraction.Ignore))
             {
                 // todo piercing keep going for range or until hit a non hittable
@@ -152,7 +152,7 @@ public class BaseArrowLogic : MonoBehaviour
     {
         SetPhysicsEnabled(true);
         float forceAmount = GetLaunchForce(launchPullAmount);
-        VRDebug.Log("Launching at " + forceAmount + " force", debugContext: this);
+        // VRDebug.Log("Launching at " + forceAmount + " force", debugContext: this);
         rb.AddForce(transform.forward * forceAmount, ForceMode.Impulse);
     }
 
@@ -225,6 +225,7 @@ public class BaseArrowLogic : MonoBehaviour
         transform.position = tip.transform.position;
         launchPullAmount = pullAmount;
         launchTime = Time.time;
+        lastPos = tip.transform.position;
         LaunchForce();
     }
     /// <summary>

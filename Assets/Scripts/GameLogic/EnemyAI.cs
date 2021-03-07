@@ -127,7 +127,7 @@ public class EnemyAI : MonoBehaviour
         {
             // rotate freely
             targRot = Quaternion.LookRotation(toTarg.normalized, Vector3.up);
-            // todo should be always moving
+            // todo target height
         }
         // Quaternion.Slerp
         targRot = Quaternion.RotateTowards(transform.rotation, targRot, rotRate);
