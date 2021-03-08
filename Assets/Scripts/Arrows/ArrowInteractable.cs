@@ -38,6 +38,7 @@ public class ArrowInteractable : XRGrabInteractable
         if (args.interactor is XRDirectInteractor)
         {
             // arrow was grabbed by player
+            ArrowDisplay(false);
             arrowLogic.ArrowGrabbed();
         }
         base.OnSelectEntering(args);
@@ -70,10 +71,18 @@ public class ArrowInteractable : XRGrabInteractable
     }
 
     /// <summary>
+    /// the arrow is in a display
+    /// </summary>
+    public virtual void ArrowDisplay(bool inDisplay)
+    {
+        // todo make not selectable?
+    }
+    /// <summary>
     /// the arrow was set in the bow
     /// </summary>
     public void ArrowSet()
     {
+        ArrowDisplay(false);
         arrowLogic.ArrowSet();
     }
     /// <summary>

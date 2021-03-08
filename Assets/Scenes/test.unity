@@ -10810,14 +10810,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef515dddf013cd4468f2dfe185074f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sideOffset: {x: 0.17, y: 0, z: 0}
-  displayLength: {x: 0, y: 0.46, z: 0}
-  displayModelScale: 0.5
+  sideOffset: {x: 0.2, y: 0, z: 0}
+  displayLength: {x: 0, y: 0.4, z: 0}
+  displayModelScale: 0.05
   displayRotation: {x: 20, y: 20, z: 0}
+  displaySpacer: 0.1
+  displaySelectedScaleMod: 1.4
   arrowPrefabs:
   - {fileID: 3995991532393962745, guid: 0998feafbdb777c4696d5e6449cb9364, type: 3}
-  - {fileID: 3995991532393962745, guid: 0998feafbdb777c4696d5e6449cb9364, type: 3}
   - {fileID: 474552230912974233, guid: e2079a5f6d2ec8341b067dfda9ec6eae, type: 3}
+  - {fileID: 474552230912974233, guid: e2079a5f6d2ec8341b067dfda9ec6eae, type: 3}
+  - {fileID: 474552230912974233, guid: e2079a5f6d2ec8341b067dfda9ec6eae, type: 3}
+  - {fileID: 474552230912974233, guid: e2079a5f6d2ec8341b067dfda9ec6eae, type: 3}
+  menuItemPrefab: {fileID: 5459602866879439928, guid: 20c9a1d5ab494674db413cced02e847b, type: 3}
+  menuItems: []
   arrowsSpawned: []
   arrowsShown: 0
   isOnRightSide: 1

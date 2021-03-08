@@ -42,6 +42,12 @@ public class BowNotch : XRSocketInteractor
     }
     public void Grabbed()
     {
+        if (!currentArrow)
+        {
+            // notch the selected arrow if dont have one
+            var selArrow = bow.arrowMenu.GetSelectedArrow();
+            interactionManager.ForceSelect(this, selArrow);
+        }
     }
     public void ReleaseArrow()
     {
