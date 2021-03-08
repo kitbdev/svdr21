@@ -21,16 +21,22 @@ public class LevelGen : Singleton<LevelGen>
 
     [Header("Prefabs")]
     public GameObject startRoomPrefab;
-    public GameObject finishRoomPrefab;
+    public GameObject endRoomPrefab;
     public GameObject[] roomPrefabs = new GameObject[0];
 
+    // debug stuff
+    public bool genOnStart = true;
+    public bool advancedDebug = false;
+
     [Header("Dynamic")]
-    [ReadOnly] public List<Room> placedRooms = new List<Room>();
+    [ReadOnly] public int numRooms = 0;
+    [ReadOnly] [SerializeField] List<Room> placedRooms = new List<Room>();
+    [ReadOnly] [SerializeField] List<Room> mainPath = new List<Room>();
     // gates
     // keys
     /// <summary>connectors that havent been used</summary>
     [ReadOnly] [SerializeField] List<LevelOptionalComponent> frontierConnectors = new List<LevelOptionalComponent>();
-    public bool genOnStart = true;
+    [ReadOnly] [SerializeField] List<LevelOptionalComponent> lastRoomUnusedCons = new List<LevelOptionalComponent>();
 
     private void Start()
     {
@@ -39,109 +45,221 @@ public class LevelGen : Singleton<LevelGen>
             GenerateLevel();
         }
     }
+    [ContextMenu("Clear Level")]
     public void ClearLevel()
     {
+        Debug.ClearDeveloperConsole();
+        Debug.Log("clearing level");
+        numRooms = 0;
         foreach (var room in placedRooms)
         {
-            Destroy(room);
+            SafeDestroy(room.gameObject);
         }
         placedRooms.Clear();
+        mainPath.Clear();
         frontierConnectors.Clear();
-        // remove all children
-        int numChildren = transform.childCount;
-        for (int i = numChildren - 1; i >= 0; i--)
-        {
-            Destroy(transform.GetChild(i).gameObject);
-        }
+        lastRoomUnusedCons.Clear();
+        // remove all children?
+        // int numChildren = transform.childCount;
+        // for (int i = numChildren - 1; i >= 0; i--)
+        // {
+        //     Destroy(transform.GetChild(i).gameObject);
+        // }
     }
+    void SafeDestroy(Object obj)
+    {
+#if UNITY_EDITOR
+        DestroyImmediate(obj);
+#else
+        Destroy(obj);
+#endif
+    }
+    [ContextMenu("Gen Level")]
     public void GenerateLevel()
     {
         StartCoroutine(GenLevelCo());
     }
     IEnumerator GenLevelCo()
     {
-        yield return null;
         // clear
         ClearLevel();
         ValidatePrefabs();
+        yield return null;
         // start
+        Debug.Log("level gen start");
         SpawnAndAddRoom(startRoomPrefab, Vector3.zero, Quaternion.identity);
         var firstConnector = placedRooms[0].allConnectors[0];
         SpawnRoomFor(firstConnector);
-        // frontierConnectors.AddRange();
-        // choose one to continue off of
-        // int fcr = Random.Range(0, frontierConnectors.Count);
+
+        List<int> checkedFConIs = new List<int>();
+        while (numRooms <= maxRooms)
+        {
+            if (frontierConnectors.Count == 0)
+            {
+                Debug.LogWarning("Out of all frontierConnectors!");
+                break;
+            }
+            if (lastRoomUnusedCons.Count == 0)
+            {
+                Debug.Log("Dead end! out of lastRoomUnusedCons");
+                if (!FillUnusedCons())
+                {
+                    Debug.LogError("No prior rooms have connectors!");
+                }
+                break;
+            }
+            bool useEndRoom = numRooms == maxRooms;
+            // try all connections
+            int nextConIndex = 0;
+            checkedFConIs.Clear();
+            while (nextConIndex >= 0)
+            {
+                // continue linearly, so use an unused connector on the last room
+                var nextCon = GetRandomIn<LevelOptionalComponent>(lastRoomUnusedCons.ToArray(), out nextConIndex, checkedFConIs);
+                if (nextConIndex == -1)
+                {
+                    // tried all of these connectors
+                    Debug.Log("Tried all connectors in lastRoomUnusedCons: " + lastRoomUnusedCons.Count);
+                    if (!FillUnusedCons())
+                    {
+                        Debug.LogError("No prior rooms have connectors!");
+                    }
+                    continue;
+                }
+                if (useEndRoom ? SpawnRoomFor(nextCon, endRoomPrefab) : SpawnRoomFor(nextCon))
+                {
+                    // success
+                    break;
+                } else
+                {
+                    // continue to try another connector
+                    continue;
+                }
+            }
+            yield return null;
+            // todo add additional rooms with lock and key structure
+        }
+        // done with spawning rooms
+        yield return null;
+        // randomize individual rooms
+        // todo
+        // add loot
+        // todo
+        // spawn enemies
         // todo
     }
-    void ValidatePrefabs()
+    /// <summary>
+    /// get unused connectors from the previous room
+    /// moves main path back
+    /// </summary>
+    /// <returns>true on success</returns>
+    bool FillUnusedCons()
     {
-        foreach (var roomP in roomPrefabs)
+        int prevPathRoom = mainPath.Count - 2;
+        if (prevPathRoom > 0)
         {
-            Room prefabRoom = roomP.GetComponent<Room>();
-            prefabRoom.FindAllLevelComponents();
-        } //todo also start and end
+            lastRoomUnusedCons.Clear();
+            // add that rooms connectors
+            lastRoomUnusedCons.AddRange(mainPath[prevPathRoom].allConnectors);
+            // remove the used ones,the ones not in frontier
+            lastRoomUnusedCons.RemoveAll((a) => !frontierConnectors.Contains(a));
+            // shorten main path
+            mainPath.RemoveAt(prevPathRoom + 1);
+            if (lastRoomUnusedCons.Count > 0)
+            {
+                return true;
+            } else
+            {
+                // recursion
+                return FillUnusedCons();
+            }
+        }
+        return false;
     }
-    void SpawnRoomFor(LevelOptionalComponent connector)
+    /// <summary>
+    /// try to spawn a room for a connector
+    /// </summary>
+    /// <param name="connector"></param>
+    /// <param name="forceRoom"></param>
+    /// <returns>true on success</returns>
+    bool SpawnRoomFor(LevelOptionalComponent connector, GameObject forceRoom = null)
     {
         // try to spawn a room
-        List<int> checkedPrefabIs = new List<int>();
-        List<int> checkedConnectors = new List<int>();
+        List<int> checkedRoomPrefabIs = new List<int>();
+        List<int> checkedConnectorIs = new List<int>();
+        checkedRoomPrefabIs.Clear();
         int tries = 0;
+        // ? instead try all rooms
         while (tries < maxTries)
         {
             tries++;
             // select room randomly
-            var rroomp = GetRandomIn<GameObject>(roomPrefabs, out int rrp, checkedPrefabIs);
+            var rroomp = GetRandomIn<GameObject>(roomPrefabs, out int rrp, checkedRoomPrefabIs);
             if (rrp == -1)
             {
                 // all rooms tried!
+                Debug.LogWarning("Tried all rooms!");
                 break;
             }
-            checkedPrefabIs.Add(rrp);
+            checkedRoomPrefabIs.Add(rrp);
+            if (forceRoom)
+            {
+                rroomp = forceRoom;
+            }
+            Debug.Log("trying to spawn room " + rroomp.name);
             Room prefabRoom = rroomp.GetComponent<Room>();
             // try all connectors on the room
-            checkedConnectors.Clear();
+            checkedConnectorIs.Clear();
             int selCon = 0;
             while (selCon >= 0)
             {
                 // select a connector
-                var rCon = GetRandomIn<LevelOptionalComponent>(prefabRoom.allConnectors.ToArray(), out selCon, checkedConnectors);
+                var rCon = GetRandomIn<LevelOptionalComponent>(prefabRoom.allConnectors.ToArray(), out selCon, checkedConnectorIs);
                 if (selCon == -1)
                 {
                     // all components tried
+                    Debug.Log("Tried all connectors on " + rroomp.name);
                     break;
                 }
-                checkedConnectors.Add(selCon);
+                checkedConnectorIs.Add(selCon);
                 // check room collision
-                // todo
-                Vector3 roomOffset = default;
-                Quaternion roomRot = rCon.transform.rotation;
+                // todo check
+                // wanted room postion 
+                Vector3 roomOffset = connector.transform.position + -rCon.transform.localPosition;
+                Quaternion roomRot = connector.transform.rotation * Quaternion.Inverse(rCon.transform.rotation);
                 if (IsValidRoomCol(prefabRoom.bounds, roomOffset, roomRot))
                 {
+                    Debug.Log("room is valid");
                     // spawn the room
                     Room nroom = SpawnAndAddRoom(rroomp, roomOffset, roomRot);
+                    mainPath.Add(nroom); // todo may not be a mainpath room
                     // remove the used connector from frontier
                     frontierConnectors.Remove(connector);
                     // add new connectors, if any
-                    frontierConnectors.AddRange(nroom.allConnectors);
-                    frontierConnectors.Remove(rCon);
-                    // var unusedCons = new List<LevelOptionalComponent>(nroom.allConnectors);
-                    // if (unusedCons.Count > 0)
-                    // {
-                    //     frontierConnectors.AddRange(unusedCons);
-                    // }
-                    return;
+                    lastRoomUnusedCons.Clear();
+                    lastRoomUnusedCons.AddRange(nroom.allConnectors);
+                    lastRoomUnusedCons.RemoveAt(selCon);
+                    if (lastRoomUnusedCons.Count > 0)
+                    {
+                        frontierConnectors.AddRange(lastRoomUnusedCons);
+                    }
+                    return true;
                 }
             }
+            if (forceRoom)
+            {
+                break;
+            }
         }
-        // failed!
-        Debug.LogError("SpawnRoomFor failed " + tries + " times!");
+        // failed to place a room on this connector!
+        return false;
+        // Debug.LogError("SpawnRoomFor failed " + tries + " times!");
     }
     bool IsValidRoomCol(Bounds bounds, Vector3 roomOffset = default, Quaternion roomOrientation = default, List<Collider> ignoreCols = default)
     {
-        // todo make sure room we are checking is not hit, or is ignored
         // overlap box
         var cols = Physics.OverlapBox(bounds.center + roomOffset, bounds.extents / 2, roomOrientation, levelOnlyLayer, QueryTriggerInteraction.Ignore);
+        // make sure room we are checking can be ignored
         if (ignoreCols != null && ignoreCols.Count > 0)
         {
             // remove cols
@@ -149,6 +267,16 @@ public class LevelGen : Singleton<LevelGen>
         }
         if (cols.Length > 0)
         {
+            if (advancedDebug)
+            {
+                Debug.Log($"invalid room b:{bounds.ToString()} p:{roomOffset} q:{roomOrientation.eulerAngles}");
+                string logText = "intersecting ";
+                for (int i = 0; i < cols.Length; i++)
+                {
+                    logText += cols[i].name;
+                }
+                Debug.Log(logText);
+            }
             return false;
         } else
         {
@@ -168,6 +296,22 @@ public class LevelGen : Singleton<LevelGen>
         roomGo.transform.position = position;
         roomGo.transform.rotation = rotation;
         return roomGo.transform;
+    }
+    void ValidatePrefabs()
+    {
+        // ! be careful, this is editing the actual prefab
+        Room startprefabRoom = startRoomPrefab.GetComponent<Room>();
+        startprefabRoom.FindAllLevelComponents();
+        if (endRoomPrefab)
+        {
+            Room endprefabRoom = endRoomPrefab.GetComponent<Room>();
+            endprefabRoom.FindAllLevelComponents();
+        }
+        foreach (var roomP in roomPrefabs)
+        {
+            Room prefabRoom = roomP.GetComponent<Room>();
+            prefabRoom.FindAllLevelComponents();
+        } //todo also start and end
     }
 
 
