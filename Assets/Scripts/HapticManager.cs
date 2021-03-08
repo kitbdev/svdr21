@@ -119,9 +119,10 @@ public class HapticManager : Singleton<HapticManager>
     what do I need haptics for?
     single impluses when something happens (arrow fired, menu hit)
      should be noticably different (hit with arrow, release arrow)
-    sustained rumble for unknown amounts of time (quiver position)?
+     can be multiple impulses in quick succession
+    ?sustained rumble for unknown amounts of time (quiver position)?
     rumble for fixed time (earthquake from nearby attacks)
-    dynamically changing frequency??
+    ?dynamically changing frequency??
     todo major refactor of this
     */
     protected override void Awake()
