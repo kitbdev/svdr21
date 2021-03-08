@@ -33,7 +33,7 @@ public class Health : MonoBehaviour
     [HideInInspector]
     public HitArgs lastHitArgs = null;
     public bool manualInvincible = false;
-    [HideInInspector] [SerializeField] HitBox[] hitBoxes;
+    [ReadOnly] [SerializeField] HitBox[] hitBoxes;
 
     bool isHitInvincible => hitInvincibleDur > 0 && Time.time < lastDamageTime + hitInvincibleDur;
     public bool isInvincible => manualInvincible || isHitInvincible;
@@ -96,7 +96,7 @@ public class Health : MonoBehaviour
     }
     public void TakeDamage(HitArgs args)
     {
-        // VRDebug.Log(name + " hit by " + args.attacker + " for " + args.damage, debugContext: this);
+        VRDebug.Log(name + " hit by " + args.attacker + " for " + args.damage, debugContext: this);
         if (isDead)
         {
             VRDebug.Log(name + " is already dead", debugContext: this);

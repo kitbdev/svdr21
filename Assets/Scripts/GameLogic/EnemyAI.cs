@@ -207,13 +207,13 @@ public class EnemyAI : MonoBehaviour
         // Quaternion.Slerp
         targRot = Quaternion.RotateTowards(transform.rotation, targRot, rotRate);
         transform.rotation = targRot;
-
         // move
         if (moveMode == MoveMode.STATIONARY)
         {
             return;
         } else if (moveMode == MoveMode.GROUND)
         {
+            // todo dont fall into pits
 
         } else if (moveMode == MoveMode.STATIONARY)
         {

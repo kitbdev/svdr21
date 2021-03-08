@@ -98,8 +98,7 @@ public class ArrowMenu : MonoBehaviour
     }
     public void ArrowTaken(int index, SelectEnterEventArgs args)
     {
-
-        VRDebug.Log("Chose arrow " + index);
+        // VRDebug.Log("Chose arrow " + index);
         arrowsSpawned[index].transform.localScale = Vector3.one;
         // todo dont remove all listeners
         arrowsSpawned[index].selectEntered.RemoveAllListeners();

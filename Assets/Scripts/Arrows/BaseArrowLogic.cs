@@ -118,8 +118,9 @@ public class BaseArrowLogic : MonoBehaviour
                 groundHitTime = Time.time;
                 ArrowHit(hit);
                 // check hittable
-                if (hit.transform.gameObject.TryGetComponent<IHittable>(out var hittable))
+                if (hit.collider.gameObject.TryGetComponent<IHittable>(out var hittable))
                 {
+                    // VRDebug.Log("Arrow hit hittable");
                     HitArgs args = new HitArgs();
                     args.isDirect = true;
                     args.damage = damage;

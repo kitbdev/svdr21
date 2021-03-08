@@ -14,9 +14,10 @@ public class GameManager : Singleton<GameManager>
 
     public enum SnapTurnOptions
     {
-        NONE, LEFTHAND, RIGHTHAND
+        NONE, LEFTHAND, RIGHTHAND, BOTH, PRIMARYHAND, OFFHAND
     }
-    private SnapTurnOptions m_snapTurnOptions;
+    [SerializeField]
+    private SnapTurnOptions m_snapTurnOptions = SnapTurnOptions.BOTH;
     public SnapTurnOptions snapTurnOptions
     {
         get { return m_snapTurnOptions; }
@@ -26,6 +27,7 @@ public class GameManager : Singleton<GameManager>
     protected override void Awake()
     {
         base.Awake();
+        if (!playerBow) playerBow = GameObject.FindObjectOfType<Bow>();
         if (!snapturn) snapturn = GameObject.FindObjectOfType<SnapturnSingleHand>();
         SetSnapTurn(snapTurnOptions);
     }
@@ -52,6 +54,32 @@ public class GameManager : Singleton<GameManager>
         {
             snapturn.turnLeftEnabled = false;
             snapturn.turnRightEnabled = true;
+        } else if (options == SnapTurnOptions.BOTH)
+        {
+            snapturn.turnLeftEnabled = true;
+            snapturn.turnRightEnabled = true;
+        } else if (options == SnapTurnOptions.PRIMARYHAND)
+        {
+            if (playerBow.primaryLeftHand)
+            {
+                snapturn.turnLeftEnabled = true;
+                snapturn.turnRightEnabled = false;
+            } else
+            {
+                snapturn.turnLeftEnabled = false;
+                snapturn.turnRightEnabled = true;
+            }
+        } else if (options == SnapTurnOptions.OFFHAND)
+        {
+            if (playerBow.primaryLeftHand)
+            {
+                snapturn.turnLeftEnabled = false;
+                snapturn.turnRightEnabled = true;
+            } else
+            {
+                snapturn.turnLeftEnabled = true;
+                snapturn.turnRightEnabled = false;
+            }
         }
     }
     public void SetSnapTurn(SnapTurnOptions options)

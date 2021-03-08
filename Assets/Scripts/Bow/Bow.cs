@@ -22,6 +22,7 @@ public class Bow : XRGrabInteractable
     public XRBaseInteractor leftHand;
     public XRBaseInteractor rightHand;
     public bool defaultToLeftHand = true;
+    [ReadOnly] public bool primaryLeftHand = true;
     public XRBaseInteractor bowHand { get; protected set; }
     public XRBaseInteractor offHand { get; protected set; }
 
@@ -45,7 +46,7 @@ public class Bow : XRGrabInteractable
     public void SetBowHand(bool left)
     {
         VRDebug.Log("Bow in " + (left ? "left" : "right") + " hand", debugContext: this);
-
+        primaryLeftHand = left;
         if (left)
         {
             bowHand = leftHand;
