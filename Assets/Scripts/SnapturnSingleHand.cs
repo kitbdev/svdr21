@@ -7,40 +7,25 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class SnapturnSingleHand : ActionBasedSnapTurnProvider
 {
-    [SerializeField]
-    protected bool m_turnRightEnabled = true;
-    public bool turnRightEnabled
+
+    public bool turnRightEnabled = true;
+    public bool turnLeftEnabled = true;
+
+    protected override Vector2 ReadInput()
     {
-        get {
-            return m_turnRightEnabled;
+        // return base.ReadInput();
+        var leftHandValue = leftHandSnapTurnAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
+        var rightHandValue = rightHandSnapTurnAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
+        if (!turnLeftEnabled)
+        {
+            leftHandValue = Vector2.zero;
         }
-        set {
-            m_turnRightEnabled = value;
-            if (value)
-            {
-                rightHandSnapTurnAction.action.Enable();
-            } else
-            {
-                rightHandSnapTurnAction.action.Disable();
-            }
+        if (!turnRightEnabled)
+        {
+            rightHandValue = Vector2.zero;
         }
-    }
-    [SerializeField]
-    protected bool m_turnLeftEnabled = true;
-    public bool turnLeftEnabled
-    {
-        get {
-            return m_turnLeftEnabled;
-        }
-        set {
-            m_turnLeftEnabled = value;
-            if (value)
-            {
-                leftHandSnapTurnAction.action.Enable();
-            } else
-            {
-                leftHandSnapTurnAction.action.Disable();
-            }
-        }
+        // ? kinda working?
+
+        return leftHandValue + rightHandValue;
     }
 }

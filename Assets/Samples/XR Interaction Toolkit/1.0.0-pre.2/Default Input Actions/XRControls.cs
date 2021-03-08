@@ -807,9 +807,9 @@ public class @XRControls : IInputActionCollection, IDisposable
             ""actions"": [
                 {
                     ""name"": ""SelectMove"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""ff015b77-b06f-4308-9794-ca2e83764712"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -818,10 +818,10 @@ public class @XRControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""6ad870c7-c4ca-4463-ad70-27934f065628"",
-                    ""path"": """",
+                    ""path"": ""<XRController>/primary2DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Generic XR Controller"",
                     ""action"": ""SelectMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false

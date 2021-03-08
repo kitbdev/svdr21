@@ -10,7 +10,8 @@ public class ArrowMenu : MonoBehaviour
     public Vector3 sideOffset = Vector3.right * 0.2f;
     public Vector3 displayLength = Vector3.up * 1f;
     // public Vector3 displaySpacing = Vector3.up * 0.2f;
-    public float displayModelScale = 0.5f;
+    public float displayModelScale = 0.05f;
+    public float displayModelArrowScale = 0.5f;
     public Vector3 displayRotation = Vector3.zero;
     public float displaySpacer = 0.2f;
     public float displaySelectedScaleMod = 2;
@@ -42,6 +43,7 @@ public class ArrowMenu : MonoBehaviour
         arrowsShown = false;
         xrControls = new XRControls();
         xrControls.Enable();
+        // todo left/right issues
         xrControls.PrimaryHand.SelectMove.performed += c => { inputSelect = c.ReadValue<Vector2>(); UpdateSel(); };
         xrControls.PrimaryHand.SelectMove.canceled += c => { inputSelect = Vector2.zero; UpdateSel(); };
     }
@@ -143,7 +145,7 @@ public class ArrowMenu : MonoBehaviour
         var arrowGo = Instantiate(arrowPrefab, menuItemgo.transform);
         arrowGo.name = arrowPrefab.name + "_" + i;
         arrowGo.transform.localPosition = Vector3.zero;
-        arrowGo.transform.localScale = Vector3.one;
+        arrowGo.transform.localScale = Vector3.one * displayModelArrowScale / displayModelScale;
         arrowGo.transform.localRotation = Quaternion.Euler(displayRotation);
         ArrowInteractable arrow = arrowGo.GetComponent<ArrowInteractable>();
         arrow.ArrowDisplay(true);
@@ -194,7 +196,9 @@ public class ArrowMenu : MonoBehaviour
     public void ArrowTaken(int index, SelectEnterEventArgs args)
     {
         // VRDebug.Log("Chose arrow " + index);
-        menuItems[index].transform.localScale = Vector3.one;
+        arrowsSpawned[index].transform.localScale = Vector3.one;
+        int killed = DOTween.Kill(menuItems[index]);
+        Debug.Log("select killed " + killed);
         // ? todo dont remove all listeners
         arrowsSpawned[index].selectEntered.RemoveAllListeners();
         // make sure arrow is already unparented

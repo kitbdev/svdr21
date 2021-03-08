@@ -4248,7 +4248,7 @@ MonoBehaviour:
   nonvrOnlyGOs:
   - {fileID: 971654505}
   vrOnlyGOs: []
-  disableVR: 1
+  disableVR: 0
   vrTimeout: 2
   vrSpaceMode: 0
 --- !u!4 &1086828276
@@ -4298,7 +4298,7 @@ MonoBehaviour:
   xrRig: {fileID: 885376446}
   playerBow: {fileID: 1480992646}
   player: {fileID: 885376447}
-  m_snapTurnOptions: 4
+  m_snapTurnOptions: 5
 --- !u!4 &1128534976
 Transform:
   m_ObjectHideFlags: 0
@@ -5718,8 +5718,8 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
     m_Reference: {fileID: -6493913391331992944, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  m_turnRightEnabled: 1
-  m_turnLeftEnabled: 1
+  turnRightEnabled: 1
+  turnLeftEnabled: 1
 --- !u!114 &1549869785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10813,6 +10813,7 @@ MonoBehaviour:
   sideOffset: {x: 0.2, y: 0, z: 0}
   displayLength: {x: 0, y: 0.4, z: 0}
   displayModelScale: 0.05
+  displayModelArrowScale: 0.25
   displayRotation: {x: 20, y: 20, z: 0}
   displaySpacer: 0.1
   displaySelectedScaleMod: 1.4
@@ -10827,6 +10828,7 @@ MonoBehaviour:
   arrowsSpawned: []
   arrowsShown: 0
   isOnRightSide: 1
+  scaleDur: 0.2
 --- !u!1 &1966765407
 GameObject:
   m_ObjectHideFlags: 0
