@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Level generator
 /// </summary>
+[DefaultExecutionOrder(-5)]
 public class LevelGen : Singleton<LevelGen>
 {
     /*
@@ -16,8 +18,9 @@ public class LevelGen : Singleton<LevelGen>
     [Header("General gen settings")]
     public int maxTries = 10;
     public int maxRooms = 50;
-    public int minSequentialRooms = 10;
+    // public int minSequentialRooms = 10;
     public LayerMask levelOnlyLayer;
+    public LevelGenSettings defLevelSettings = new LevelGenSettings();
 
     [Header("Prefabs")]
     public GameObject startRoomPrefab;
@@ -25,7 +28,7 @@ public class LevelGen : Singleton<LevelGen>
     public GameObject[] roomPrefabs = new GameObject[0];
 
     // debug stuff
-    public bool genOnStart = true;
+    public bool genOnStart = false;
     public bool advancedDebug = false;
 
     [Header("Dynamic")]
@@ -35,14 +38,18 @@ public class LevelGen : Singleton<LevelGen>
     // gates
     // keys
     /// <summary>connectors that havent been used</summary>
-    [ReadOnly] [SerializeField] List<LevelOptionalComponent> frontierConnectors = new List<LevelOptionalComponent>();
-    [ReadOnly] [SerializeField] List<LevelOptionalComponent> lastRoomUnusedCons = new List<LevelOptionalComponent>();
+    [ReadOnly] [SerializeField] List<LevelComponent> frontierConnectors = new List<LevelComponent>();
+    [ReadOnly] [SerializeField] List<LevelComponent> lastRoomUnusedCons = new List<LevelComponent>();
+    [SerializeField] LevelGenSettings curLevelSettings;
+
+    [Header("Events")]
+    public UnityEvent GenCompleteEvent;
 
     private void Start()
     {
         if (genOnStart)
         {
-            GenerateLevel();
+            ReGenerateLevel();
         }
     }
     [ContextMenu("Clear Level")]
@@ -74,9 +81,23 @@ public class LevelGen : Singleton<LevelGen>
         Destroy(obj);
 #endif
     }
-    [ContextMenu("Gen Level")]
-    public void GenerateLevel()
+    [ContextMenu("Gen def Level")]
+    public void GenerateDefLevel()
     {
+        curLevelSettings = defLevelSettings;
+        ReGenerateLevel();
+    }
+    public void GenerateLevel(LevelGenSettings settings)
+    {
+        curLevelSettings = settings;
+        ReGenerateLevel();
+    }
+    public void ReGenerateLevel()
+    {
+        if (curLevelSettings == null)
+        {
+            curLevelSettings = defLevelSettings;
+        }
         StartCoroutine(GenLevelCo());
     }
     IEnumerator GenLevelCo()
@@ -87,10 +108,31 @@ public class LevelGen : Singleton<LevelGen>
         yield return null;
         // start
         Debug.Log("level gen start");
+        // spawn rooms
+        yield return StartCoroutine(SpawnAllRooms());
+        yield return null;
+        // randomize individual rooms
+        yield return StartCoroutine(RandomizeRooms());
+        yield return null;
+        // add loot
+        // todo
+        // spawn enemies
+        /*
+        enemies can be anywhere besides start and end rooms
+        ? spawn in rooms
+        ? move to enemy manager
+        ? use enemy generators
+        */
+        // todo
+        GenCompleteEvent.Invoke();
+    }
+    IEnumerator SpawnAllRooms()
+    {
+        // spawn start room
         SpawnAndAddRoom(startRoomPrefab, Vector3.zero, Quaternion.identity);
+        // spawn rooms connecting to it
         var firstConnector = placedRooms[0].allConnectors[0];
         SpawnRoomFor(firstConnector);
-
         List<int> checkedFConIs = new List<int>();
         while (numRooms <= maxRooms)
         {
@@ -108,6 +150,11 @@ public class LevelGen : Singleton<LevelGen>
                     break;
                 }
             }
+            if (numRooms >= curLevelSettings.preferredRooms)
+            {
+                // done
+                break;
+            }
             bool useEndRoom = numRooms == maxRooms;
             // try all connections
             int nextConIndex = 0;
@@ -115,7 +162,7 @@ public class LevelGen : Singleton<LevelGen>
             while (nextConIndex >= 0)
             {
                 // continue linearly, so use an unused connector on the last room
-                var nextCon = GetRandomIn<LevelOptionalComponent>(lastRoomUnusedCons.ToArray(), out nextConIndex, checkedFConIs);
+                var nextCon = GetRandomIn<LevelComponent>(lastRoomUnusedCons.ToArray(), out nextConIndex, checkedFConIs);
                 if (nextConIndex == -1)
                 {
                     // tried all of these connectors
@@ -127,6 +174,7 @@ public class LevelGen : Singleton<LevelGen>
                     }
                     continue;
                 }
+                checkedFConIs.Add(nextConIndex);
                 if (useEndRoom ? SpawnRoomFor(nextCon, endRoomPrefab) : SpawnRoomFor(nextCon))
                 {
                     // success
@@ -142,14 +190,14 @@ public class LevelGen : Singleton<LevelGen>
             // todo add additional rooms with lock and key structure
         }
         // done with spawning rooms
-        yield return null;
-        // randomize individual rooms
-        // todo
-        // add loot
-        // todo
-        // spawn enemies
-        // todo
     }
+    IEnumerator RandomizeRooms()
+    {
+        // randomize optional room components
+        // todo
+        if (advancedDebug) yield return null;
+    }
+
     /// <summary>
     /// get unused connectors from the previous room
     /// moves main path back
@@ -186,7 +234,7 @@ public class LevelGen : Singleton<LevelGen>
     /// <param name="connector"></param>
     /// <param name="forceRoom"></param>
     /// <returns>true on success</returns>
-    bool SpawnRoomFor(LevelOptionalComponent connector, GameObject forceRoom = null)
+    bool SpawnRoomFor(LevelComponent connector, GameObject forceRoom = null)
     {
         // try to spawn a room
         List<int> checkedRoomPrefabIs = new List<int>();
@@ -203,6 +251,7 @@ public class LevelGen : Singleton<LevelGen>
             {
                 // all rooms tried!
                 Debug.LogWarning("Tried all rooms!");
+                // should next try somewhere else
                 break;
             }
             checkedRoomPrefabIs.Add(rrp);
@@ -218,7 +267,7 @@ public class LevelGen : Singleton<LevelGen>
             while (selCon >= 0)
             {
                 // select a connector
-                var rCon = GetRandomIn<LevelOptionalComponent>(prefabRoom.allConnectors.ToArray(), out selCon, checkedConnectorIs);
+                var rCon = GetRandomIn<LevelComponent>(prefabRoom.allConnectors.ToArray(), out selCon, checkedConnectorIs);
                 if (selCon == -1)
                 {
                     // all components tried
@@ -322,7 +371,7 @@ public class LevelGen : Singleton<LevelGen>
         {
             Room prefabRoom = roomP.GetComponent<Room>();
             prefabRoom.FindAllLevelComponents();
-        } //todo also start and end
+        }
     }
 
 
@@ -366,14 +415,14 @@ public class LevelGen : Singleton<LevelGen>
     {
         return GetRandomIn<T>(list, out var _);
     }
-    static T[] ListSubtract<T>(T[] array1, T[] array2)
-    {
-        return ListSubtract<T>(array1, array2);
-    }
     static List<T> ListSubtract<T>(List<T> list1, List<T> list2)
     {
         List<T> results = new List<T>(list1);
         results.Find((a) => !list2.Contains(a));
         return results;
+    }
+    static T[] ListSubtract<T>(T[] array1, T[] array2)
+    {
+        return ListSubtract<T>(array1, array2);
     }
 }

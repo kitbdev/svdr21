@@ -235,6 +235,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b657d7ae608cf4f8a213fe426c6f61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levels:
+  - difficulty: 1
+    preferredRooms: 10
+    minTotalRooms: 3
+    minSequentialRooms: 3
+  m_curLevel: 0
+  levelLoading: 0
 --- !u!1 &580513896
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,6 +494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isRoomConnector: 1
+  isRequired: 0
   requireOneOf: []
   blocks: []
   onlyIf: []
@@ -551,6 +559,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isRoomConnector: 0
+  isRequired: 0
   requireOneOf: []
   blocks: []
   onlyIf: []
@@ -660,6 +669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isRoomConnector: 1
+  isRequired: 0
   requireOneOf: []
   blocks: []
   onlyIf: []
@@ -742,6 +752,7 @@ MonoBehaviour:
   allConnectors:
   - {fileID: 837087960}
   - {fileID: 911816645}
+  uniqueToLevel: -1
 --- !u!1 &1665310351
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,6 +783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isRoomConnector: 1
+  isRequired: 0
   requireOneOf: []
   blocks: []
   onlyIf: []
@@ -993,16 +1005,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxTries: 10
-  maxRooms: 10
-  minSequentialRooms: 10
+  maxRooms: 100
   levelOnlyLayer:
     serializedVersion: 2
     m_Bits: 256
+  defLevelSettings:
+    difficulty: 1
+    preferredRooms: 10
+    minTotalRooms: 3
+    minSequentialRooms: 3
   startRoomPrefab: {fileID: 2619078692840791446, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
   endRoomPrefab: {fileID: 2619078692840791446, guid: 94853b11d35760245ae382de27fd18aa, type: 3}
   roomPrefabs:
   - {fileID: 3566360456250664069, guid: 6f487bc3f02c52c4abbd000f91d06a70, type: 3}
-  genOnStart: 1
+  genOnStart: 0
   advancedDebug: 0
   numRooms: 0
   placedRooms:
@@ -1012,6 +1028,14 @@ MonoBehaviour:
   frontierConnectors:
   - {fileID: 837087960}
   lastRoomUnusedCons: []
+  curLevelSettings:
+    difficulty: 1
+    preferredRooms: 10
+    minTotalRooms: 3
+    minSequentialRooms: 3
+  GenCompleteEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1992380423
 GameObject:
   m_ObjectHideFlags: 0
@@ -1143,6 +1167,7 @@ MonoBehaviour:
   activeLevelComponents: []
   allConnectors:
   - {fileID: 1665310352}
+  uniqueToLevel: -1
 --- !u!4 &1999385265
 Transform:
   m_ObjectHideFlags: 0

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Shapes;
 
-public class LevelOptionalComponent : MonoBehaviour
+public class LevelComponent : MonoBehaviour
 {
     public bool isRoomConnector = false;
-    public List<LevelOptionalComponent> requireOneOf = new List<LevelOptionalComponent>();
-    public List<LevelOptionalComponent> blocks = new List<LevelOptionalComponent>();
-    public List<LevelOptionalComponent> onlyIf = new List<LevelOptionalComponent>();
+    public bool isRequired = false;
+    public List<LevelComponent> requireOneOf = new List<LevelComponent>();
+    public List<LevelComponent> blocks = new List<LevelComponent>();
+    public List<LevelComponent> onlyIf = new List<LevelComponent>();
 
     private void OnDrawGizmosSelected()
     {

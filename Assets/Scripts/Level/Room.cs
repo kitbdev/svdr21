@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    [ReadOnly] [SerializeField] List<LevelOptionalComponent> allLevelComponents = new List<LevelOptionalComponent>();
-    [ReadOnly] [SerializeField] List<LevelOptionalComponent> activeLevelComponents = new List<LevelOptionalComponent>();
-    [ReadOnly] public List<LevelOptionalComponent> allConnectors = new List<LevelOptionalComponent>();
+    [ReadOnly] [SerializeField] List<LevelComponent> allLevelComponents = new List<LevelComponent>();
+    [ReadOnly] [SerializeField] List<LevelComponent> activeLevelComponents = new List<LevelComponent>();
+    [ReadOnly] public List<LevelComponent> allConnectors = new List<LevelComponent>();
+    public int uniqueToLevel = -1;
+
     public Bounds bounds
     {
         get {
@@ -34,7 +36,7 @@ public class Room : MonoBehaviour
     public void FindAllLevelComponents()
     {
         ClearLevelComponents();
-        var lcs = GetComponentsInChildren<LevelOptionalComponent>(true);
+        var lcs = GetComponentsInChildren<LevelComponent>(true);
         foreach (var lc in lcs)
         {
             if (lc.isRoomConnector)
