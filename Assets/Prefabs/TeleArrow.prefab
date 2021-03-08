@@ -26,8 +26,11 @@ MonoBehaviour:
   stopped: 0
   isSet: 0
   isArmed: 0
+  lastPos: {x: 0, y: 0, z: 0}
+  launchBow: {fileID: 0}
   verticalityThreshold: 0.6
-  wallOffsetdist: 0.5
+  wallOffsetDist: 0.5
+  tpDropDist: 2
   matchOrientation: 0
 --- !u!1 &2700516279677991234
 GameObject:

@@ -1558,6 +1558,72 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+--- !u!1 &261209705
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 261209708}
+  - component: {fileID: 261209707}
+  - component: {fileID: 261209706}
+  m_Layer: 0
+  m_Name: MeleeAttack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &261209706
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261209705}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &261209707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261209705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccb4e12afa906cc4ca31a45bdff29b32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: Player
+  checkTag: Player
+  vel: {x: 0, y: 0, z: 0}
+  hitDamage: 1
+  hitRepeatDelay: -1
+  lastHitArgs: {fileID: 0}
+  hitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &261209708
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261209705}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.6, y: 1.37, z: 13.88}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 17
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &338778980
 GameObject:
   m_ObjectHideFlags: 0
@@ -1726,18 +1792,34 @@ MonoBehaviour:
   moveSpeed: 5
   accelerationRate: 5
   turnSpeed: 100
-  isGroundBased: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  moveMode: 2
+  movePattern: 1
+  moveState: 0
   playerDetectionRadius: 20
   playerForgetRadius: 21
   stopRadius: 5
+  preferredRadius: 10
   stopResumeRadius: 2.5
+  preferedHeight: 10
+  wanderMaxDistance: 3
+  damage: 1
+  attackRate: 1
+  attackSpawnPoint: {fileID: 0}
+  allAttacks: []
+  currentActiveAttacks: []
+  attackCooldown: 0
+  attackIndivCooldowns: []
   playerDetected: 0
-  stop: 0
+  stopMoving: 0
   isGrounded: 0
-  target: {fileID: 0}
+  curSpeed: 0
+  isBeingKnockedBacked: 0
+  moveTarget: {fileID: 0}
+  attackTarget: {fileID: 0}
+  health: {fileID: 0}
 --- !u!114 &359696275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2167,18 +2249,34 @@ MonoBehaviour:
   moveSpeed: 5
   accelerationRate: 5
   turnSpeed: 100
-  isGroundBased: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  moveMode: 1
+  movePattern: 1
+  moveState: 0
   playerDetectionRadius: 20
   playerForgetRadius: 21
   stopRadius: 5
+  preferredRadius: 10
   stopResumeRadius: 2.5
+  preferedHeight: 10
+  wanderMaxDistance: 3
+  damage: 1
+  attackRate: 1
+  attackSpawnPoint: {fileID: 0}
+  allAttacks: []
+  currentActiveAttacks: []
+  attackCooldown: 0
+  attackIndivCooldowns: []
   playerDetected: 0
-  stop: 0
+  stopMoving: 0
   isGrounded: 0
-  target: {fileID: 0}
+  curSpeed: 0
+  isBeingKnockedBacked: 0
+  moveTarget: {fileID: 0}
+  attackTarget: {fileID: 0}
+  health: {fileID: 0}
 --- !u!54 &613399011
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3598,6 +3696,7 @@ MonoBehaviour:
   m_RecycleDelayTime: 0.5
   releaseThreshold: 0.25
   canGrabArrows: 1
+  pullAmount: 0
   bowString: {fileID: 1670195947}
   bow: {fileID: 1480992646}
 --- !u!65 &793032831
@@ -3655,6 +3754,7 @@ GameObject:
   - component: {fileID: 885376447}
   - component: {fileID: 885376446}
   - component: {fileID: 885376448}
+  - component: {fileID: 885376449}
   m_Layer: 0
   m_Name: XR Rig
   m_TagString: Player
@@ -3711,6 +3811,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ActionAssets:
   - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+--- !u!114 &885376449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885376445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8817f22131e060349b1610341d543944, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_currentHealth: 0
+  maxHealth: 5
+  regenRate: -1
+  destroyOnDie: 0
+  autoRegisterHitboxes: 1
+  hitInvincibleDur: 0.5
+  dieEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  damageEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  healthUpdateEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  lastHitArgs: {fileID: 0}
+  manualInvincible: 0
+  hitBoxes: []
 --- !u!1 &918496261
 GameObject:
   m_ObjectHideFlags: 0
@@ -4118,6 +4248,7 @@ MonoBehaviour:
   - {fileID: 971654505}
   vrOnlyGOs: []
   disableVR: 1
+  vrTimeout: 2
   vrSpaceMode: 0
 --- !u!4 &1086828276
 Transform:
@@ -10684,6 +10815,8 @@ MonoBehaviour:
   - {fileID: 3995991532393962745, guid: 0998feafbdb777c4696d5e6449cb9364, type: 3}
   - {fileID: 3995991532393962745, guid: 0998feafbdb777c4696d5e6449cb9364, type: 3}
   - {fileID: 474552230912974233, guid: e2079a5f6d2ec8341b067dfda9ec6eae, type: 3}
+  arrowsSpawned: []
+  arrowsShown: 0
   isOnRightSide: 1
 --- !u!1 &1966765407
 GameObject:

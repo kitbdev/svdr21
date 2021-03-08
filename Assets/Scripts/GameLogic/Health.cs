@@ -30,14 +30,9 @@ public class Health : MonoBehaviour
     /// </summary>
     public float hitInvincibleDur = 0.5f;
     protected float lastDamageTime = 0;
-    [Header("Events")]
-    public UnityEvent dieEvent;
-    public UnityEvent damageEvent;
-    public UnityEvent healthUpdateEvent;
     [HideInInspector]
     public HitArgs lastHitArgs = null;
     public bool manualInvincible = false;
-
     [HideInInspector] [SerializeField] HitBox[] hitBoxes;
 
     bool isHitInvincible => hitInvincibleDur > 0 && Time.time < lastDamageTime + hitInvincibleDur;
@@ -45,6 +40,11 @@ public class Health : MonoBehaviour
     // max health negative means true invincibility
     public bool isDead => currentHealth <= 0 && maxHealth >= 0;
     public bool isFull => currentHealth >= maxHealth;
+
+    [Header("Events")]
+    public UnityEvent dieEvent;
+    public UnityEvent damageEvent;
+    public UnityEvent healthUpdateEvent;
 
     private void Awake()
     {
