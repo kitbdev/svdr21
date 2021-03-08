@@ -947,11 +947,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2619078692840791440, guid: 94853b11d35760245ae382de27fd18aa, type: 3}
   m_PrefabInstance: {fileID: 1964416651}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1964416653 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2619078692840791446, guid: 94853b11d35760245ae382de27fd18aa, type: 3}
-  m_PrefabInstance: {fileID: 1964416651}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1976700632
 GameObject:
   m_ObjectHideFlags: 0
@@ -998,13 +993,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxTries: 10
-  maxRooms: 50
+  maxRooms: 10
   minSequentialRooms: 10
   levelOnlyLayer:
     serializedVersion: 2
     m_Bits: 256
   startRoomPrefab: {fileID: 2619078692840791446, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
-  endRoomPrefab: {fileID: 1964416653}
+  endRoomPrefab: {fileID: 2619078692840791446, guid: 94853b11d35760245ae382de27fd18aa, type: 3}
   roomPrefabs:
   - {fileID: 3566360456250664069, guid: 6f487bc3f02c52c4abbd000f91d06a70, type: 3}
   genOnStart: 1

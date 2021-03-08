@@ -105,8 +105,8 @@ public class LevelGen : Singleton<LevelGen>
                 if (!FillUnusedCons())
                 {
                     Debug.LogError("No prior rooms have connectors!");
+                    break;
                 }
-                break;
             }
             bool useEndRoom = numRooms == maxRooms;
             // try all connections
@@ -123,6 +123,7 @@ public class LevelGen : Singleton<LevelGen>
                     if (!FillUnusedCons())
                     {
                         Debug.LogError("No prior rooms have connectors!");
+                        break;
                     }
                     continue;
                 }
@@ -133,6 +134,7 @@ public class LevelGen : Singleton<LevelGen>
                 } else
                 {
                     // continue to try another connector
+                    if (advancedDebug) yield return null;
                     continue;
                 }
             }
@@ -171,6 +173,8 @@ public class LevelGen : Singleton<LevelGen>
             } else
             {
                 // recursion
+                // Debug.LogWarning("recursion needed but disabled");
+                // return false;
                 return FillUnusedCons();
             }
         }
@@ -218,20 +222,25 @@ public class LevelGen : Singleton<LevelGen>
                 if (selCon == -1)
                 {
                     // all components tried
-                    Debug.Log("Tried all connectors on " + rroomp.name);
+                    if (advancedDebug) Debug.Log("Tried all connectors on " + rroomp.name);
                     break;
                 }
                 checkedConnectorIs.Add(selCon);
                 // check room collision
-                // todo check
-                // wanted room postion 
-                Vector3 roomOffset = connector.transform.position + -rCon.transform.localPosition;
+                // todo check with non standard connectors
+                // rotation connector local rotation, flipped
                 Quaternion roomRot = connector.transform.rotation * Quaternion.Inverse(rCon.transform.rotation);
+                roomRot *= Quaternion.Euler(0, 180, 0);
+                // wanted room postion 
+                Vector3 roomOffset = connector.transform.position - roomRot * rCon.transform.position;
                 if (IsValidRoomCol(prefabRoom.bounds, roomOffset, roomRot))
                 {
-                    Debug.Log("room is valid");
                     // spawn the room
+                    string roomName = prefabRoom.name + "_" + numRooms;
+                    Debug.Log($"Connecting cons {connector.transform.parent.name}.{connector.name} to {roomName}.{rCon.name}");
+                    Debug.Log("room " + roomName + " is valid");
                     Room nroom = SpawnAndAddRoom(rroomp, roomOffset, roomRot);
+                    nroom.gameObject.name = roomName;
                     mainPath.Add(nroom); // todo may not be a mainpath room
                     // remove the used connector from frontier
                     frontierConnectors.Remove(connector);
@@ -239,6 +248,7 @@ public class LevelGen : Singleton<LevelGen>
                     lastRoomUnusedCons.Clear();
                     lastRoomUnusedCons.AddRange(nroom.allConnectors);
                     lastRoomUnusedCons.RemoveAt(selCon);
+                    // Debug.Break();
                     if (lastRoomUnusedCons.Count > 0)
                     {
                         frontierConnectors.AddRange(lastRoomUnusedCons);
@@ -288,6 +298,7 @@ public class LevelGen : Singleton<LevelGen>
         var t = SpawnRoomAt(roomPrefab, position, rotation);
         var r = t.GetComponent<Room>();
         placedRooms.Add(r);
+        numRooms++;
         return r;
     }
     Transform SpawnRoomAt(GameObject roomPrefab, Vector3 position, Quaternion rotation)

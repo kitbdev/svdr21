@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5613319566172566996}
   - component: {fileID: 4564040312226578360}
   m_Layer: 8
-  m_Name: connector_4
+  m_Name: connector_W
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,8 +79,8 @@ Transform:
   - {fileID: 3566360457883249842}
   - {fileID: 3566360456387574281}
   - {fileID: 3566360457635815364}
-  - {fileID: 3566360456713994087}
   - {fileID: 7780906485708778763}
+  - {fileID: 3566360456713994087}
   - {fileID: 5613319566172566996}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: 3566360456713994087}
   - component: {fileID: 3566360456713994088}
   m_Layer: 8
-  m_Name: connector_2
+  m_Name: connector_S
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -254,7 +254,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3566360456250664071}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &3566360456713994088
 MonoBehaviour:
@@ -283,7 +283,7 @@ GameObject:
   - component: {fileID: 3566360457635815364}
   - component: {fileID: 3566360457635815365}
   m_Layer: 8
-  m_Name: connector_1
+  m_Name: connector_N
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 7780906485708778763}
   - component: {fileID: 8393457491714695046}
   m_Layer: 8
-  m_Name: connector_3
+  m_Name: connector_E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -444,7 +444,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3566360456250664071}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &8393457491714695046
 MonoBehaviour:
