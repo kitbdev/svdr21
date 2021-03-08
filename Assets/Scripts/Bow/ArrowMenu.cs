@@ -21,6 +21,7 @@ public class ArrowMenu : MonoBehaviour
 
     public ArrowInteractable[] arrowPrefabs = new ArrowInteractable[0];
     public GameObject menuItemPrefab;
+    public GameObject deactivatedMenuItemPrefab;// or a setting on it?
 
     [ReadOnly] [SerializeField] protected List<GameObject> menuItems = new List<GameObject>();
     [ReadOnly] [SerializeField] protected List<ArrowInteractable> arrowsSpawned = new List<ArrowInteractable>();
@@ -28,6 +29,7 @@ public class ArrowMenu : MonoBehaviour
     public bool isOnRightSide = true;
     [Header("Anim")]
     public float scaleDur = 0.2f;
+    protected Bow bow;
 
     XRControls xrControls;
     Vector2 inputSelect = Vector2.zero;
@@ -43,7 +45,8 @@ public class ArrowMenu : MonoBehaviour
         arrowsShown = false;
         xrControls = new XRControls();
         xrControls.Enable();
-        // todo left/right issues
+        bow = GetComponentInParent<Bow>();
+        // todo left/right primary issues
         xrControls.PrimaryHand.SelectMove.performed += c => { inputSelect = c.ReadValue<Vector2>(); UpdateSel(); };
         xrControls.PrimaryHand.SelectMove.canceled += c => { inputSelect = Vector2.zero; UpdateSel(); };
     }
@@ -56,6 +59,7 @@ public class ArrowMenu : MonoBehaviour
     }
     public void SpawnAllArrows()
     {
+        if (bow.debugLog) VRDebug.Log("Spawning all arrows");
         for (int i = 0; i < arrowPrefabs.Length; i++)
         {
             SpawnArrowAt(i);
@@ -63,6 +67,7 @@ public class ArrowMenu : MonoBehaviour
     }
     public void DeSpawnAllArrows()
     {
+        if (bow.debugLog) VRDebug.Log("Despawning all arrows");
         for (int i = menuItems.Count - 1; i >= 0; i--)
         {
             Destroy(menuItems[i]);
@@ -172,6 +177,7 @@ public class ArrowMenu : MonoBehaviour
             SpawnAllArrows();
         } else
         {
+            if (bow.debugLog) VRDebug.Log("Showing Arrows");
             for (int i = 0; i < menuItems.Count; i++)
             {
                 // menuItems[i].transform.localScale = displayModelScale * Vector3.one;
@@ -187,6 +193,7 @@ public class ArrowMenu : MonoBehaviour
     }
     public void HideArrows()
     {
+        if (bow.debugLog) VRDebug.Log("Hiding Arrows");
         for (int i = 0; i < menuItems.Count; i++)
         {
             menuItems[i].gameObject.SetActive(false);
@@ -195,13 +202,18 @@ public class ArrowMenu : MonoBehaviour
     }
     public void ArrowTaken(int index, SelectEnterEventArgs args)
     {
-        // VRDebug.Log("Chose arrow " + index);
+        if (bow.debugLog) VRDebug.Log("Arrow taken " + index);
         arrowsSpawned[index].transform.localScale = Vector3.one;
         int killed = DOTween.Kill(menuItems[index]);
-        Debug.Log("select killed " + killed);
+        if (bow.debugLog) Debug.Log("select killed " + killed);
         // ? todo dont remove all listeners
         arrowsSpawned[index].selectEntered.RemoveAllListeners();
         // make sure arrow is already unparented
+        if (arrowsSpawned[index].transform.parent == menuItems[index].transform)
+        {
+            VRDebug.Log("Arrow taken not unparented!");
+            arrowsSpawned[index].transform.SetParent(null);
+        }
         Destroy(menuItems[index]);
         menuItems.RemoveAt(index);
         arrowsSpawned.RemoveAt(index);

@@ -25,6 +25,7 @@ public class Bow : XRGrabInteractable
     [ReadOnly] public bool primaryLeftHand = true;
     public XRBaseInteractor bowHand { get; protected set; }
     public XRBaseInteractor offHand { get; protected set; }
+    public bool debugLog = false;
 
     protected override void Awake()
     {

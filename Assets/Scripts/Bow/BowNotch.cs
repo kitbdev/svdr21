@@ -60,17 +60,17 @@ public class BowNotch : XRSocketInteractor
             if (isArrowArmed)
             {
                 float normPullAmount = Mathf.InverseLerp(releaseThreshold, 1f, pullAmount);
-                VRDebug.Log("Arrow launched " + normPullAmount * 100 + "%");
+                if (bow.debugLog) VRDebug.Log("Arrow launched " + normPullAmount * 100 + "%");
                 launchArrow.ArrowLaunched(normPullAmount);
                 bow.ArrowLaunched(normPullAmount);
             } else
             {
-                VRDebug.Log("Arrow dropped");
+                if (bow.debugLog) VRDebug.Log("Arrow dropped");
                 launchArrow.ArrowDropped();
                 bow.ArrowDropped();
             }
         }
-        bow.ArrowReleased();
+        bow.ArrowReleased(); // todo move up, do only if have an arrow?
         isArrowArmed = false;
     }
 
@@ -99,7 +99,7 @@ public class BowNotch : XRSocketInteractor
 
         // get arrow
         currentArrow = args.interactable as ArrowInteractable;
-        VRDebug.Log("Arrow '" + currentArrow.gameObject.name + "' notched");
+        if (bow.debugLog) VRDebug.Log("Arrow '" + currentArrow.gameObject.name + "' notched");
         isArrowArmed = false;
         currentArrow.ArrowSet();
         currentArrow.SetBow(bow);
@@ -108,7 +108,7 @@ public class BowNotch : XRSocketInteractor
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
         base.OnSelectExited(args);
-        // VRDebug.Log("Arrow exited");
+        if (bow.debugLog) VRDebug.Log("Arrow exited notch");
         currentArrow.ArrowUnSet();
         bow.ArrowUnSet();
         currentArrow = null;

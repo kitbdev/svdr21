@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -45,7 +46,7 @@ public class BowString : XRBaseInteractable
 
     protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
-        // VRDebug.Log("String Grabbed");
+        if (bowNotch.bow.debugLog) VRDebug.Log("String Grabbed");
         // bowstring grabbed by player
         base.OnSelectEntered(args);
         pullingInteractor = args.interactor;
@@ -54,13 +55,14 @@ public class BowString : XRBaseInteractable
     }
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
-        // VRDebug.Log("String released");
+        if (bowNotch.bow.debugLog) VRDebug.Log("String released");
         // bowstring released by player
         base.OnSelectExited(args);
         bowNotch.ReleaseArrow();
         SetPullAmount(0);
         pullingInteractor = null;
         // todo snap animation?
+        // todo there is some problem when firing arrows quickly
     }
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {
