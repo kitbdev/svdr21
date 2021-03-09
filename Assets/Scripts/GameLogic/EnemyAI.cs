@@ -37,7 +37,8 @@ public class EnemyAI : MonoBehaviour
     /// <summary>
     /// used by movepattern to determine the current action
     /// </summary>
-    [ReadOnly] public MoveState moveState = MoveState.IDLE;
+    // [ReadOnly] 
+    public MoveState moveState = MoveState.IDLE;
     public enum MoveState
     {
         IDLE,
@@ -60,6 +61,8 @@ public class EnemyAI : MonoBehaviour
     // public float stopResumeDelay = 0.5f;
     // float stopResumeTime = 0;
 
+    float wanderResumeTime = 0;
+
     [Header("Combat")]
     public float damage = 1;
     public float attackRate = 1;
@@ -78,6 +81,9 @@ public class EnemyAI : MonoBehaviour
     [ReadOnly] [SerializeField] protected List<AttackSO> currentActiveAttacks = new List<AttackSO>();
     [ReadOnly] [SerializeField] float attackCooldown = 0;
     [ReadOnly] [SerializeField] float[] attackIndivCooldowns;
+    [Header("Other")]
+    public Transform lookTarget;
+    public Vector3 headHeight = Vector3.up * 1.5f;
 
     [Space]
     [ReadOnly] [SerializeField] bool playerDetected = false;
@@ -119,16 +125,10 @@ public class EnemyAI : MonoBehaviour
         curMoveBlockDur -= Time.deltaTime;
         if (moveTarget != null)
         {
+            lookTarget.position = moveTarget.position;
             float targetDist = Vector3.Distance(transform.position, moveTarget.position);
-            if (playerDetected)
-            {
-                if (targetDist >= playerForgetRadius)
-                {
-                    playerDetected = false;
-                    moveTarget = null;
-                    return;
-                }
-            }
+
+            // todo 
             if (targetDist <= stopRadius)
             {
                 if (!stopMoving)
@@ -142,12 +142,54 @@ public class EnemyAI : MonoBehaviour
                     stopMoving = false;
                 }
             }
+            // determine what state to go based on movepattern
+            // determine what to do based on movestate
+            if (movePattern == MovePattern.CHASE)
+            {
+                if (playerDetected)
+                {
+                    if (targetDist >= playerForgetRadius)
+                    {
+                        playerDetected = false;
+                        moveTarget = null;
+                    }
+                    moveState = MoveState.CHASING;
+                }
+            } else if (movePattern == MovePattern.WANDER)
+            {
+                moveState = MoveState.WANDER;
+            }
+            if (moveState == MoveState.WANDER)
+            {
+                if (targetDist <= stopRadius)
+                {
+                    if (Time.time >= wanderResumeTime)
+                    {
+                        // get new target
+                        moveTarget = createdMoveTarget;
+                        Vector2 np2 = Random.insideUnitCircle * wanderMaxDistance;
+                        Vector3 np3 = new Vector3(np2.x, 0, np2.y);
+                        moveTarget.position = np3;
+                        wanderResumeTime = 0;
+                    }
+                    if (wanderResumeTime <= 0)
+                    {
+                        // moveState = MoveState.IDLE;
+                        wanderResumeTime = Time.time + Random.Range(1, 4);
+                    }
+                }
+            }
+            // todo this is a fucking mess
             // todo perfered radius
             if (moveMode == MoveMode.GROUND)
             {
                 CheckGrounded();
             }
-            Move();
+            MoveToTarget();
+        } else
+        {
+            lookTarget.position = transform.position + headHeight + Vector3.forward;
+            // todo see if there are other things to look at
         }
         TryDoAttack();
     }
@@ -171,7 +213,7 @@ public class EnemyAI : MonoBehaviour
             playerDetected = true;
         }
     }
-    void Move()
+    void MoveToTarget()
     {
         if (moveTarget == null)
         {
