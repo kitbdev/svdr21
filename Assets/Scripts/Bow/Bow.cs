@@ -33,6 +33,7 @@ public class Bow : XRGrabInteractable
         if (!arrowMenu) arrowMenu = GetComponentInChildren<ArrowMenu>();
         if (!line) line = GetComponentInChildren<ProjectileLine>();
         if (!bowNotch) bowNotch = GetComponentInChildren<BowNotch>();
+        if (!bowString) bowString = GetComponentInChildren<BowString>();
     }
     private void Start()
     {

@@ -76,7 +76,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 9.42, y: 1.29, z: 9.67}
+  m_Size: {x: 9.5, y: 1.29, z: 9.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3566360456387574280
 GameObject:
@@ -194,7 +194,7 @@ MonoBehaviour:
   activeGO: {fileID: 0}
   replacementGO: {fileID: 0}
   isInUse: 0
-  myRoom: {fileID: 0}
+  myRoom: {fileID: 3566360456250664070}
 --- !u!1 &6924242124279333568
 GameObject:
   m_ObjectHideFlags: 0
@@ -1523,6 +1523,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5416703718807673, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
+      propertyPath: myRoom
+      value: 
+      objectReference: {fileID: 3566360456250664070}
     - target: {fileID: 5416703718807679, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_Name
       value: door_E
@@ -1632,6 +1636,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5416703718807673, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
+      propertyPath: myRoom
+      value: 
+      objectReference: {fileID: 3566360456250664070}
     - target: {fileID: 5416703718807679, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_Name
       value: door_S
@@ -1741,6 +1749,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5416703718807673, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
+      propertyPath: myRoom
+      value: 
+      objectReference: {fileID: 3566360456250664070}
     - target: {fileID: 5416703718807679, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_Name
       value: door_N
@@ -1850,6 +1862,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5416703718807673, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
+      propertyPath: myRoom
+      value: 
+      objectReference: {fileID: 3566360456250664070}
     - target: {fileID: 5416703718807679, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_Name
       value: door_W

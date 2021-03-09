@@ -34,6 +34,7 @@ public class LevelComponent : MonoBehaviour
     {
         if (isRoomConnector)
         {
+            Draw.ZTest = UnityEngine.Rendering.CompareFunction.Always;
             Draw.Color = Color.white;
             float size = 1.5f;
             Vector3 endPos = transform.position + transform.forward * 0.3f * size;

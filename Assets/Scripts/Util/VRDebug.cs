@@ -14,7 +14,7 @@ public class VRDebug : Singleton<VRDebug>
     protected override void Awake()
     {
         base.Awake();
-        textEl = GetComponent<TMP_Text>();
+        textEl = GetComponentInChildren<TMP_Text>();
         Clear();
     }
     private void Update()
