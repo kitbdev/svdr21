@@ -5,6 +5,8 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class Player : MonoBehaviour
 {
+    // todo loading
+
     Transform spawnPoint;
     XRRig rig;
     Health health;
@@ -15,6 +17,14 @@ public class Player : MonoBehaviour
         health = GetComponent<Health>();
         health.dieEvent.AddListener(Die);
         health.damageEvent.AddListener(Damaged);
+    }
+    private void OnEnable()
+    {
+        LevelManager.Instance.levelReadyEvent.AddListener(Respawn);
+    }
+    private void OnDisable()
+    {
+        LevelManager.Instance.levelReadyEvent.RemoveListener(Respawn);
     }
     void Damaged()
     {

@@ -35,7 +35,7 @@ public class Trigger : MonoBehaviour
     [ContextMenu("Set to player tag")]
     void SetTagToPlayer()
     {
-        checkTag = "Player";
+        checkTag = GameManager.PlayerTag;
     }
     private void Awake()
     {
@@ -44,6 +44,7 @@ public class Trigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Trigger enter " + other);
         if (IsValidTrig(other))
         {
             triggerEnteredEvent.Invoke();

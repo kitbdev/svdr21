@@ -8,8 +8,8 @@ using UnityEngine.Events;
 /// </summary>
 public class AttackBox : MonoBehaviour
 {
-    public string owner = "Player";
-    public string checkTag = "Player";
+    public string owner = "Unknown";
+    public string checkTag = GameManager.PlayerTag;
     public bool isOn = true;
     // public Vector3 point;
     public Vector3 vel;

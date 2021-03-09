@@ -9,30 +9,44 @@ using UnityEngine;
 [DefaultExecutionOrder(-50)]
 public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
-    public static T Instance { get; private set; }
+    private static T _instance;
+
+    public static T Instance
+    {
+        get {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType<T>();
+            }
+            return _instance;
+        }
+    }
 
     /// <summary>
     ///     Returns whether the instance has been initialized or not.
     /// </summary>
-    public static bool IsInitialized
-    {
-        get { return Instance != null; }
-    }
+    // public static bool IsInitialized
+    // {
+    //     get { return Instance != null; }
+    // }
 
     /// <summary>
     ///     Base awake method that sets the singleton's unique instance.
     /// </summary>
     protected virtual void Awake()
     {
-        if (Instance != null)
+        if (GameObject.FindObjectsOfType<T>().Length > 1)
+        {
             Debug.LogErrorFormat("Trying to instantiate a second instance of singleton class {0}", GetType().Name);
-        else
-            Instance = (T)this;
+        }
+        // if (_instance != null)
+        // else
+        //     _instance = (T)this;
     }
 
     protected virtual void OnDestroy()
     {
-        if (Instance == this)
-            Instance = null;
+        if (_instance == this)
+            _instance = null;
     }
 }

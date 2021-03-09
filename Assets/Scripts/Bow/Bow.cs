@@ -10,7 +10,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class Bow : XRGrabInteractable
 {
     [Header("Bow")]
-    public string ownerName = "Player";
+    public string ownerName = GameManager.PlayerTag;
     public BowString bowString;
     public BowNotch bowNotch;
     public ArrowMenu arrowMenu;

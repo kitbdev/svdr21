@@ -369,7 +369,7 @@ public class EnemyAI : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        const string playerTag = "Player";
+        const string playerTag = GameManager.PlayerTag;
         if (!playerDetected && other.CompareTag(playerTag))
         {
             // check los

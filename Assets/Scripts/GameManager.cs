@@ -6,7 +6,7 @@ using Shapes;
 
 public class GameManager : Singleton<GameManager>
 {
-
+    public const string PlayerTag = "Player";
     public SnapturnSingleHand snapturn;
     public XRRig xrRig;
     public Bow playerBow;

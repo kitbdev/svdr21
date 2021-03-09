@@ -9,13 +9,17 @@ public class LevelEnd : MonoBehaviour
     Trigger trigger;
     // todo anim
 
-    private void Awake() {
+    private void Awake()
+    {
         trigger = GetComponentInChildren<Trigger>();
-        // trigger.triggerEnteredEvent
+        trigger.triggerEnteredEvent.AddListener(OnLevelEnd);
+    }
+    private void OnDisable() {
+        trigger.triggerEnteredEvent.RemoveListener(OnLevelEnd);
     }
     public void OnLevelEnd()
     {
         LevelManager.Instance.LevelComplete();
     }
-    
+
 }

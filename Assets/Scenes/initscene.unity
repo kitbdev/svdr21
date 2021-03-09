@@ -1681,6 +1681,9 @@ MonoBehaviour:
     minTotalRooms: 3
     minSequentialRooms: 3
   m_curLevel: 0
+  levelReadyEvent:
+    m_PersistentCalls:
+      m_Calls: []
   levelLoading: 0
 --- !u!1 &627099327
 GameObject:
@@ -2483,8 +2486,10 @@ GameObject:
   - component: {fileID: 885376446}
   - component: {fileID: 885376448}
   - component: {fileID: 885376449}
+  - component: {fileID: 885376452}
   - component: {fileID: 885376450}
   - component: {fileID: 885376451}
+  - component: {fileID: 885376453}
   m_Layer: 0
   m_Name: XR Rig
   m_TagString: Player
@@ -2586,7 +2591,19 @@ MonoBehaviour:
   justDestroy: 0
   fallEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 885376452}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: Respawn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &885376451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2599,6 +2616,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0596975e12190374c80538491ae28b53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &885376452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885376445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b39aa5ac797dc8f4da88d0271b5b0182, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!54 &885376453
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885376445}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &918496261
 GameObject:
   m_ObjectHideFlags: 0

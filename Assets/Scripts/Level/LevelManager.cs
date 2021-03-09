@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LevelManager : Singleton<LevelManager>
 {
     public LevelGenSettings[] levels = new LevelGenSettings[0];
     [SerializeField]
     private int m_curLevel = 0;
+    public UnityEvent levelReadyEvent;
 
     public int curLevel
     {
@@ -41,7 +43,7 @@ public class LevelManager : Singleton<LevelManager>
     }
     private void OnDisable()
     {
-        LevelGen.Instance?.GenCompleteEvent.RemoveListener(OnLevelLoaded);
+        LevelGen.Instance.GenCompleteEvent.RemoveListener(OnLevelLoaded);
     }
     public void LevelComplete()
     {
@@ -52,6 +54,10 @@ public class LevelManager : Singleton<LevelManager>
     void LoadNextLevel()
     {
         curLevel++;
+        if (curLevel >= levels.Length)
+        {
+            VRDebug.Log("Reached last level!");
+        }
         LoadLevel();
     }
     void LoadLevel()
@@ -62,13 +68,14 @@ public class LevelManager : Singleton<LevelManager>
             return;
         }
         levelLoading = true;
-        Debug.Log("Level " + curLevel + " loading...");
+        VRDebug.Log("Level " + curLevel + " loading...");
         LevelGen.Instance.GenerateLevel(levels[curLevel]);
     }
     void OnLevelLoaded()
     {
-        Debug.Log("Level " + curLevel + " finished loading");
+        VRDebug.Log("Level " + curLevel + " finished loading");
         levelLoading = false;
+        levelReadyEvent.Invoke();
         // todo something
     }
 }
