@@ -44,15 +44,19 @@ public class Room : MonoBehaviour
     BoxCollider cacheCol;
     public Bounds GetBounds()
     {
+        CheckCol();
+        var b = new Bounds(cacheCol.center, cacheCol.size);
+        // Debug.Log("col: " + cacheCol.center.ToString());
+        return b;
+    }
+    void CheckCol()
+    {
         if (cacheCol == null)
         {
             cacheCol = GetComponent<BoxCollider>();
             if (cacheCol == null)
                 cacheCol = GetComponentInChildren<BoxCollider>();
         }
-        var b =new Bounds(cacheCol.center, cacheCol.size);
-        // Debug.Log("col: " + cacheCol.center.ToString());
-        return b;
     }
 
     private void Awake()
@@ -86,6 +90,7 @@ public class Room : MonoBehaviour
     public void LevelStart()
     {
         // disable bounds collider
+        CheckCol();
         cacheCol.enabled = false;
         foreach (var lc in allLevelComponents)
         {

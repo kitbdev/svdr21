@@ -34,6 +34,7 @@ public class LevelGen : Singleton<LevelGen>
     public bool genOnStart = false;
     public bool advancedDebug = false;
     public bool debugBreak = false;
+    bool forceRetry = false;
 
     [Header("Dynamic")]
     [ReadOnly] public int numRooms = 0;
@@ -102,6 +103,7 @@ public class LevelGen : Singleton<LevelGen>
         {
             curLevelSettings = defLevelSettings;
         }
+        forceRetry = false;
         StartCoroutine(GenLevelCo());
     }
     IEnumerator GenLevelCo()
@@ -114,6 +116,11 @@ public class LevelGen : Singleton<LevelGen>
         Debug.Log("level gen start");
         // spawn rooms
         yield return StartCoroutine(SpawnAllRooms());
+        if (forceRetry)
+        {
+            ReGenerateLevel();
+            yield break;
+        }
         yield return null;
         // randomize individual rooms
         yield return StartCoroutine(RandomizeRooms());
@@ -133,6 +140,11 @@ public class LevelGen : Singleton<LevelGen>
         ? use enemy generators
         */
         // todo
+        if (forceRetry)
+        {
+            ReGenerateLevel();
+            yield break;
+        }
         GenCompleteEvent.Invoke();
     }
     IEnumerator SpawnAllRooms()
@@ -145,6 +157,7 @@ public class LevelGen : Singleton<LevelGen>
         if (advancedDebug) Debug.Log("Spawned start room cs:" + startRoom.allConnectors.Count);
         var firstConnector = startRoom.allConnectors[0];
         SpawnRoomFor(firstConnector);
+        mainPath.Add(placedRooms[placedRooms.Count - 1]);
         if (advancedDebug) Debug.Log("spawned 2nd room");
         List<int> checkedFConIs = new List<int>();
         while (numRooms <= endRoom)
@@ -160,7 +173,9 @@ public class LevelGen : Singleton<LevelGen>
                 if (!FillUnusedCons())
                 {
                     Debug.LogError("No prior rooms have connectors!");
-                    break;
+                    // need the end room so retry
+                    forceRetry = true;
+                    yield break;
                 }
             }
             if (advancedDebug) Debug.Log("Creating room " + numRooms);
@@ -179,7 +194,8 @@ public class LevelGen : Singleton<LevelGen>
                     if (!FillUnusedCons())
                     {
                         Debug.LogError("No prior rooms have connectors!");
-                        break;
+                        forceRetry = true;
+                        yield break;
                     }
                     continue;
                 }
@@ -258,7 +274,7 @@ public class LevelGen : Singleton<LevelGen>
     bool FillUnusedCons()
     {
         int prevPathRoom = mainPath.Count - 2;
-        if (prevPathRoom > 0)
+        if (prevPathRoom >= 0)
         {
             lastRoomUnusedCons.Clear();
             // add that rooms connectors
@@ -420,13 +436,13 @@ public class LevelGen : Singleton<LevelGen>
         // overlap box
         //? extents is half extents?
         Vector3 rCenter = bounds.center + roomOffset;
-        var cols = Physics.OverlapBox(rCenter, bounds.extents * 2, roomOrientation, levelOnlyLayer, QueryTriggerInteraction.Ignore);
+        var cols = Physics.OverlapBox(rCenter, bounds.extents, roomOrientation, levelOnlyLayer, QueryTriggerInteraction.Ignore);
         if (advancedDebug)
         {
             // Draw.Cuboid(rCenter, roomOrientation, bounds.extents, Color.red);
             Debug.Log(rCenter + " " + bounds.ToString());
-            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.min), Color.red, 5);
-            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.max), Color.red, 5);
+            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.max), Color.red, 30);
+            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.min), Color.red, 30);
         }
         // make sure room we are checking can be ignored
         if (ignoreCols != null && ignoreCols.Count > 0)

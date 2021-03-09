@@ -5230,6 +5230,7 @@ MonoBehaviour:
   levelOnlyLayer:
     serializedVersion: 2
     m_Bits: 256
+  tryToAlternatePaths: 1
   defLevelSettings:
     difficulty: 1
     preferredRooms: 10
@@ -5245,6 +5246,7 @@ MonoBehaviour:
   pathPrefabsStartAt: -1
   genOnStart: 0
   advancedDebug: 1
+  debugBreak: 0
   numRooms: 0
   placedRooms: []
   mainPath: []
