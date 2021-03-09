@@ -10,6 +10,7 @@ public class HitArgs : Object
     public string attacker;
     public Vector3 point;
     public Vector3 velocity;
+    public GameObject hit;
 }
 public interface IHittable
 {

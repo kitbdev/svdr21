@@ -1655,16 +1655,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &262321158 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6262805762627804614, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-  m_PrefabInstance: {fileID: 1153378824}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &262321161 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-  m_PrefabInstance: {fileID: 1153378824}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &338778980
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,16 +1826,25 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  IdleMoveState: 4
+  playerDetectedMoveState: 2
   moveMode: 2
-  movePattern: 1
   moveState: 0
   playerDetectionRadius: 20
   playerForgetRadius: 21
-  stopRadius: 5
-  preferredRadius: 10
-  stopResumeRadius: 2.5
+  targetMinDist: 0
+  targetMaxDist: 50
   preferedHeight: 10
   wanderMaxDistance: 3
+  wanderTimeoutDur: 3
+  wanderMaxDelay: 3
+  wanderCheckDist: 0.8
+  isTooCloseToTarget: 0
+  isTooFarFromTarget: 0
+  playerDetected: 0
+  stopMoving: 0
+  isGrounded: 0
+  curSpeed: 0
   damage: 1
   attackRate: 1
   attackSpawnPoint: {fileID: 0}
@@ -1854,13 +1853,12 @@ MonoBehaviour:
   attackCooldown: 0
   attackIndivCooldowns: []
   lookTarget: {fileID: 200974534}
+  lookTargSmoothing: 10
   headHeight: {x: 0, y: 1.5, z: 0}
-  deathGo: {fileID: 0}
-  deathHideGo: {fileID: 0}
-  playerDetected: 0
-  stopMoving: 0
-  isGrounded: 0
-  curSpeed: 0
+  alwaysLookAtPlayer: 0
+  deathGoDetach: {fileID: 0}
+  deathGoDetachDestroyDelay: 50
+  headpos: {fileID: 0}
   isBeingKnockedBacked: 0
   moveTarget: {fileID: 0}
   attackTarget: {fileID: 0}
@@ -2298,16 +2296,25 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  IdleMoveState: 4
+  playerDetectedMoveState: 2
   moveMode: 1
-  movePattern: 1
   moveState: 0
   playerDetectionRadius: 20
   playerForgetRadius: 21
-  stopRadius: 5
-  preferredRadius: 10
-  stopResumeRadius: 2.5
+  targetMinDist: 0
+  targetMaxDist: 50
   preferedHeight: 10
   wanderMaxDistance: 3
+  wanderTimeoutDur: 3
+  wanderMaxDelay: 3
+  wanderCheckDist: 0.8
+  isTooCloseToTarget: 0
+  isTooFarFromTarget: 0
+  playerDetected: 0
+  stopMoving: 0
+  isGrounded: 0
+  curSpeed: 0
   damage: 1
   attackRate: 1
   attackSpawnPoint: {fileID: 0}
@@ -2316,13 +2323,12 @@ MonoBehaviour:
   attackCooldown: 0
   attackIndivCooldowns: []
   lookTarget: {fileID: 0}
+  lookTargSmoothing: 10
   headHeight: {x: 0, y: 1.5, z: 0}
-  deathGo: {fileID: 0}
-  deathHideGo: {fileID: 0}
-  playerDetected: 0
-  stopMoving: 0
-  isGrounded: 0
-  curSpeed: 0
+  alwaysLookAtPlayer: 0
+  deathGoDetach: {fileID: 0}
+  deathGoDetachDestroyDelay: 50
+  headpos: {fileID: 0}
   isBeingKnockedBacked: 0
   moveTarget: {fileID: 0}
   attackTarget: {fileID: 0}
@@ -3805,6 +3811,7 @@ GameObject:
   - component: {fileID: 885376446}
   - component: {fileID: 885376448}
   - component: {fileID: 885376449}
+  - component: {fileID: 885376450}
   m_Layer: 0
   m_Name: XR Rig
   m_TagString: Player
@@ -3889,6 +3896,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   healthUpdateEvent:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &885376450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885376445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbe2d58101307a0429193ef33e2eec6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  justDestroy: 0
+  fallEvent:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &918496261
@@ -4049,7 +4072,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 993999860}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalPosition: {x: 0, y: 0.05, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1365184448}
@@ -4412,63 +4435,6 @@ Transform:
   m_Father: {fileID: 1480992645}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1153378824
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1365184448}
-    m_Modifications:
-    - target: {fileID: 6262805762627804614, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_Name
-      value: Grunt_c_ragdoll
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262805762627804615, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2e0531f047ff0744680fb308fa7f0994, type: 3}
 --- !u!1 &1169490123
 GameObject:
   m_ObjectHideFlags: 0
@@ -5161,6 +5127,7 @@ GameObject:
   - component: {fileID: 1365184446}
   - component: {fileID: 1365184445}
   - component: {fileID: 1365184449}
+  - component: {fileID: 1365184450}
   m_Layer: 0
   m_Name: Grunt
   m_TagString: Untagged
@@ -5186,16 +5153,25 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  IdleMoveState: 2
+  playerDetectedMoveState: 1
   moveMode: 1
-  movePattern: 1
   moveState: 0
   playerDetectionRadius: 20
   playerForgetRadius: 21
-  stopRadius: 5
-  preferredRadius: 10
-  stopResumeRadius: 2.5
+  targetMinDist: 3
+  targetMaxDist: 5
   preferedHeight: 10
-  wanderMaxDistance: 3
+  wanderMaxDistance: 5
+  wanderTimeoutDur: 8
+  wanderMaxDelay: 5
+  wanderCheckDist: 1
+  isTooCloseToTarget: 0
+  isTooFarFromTarget: 0
+  playerDetected: 0
+  stopMoving: 0
+  isGrounded: 0
+  curSpeed: 0
   damage: 1
   attackRate: 1
   attackSpawnPoint: {fileID: 0}
@@ -5204,13 +5180,12 @@ MonoBehaviour:
   attackCooldown: 0
   attackIndivCooldowns: []
   lookTarget: {fileID: 1387624509}
+  lookTargSmoothing: 10
   headHeight: {x: 0, y: 2.333, z: 0}
-  deathGo: {fileID: 262321158}
-  deathHideGo: {fileID: 1337894942}
-  playerDetected: 0
-  stopMoving: 0
-  isGrounded: 0
-  curSpeed: 0
+  alwaysLookAtPlayer: 0
+  deathGoDetach: {fileID: 1337894942}
+  deathGoDetachDestroyDelay: 10
+  headpos: {fileID: 2040346008}
   isBeingKnockedBacked: 0
   moveTarget: {fileID: 0}
   attackTarget: {fileID: 0}
@@ -5275,7 +5250,6 @@ Transform:
   - {fileID: 1937806364}
   - {fileID: 1387624508}
   - {fileID: 993999861}
-  - {fileID: 262321161}
   m_Father: {fileID: 0}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5295,6 +5269,25 @@ MonoBehaviour:
   - {fileID: 1387624511}
   - {fileID: 1387624510}
   visOffset: 1
+  deactivateOnLow: 1
+  disableKinematicOnLow: 0
+  visRbs: []
+--- !u!114 &1365184450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365184444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbe2d58101307a0429193ef33e2eec6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  justDestroy: 1
+  fallEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!850595691 &1377661115
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -11373,6 +11366,11 @@ Transform:
   m_Father: {fileID: 1480992645}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &2040346008 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7918428188561708161, guid: 1bb3ee5deb345174f9f777586dd2ae5f, type: 3}
+  m_PrefabInstance: {fileID: 1387624507}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2069067276
 GameObject:
   m_ObjectHideFlags: 0
@@ -11984,8 +11982,40 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
-      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.size
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: damageEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1718970857}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: damageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LogSimple
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: damageEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -12004,12 +12034,24 @@ PrefabInstance:
       value: LogSimple
       objectReference: {fileID: 0}
     - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: VRDebug, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Target down!
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: VRDebug, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
       value: Target down!
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
+      propertyPath: dieEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4239930336863952364, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: healthUpdateEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -12021,11 +12063,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6416393652530445164, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.72
+      value: 2.82
       objectReference: {fileID: 0}
     - target: {fileID: 6416393652530445164, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.88
+      value: 1.48
       objectReference: {fileID: 0}
     - target: {fileID: 6416393652530445164, guid: c8ef6a41d6dfd5445a8308142ac952e7, type: 3}
       propertyPath: m_LocalPosition.z

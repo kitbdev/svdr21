@@ -11,6 +11,7 @@ public class HitBox : MonoBehaviour, IHittable
     public void Hit(HitArgs args)
     {
         // VRDebug.Log(name +" hit by " + args.attacker);
+        args.hit = gameObject;
         args.damage *= hitScale;
         hitEvent.Invoke(args);
     }

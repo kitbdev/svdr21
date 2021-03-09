@@ -24,7 +24,7 @@ public class LevelManager : Singleton<LevelManager>
     public int maxLevel => levels.Length - 1;
 
     [ReadOnly] public bool levelLoading = false;
-    float levelLoadStartTime = 0;
+    // float levelLoadStartTime = 0;
 
     protected override void Awake()
     {

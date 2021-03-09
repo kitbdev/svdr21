@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.XR.Interaction.Toolkit;
+using DG.Tweening;
 using Shapes;
 
 [SelectionBase]
@@ -16,6 +18,9 @@ public class EnemyAI : MonoBehaviour
     public float turnSpeed = 100;
     public LayerMask groundLayer = Physics.DefaultRaycastLayers;
 
+    public MoveState IdleMoveState = MoveState.WANDER;
+    public MoveState playerDetectedMoveState = MoveState.CHASING;
+
     public MoveMode moveMode = MoveMode.GROUND;
     public enum MoveMode
     {
@@ -24,44 +29,41 @@ public class EnemyAI : MonoBehaviour
         FLY,
     }
     /// <summary>
-    /// type of ai. determines how the ai moves between states
-    /// </summary>
-    public MovePattern movePattern = MovePattern.CHASE;
-    public enum MovePattern
-    {
-        NONE,
-        CHASE,
-        CIRCLE,
-        WANDER,
-    }
-    /// <summary>
     /// used by movepattern to determine the current action
     /// </summary>
-    // [ReadOnly] 
-    public MoveState moveState = MoveState.IDLE;
+    [ReadOnly] public MoveState moveState = MoveState.IDLE;
     public enum MoveState
     {
         IDLE,
-        CHARGING,
         CHASING,
-        ATTACKING,
         WANDER,
+        CHARGING,
     }
-
 
     [Space]
     public float playerDetectionRadius = 20;
     public float playerForgetRadius = 21;
-    public float stopRadius = 2;
-    // for rangers
-    public float preferredRadius = 10;
-    public float stopResumeRadius = 2.5f;
-    public float preferedHeight = 10;
-    public float wanderMaxDistance = 3;
-    // public float stopResumeDelay = 0.5f;
-    // float stopResumeTime = 0;
 
-    float wanderResumeTime = 0;
+    // will move farther from target if below
+    public float targetMinDist = 0;
+    // will move closer to target if past
+    public float targetMaxDist = 50;
+    public float preferedHeight = 10;
+    // just wander
+    public float wanderMaxDistance = 3;
+    public float wanderTimeoutDur = 3;
+    public float wanderMaxDelay = 3;
+    public float wanderCheckDist = 0.8f;
+    float wanderTime = 0;
+    float wanderTimeoutTime = 0;
+
+    [ReadOnly] [SerializeField] bool isTooCloseToTarget = false;
+    [ReadOnly] [SerializeField] bool isTooFarFromTarget = false;
+    [ReadOnly] [SerializeField] bool playerDetected = false;
+    [ReadOnly] [SerializeField] bool stopMoving = false;
+    [ReadOnly] [SerializeField] bool isGrounded = false;
+    [ReadOnly] [SerializeField] float curSpeed = 0;
+
 
     [Header("Combat")]
     public float damage = 1;
@@ -83,15 +85,15 @@ public class EnemyAI : MonoBehaviour
     [ReadOnly] [SerializeField] float[] attackIndivCooldowns;
     [Header("Other")]
     public Transform lookTarget;
+    public float lookTargSmoothing = 10;
     public Vector3 headHeight = Vector3.up * 1.5f;
-    public GameObject deathGo;
-    public GameObject deathHideGo;
+    Transform playerHead;
+    public bool alwaysLookAtPlayer = false;
+    public GameObject deathGoDetach;
+    public float deathGoDetachDestroyDelay = 50;
+    public Transform headpos;
 
     [Space]
-    [ReadOnly] [SerializeField] bool playerDetected = false;
-    [ReadOnly] [SerializeField] bool stopMoving = false;
-    [ReadOnly] [SerializeField] bool isGrounded = false;
-    [ReadOnly] [SerializeField] float curSpeed = 0;
     [ReadOnly] [SerializeField] bool isBeingKnockedBacked = false;
 
     [ReadOnly] public Transform moveTarget;
@@ -100,23 +102,27 @@ public class EnemyAI : MonoBehaviour
     [HideInInspector] public Health health;
     protected Transform playerT;
     protected Rigidbody rb;
+    protected Animator anim;
 
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         health = GetComponent<Health>();
+        anim = GetComponentInChildren<Animator>();
         var sphereCol = gameObject.AddComponent<SphereCollider>();
         sphereCol.isTrigger = true;
         sphereCol.radius = playerDetectionRadius;
 
         playerT = GameManager.Instance.player;
+        playerHead = Camera.main.transform;
         rb.useGravity = moveMode == MoveMode.GROUND;
+        createdMoveTarget = new GameObject(name + "_created_move_target").transform;
 
         // setup attack stuff
         attackIndivCooldowns = new float[allAttacks.Length];
 
-        if (deathGo) deathGo.SetActive(false);
+        if (deathGoDetach) ActivateRbs(deathGoDetach.transform, false);
     }
     private void OnEnable()
     {
@@ -127,75 +133,228 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         curMoveBlockDur -= Time.deltaTime;
-        if (moveTarget != null)
-        {
-            lookTarget.position = moveTarget.position;
-            float targetDist = Vector3.Distance(transform.position, moveTarget.position);
 
-            // todo 
-            if (targetDist <= stopRadius)
+        // check if player is not detected
+        if (playerDetected)
+        {
+            float playerDist = Vector3.Distance(playerT.position, transform.position);
+            if (playerDist >= playerForgetRadius)
             {
-                if (!stopMoving)
-                {
-                    stopMoving = true;
-                }
-            } else if (targetDist > stopResumeRadius)
-            {
-                if (stopMoving)
-                {
-                    stopMoving = false;
-                }
+                playerDetected = false;
+                moveTarget = null;
             }
-            // determine what state to go based on movepattern
-            // determine what to do based on movestate
-            if (movePattern == MovePattern.CHASE)
+        }
+        if (moveTarget == null)
+        {
+            moveTarget = createdMoveTarget;
+        }
+        // update looktarget
+        Vector3 targLookPos = lookTarget.position;
+        if (alwaysLookAtPlayer)
+        {
+            targLookPos = playerHead.position;
+        } else
+        {
+            // targLookPos = transform.position + headHeight + Vector3.forward;
+            if (playerDetected)
             {
-                if (playerDetected)
+                targLookPos = playerHead.position;
+            } else
+            {
+                targLookPos = moveTarget.position;
+                targLookPos += headHeight;
+            }
+        }
+        if (lookTargSmoothing > 0)
+        {
+            lookTarget.position = Vector3.Lerp(lookTarget.position, targLookPos, lookTargSmoothing * Time.deltaTime);
+        } else
+        {
+            lookTarget.position = targLookPos;
+        }
+        if (headpos && Vector3.Distance(headpos.position, lookTarget.position) < 0.5f)
+        {
+            // ? or reduce the weight
+            var lookDir = headpos.position - lookTarget.position;
+            lookDir.y = 0;
+            lookTarget.position += -lookDir.normalized * 0.5f;
+        }
+        if (moveMode == MoveMode.GROUND)
+        {
+            CheckGrounded();
+        }
+
+        // set movestate based on player
+        if (playerDetected)
+        {
+            moveState = playerDetectedMoveState;
+        } else
+        {
+            moveState = IdleMoveState;
+        }
+        Move();
+        TryDoAttack();
+    }
+    void Move()
+    {
+        // get target state
+        float targetDist = Vector3.Distance(transform.position, moveTarget.position);
+        // need to move farther
+        isTooCloseToTarget = false;
+        // need to move closer
+        isTooFarFromTarget = false;
+        if (targetDist > targetMaxDist)
+        {
+            isTooFarFromTarget = true;
+        } else if (targetDist < targetMinDist)
+        {
+            isTooCloseToTarget = true;
+        }
+
+        // movestate logic
+        switch (moveState)
+        {
+            case MoveState.WANDER:
+                // wander around aimlessly
+                if (targetDist <= wanderCheckDist || Time.time >= wanderTimeoutTime)
                 {
-                    if (targetDist >= playerForgetRadius)
+                    // wait to get a new target
+                    if (wanderTime <= 0)
                     {
-                        playerDetected = false;
-                        moveTarget = null;
-                    }
-                    moveState = MoveState.CHASING;
-                }
-            } else if (movePattern == MovePattern.WANDER)
-            {
-                moveState = MoveState.WANDER;
-            }
-            if (moveState == MoveState.WANDER)
-            {
-                if (targetDist <= stopRadius)
-                {
-                    if (Time.time >= wanderResumeTime)
+                        // set new delay
+                        float rDelay = Random.Range(1f, wanderMaxDelay);
+                        wanderTime = Time.time + rDelay;
+                        // lots of overshoots, but whatever
+                        // Debug.Log("Wanderdelay " + rDelay);
+                    } else if (Time.time >= wanderTime)
                     {
                         // get new target
                         moveTarget = createdMoveTarget;
-                        Vector2 np2 = Random.insideUnitCircle * wanderMaxDistance;
-                        Vector3 np3 = new Vector3(np2.x, 0, np2.y);
-                        moveTarget.position = np3;
-                        wanderResumeTime = 0;
+
+                        Vector3 newTarg = transform.position;
+                        switch (moveMode)
+                        {
+                            case MoveMode.STATIONARY:
+                                break;
+                            case MoveMode.GROUND:
+                                Vector2 np2 = Random.insideUnitCircle * wanderMaxDistance;
+                                newTarg = transform.position + new Vector3(np2.x, 0, np2.y);
+                                break;
+                            case MoveMode.FLY:
+                                newTarg = transform.position + Random.insideUnitSphere * wanderMaxDistance;
+                                if (Random.value > 0.5f)
+                                {
+                                    newTarg.y = preferedHeight;
+                                }
+                                break;
+                        }
+                        moveTarget.position = newTarg;
+                        wanderTime = 0;
+                        wanderTimeoutTime = Time.time + wanderTimeoutDur;
                     }
-                    if (wanderResumeTime <= 0)
-                    {
-                        // moveState = MoveState.IDLE;
-                        wanderResumeTime = Time.time + Random.Range(1, 4);
-                    }
+                } else
+                {
+                    // move to current target
+                    MoveTo(moveTarget.position);
+                    wanderTime = 0;
                 }
-            }
-            // todo this is a fucking mess
-            // todo perfered radius
-            if (moveMode == MoveMode.GROUND)
-            {
-                CheckGrounded();
-            }
-            MoveToTarget();
-        } else
-        {
-            lookTarget.position = transform.position + headHeight + Vector3.forward;
-            // todo see if there are other things to look at
+                break;
+
+            case MoveState.CHASING:
+                // follow the player
+                Vector3 targPostion = transform.position;
+                if (isTooCloseToTarget)
+                {
+                    Vector3 away = transform.position - moveTarget.position;
+                    targPostion = away.normalized;
+                } else if (isTooFarFromTarget)
+                {
+                    targPostion = moveTarget.position;
+                }
+                switch (moveMode)
+                {
+                    case MoveMode.STATIONARY:
+                        break;
+                    case MoveMode.GROUND:
+                        break;
+                    case MoveMode.FLY:
+                        // targPostion.y = preferedHeight;
+                        break;
+                }
+                MoveTo(targPostion);
+                break;
+            case MoveState.CHARGING:
+                break;
+            case MoveState.IDLE:
+            default:
+                break;
         }
-        TryDoAttack();
+    }
+    void MoveTo(Vector3 targetPos)
+    {
+        if (moveTarget == null)
+        {
+            return;
+        }
+        if (curMoveBlockDur > 0)
+        {
+            return;
+        }
+        if (moveMode == MoveMode.GROUND && !isGrounded)
+        {
+            // cannot move in air
+            return;
+        }
+        float distToTarg = Vector3.Distance(transform.position, targetPos);
+        if (distToTarg <= 0.01f)
+        {
+            // too close, ignore
+            return;
+        }
+
+        // rotate towards target
+        float rotRate = turnSpeed * Time.deltaTime;
+        Quaternion targRot = transform.rotation;
+        Vector3 toTarg = targetPos - transform.position;
+        if (moveMode == MoveMode.GROUND)
+        {
+            // only rotate aroun y axis
+            Vector3 toFlat = toTarg;
+            toFlat.y = 0;
+            targRot = Quaternion.LookRotation(toFlat, Vector3.up);
+        } else if (moveMode == MoveMode.FLY)
+        {
+            // rotate freely
+            targRot = Quaternion.LookRotation(toTarg.normalized, Vector3.up);
+            // todo target height
+        }
+        // Quaternion.Slerp
+        targRot = Quaternion.RotateTowards(transform.rotation, targRot, rotRate);
+        transform.rotation = targRot;
+        // move
+        switch (moveMode)
+        {
+            case MoveMode.STATIONARY:
+                // only rotate, dont move
+                return;
+            case MoveMode.GROUND:
+                break;
+            case MoveMode.FLY:
+                break;
+        }
+        if (isBeingKnockedBacked)
+        {
+            return;
+        }
+        var vel = rb.velocity;
+        // wait until facing player
+        float facingAmount = Mathf.Clamp01(Vector3.Dot(transform.forward, toTarg.normalized) + 0.3f);
+        float targSpeed = stopMoving ? 0 : moveSpeed * facingAmount;
+        curSpeed = Mathf.Lerp(curSpeed, targSpeed, accelerationRate * Time.deltaTime);
+
+        vel = transform.forward * curSpeed;
+        vel = Vector3.ClampMagnitude(vel, moveSpeed);
+        rb.velocity = vel;
     }
     private void OnTriggerStay(Collider other)
     {
@@ -217,91 +376,51 @@ public class EnemyAI : MonoBehaviour
             playerDetected = true;
         }
     }
-    void MoveToTarget()
-    {
-        if (moveTarget == null)
-        {
-            return;
-        }
-        if (curMoveBlockDur > 0)
-        {
-            return;
-        }
-        // todo idle move?
-        if (moveMode == MoveMode.GROUND && !isGrounded)
-        {
-            // cannot move in air
-            return;
-        }
-
-        // rotate
-        float rotRate = turnSpeed * Time.deltaTime;
-        Quaternion targRot = transform.rotation;
-        Vector3 toTarg = moveTarget.position - transform.position;
-        if (moveMode == MoveMode.GROUND)
-        {
-            // only rotate aroun y axis
-            Vector3 toFlat = toTarg;
-            toFlat.y = 0;
-            targRot = Quaternion.LookRotation(toFlat, Vector3.up);
-        } else if (moveMode == MoveMode.FLY)
-        {
-            // rotate freely
-            targRot = Quaternion.LookRotation(toTarg.normalized, Vector3.up);
-            // todo target height
-        }
-        // Quaternion.Slerp
-        targRot = Quaternion.RotateTowards(transform.rotation, targRot, rotRate);
-        transform.rotation = targRot;
-        // move
-        if (moveMode == MoveMode.STATIONARY)
-        {
-            return;
-        } else if (moveMode == MoveMode.GROUND)
-        {
-            // todo dont fall into pits
-
-        } else if (moveMode == MoveMode.STATIONARY)
-        {
-
-        }
-        if (isBeingKnockedBacked)
-        {
-            return;
-        }
-        var vel = rb.velocity;
-        // wait until facing player
-        float facingAmount = Mathf.Clamp01(Vector3.Dot(transform.forward, toTarg.normalized) + 0.3f);
-        float targSpeed = stopMoving ? 0 : moveSpeed * facingAmount;
-        curSpeed = Mathf.Lerp(curSpeed, targSpeed, accelerationRate * Time.deltaTime);
-
-        vel = transform.forward * curSpeed;
-        vel = Vector3.ClampMagnitude(vel, moveSpeed);
-        rb.velocity = vel;
-    }
     protected void Knockback(Vector3 point, Vector3 vel)
     {
         float mag = vel.magnitude;
+        // todo fix
         VRDebug.Log("Knockback " + mag);
         rb.AddExplosionForce(mag, point, 1, 1.5f);
     }
     void OnHit()
     {
+        if (health.lastHitArgs.hit.TryGetComponent<Rigidbody>(out var hitrb))
+        {
+            hitrb.isKinematic = false;
+            DOTween.To(() => hitrb.isKinematic.AsInt(), x => hitrb.isKinematic = x >= 1, 1, 5f);
+        }
         Knockback(health.lastHitArgs.point, health.lastHitArgs.velocity);
     }
     protected void Die()
     {
         VRDebug.Log("Enemy " + name + " died");
         // anim
-        if (deathGo) deathGo.SetActive(true);
-        if (deathHideGo) deathHideGo.SetActive(false);
-        // todo detach?
+        if (deathGoDetach)
+        {
+            // activate rbs and deactivate anim
+            anim.enabled = false;
+            GetComponentInChildren<RigBuilder>().enabled = false;
+            deathGoDetach.transform.SetParent(null);
+            Destroy(deathGoDetach, deathGoDetachDestroyDelay);
+            ActivateRbs(deathGoDetach.transform, true);
+        }
         Destroy(gameObject);
+    }
+    void ActivateRbs(Transform baseT, bool activate)
+    {
+        var rbs = baseT.GetComponentsInChildren<Rigidbody>();
+        foreach (var baserb in rbs)
+        {
+            baserb.isKinematic = !activate;
+        }
     }
     protected void CheckGrounded()
     {
         float maxDist = 0.1f;
-        if (Physics.Raycast(transform.position + Vector3.up * maxDist / 2, Vector3.down, out var hit, maxDist, groundLayer))
+        Vector3 startPos = transform.position + Vector3.up * maxDist / 2;
+        // Debug.DrawRay(startPos, Vector3.down * maxDist, Color.green);
+        if (Physics.Raycast(startPos, Vector3.down, out var hit, maxDist, groundLayer))
         {
             isGrounded = true;
         } else
@@ -389,5 +508,6 @@ public class EnemyAI : MonoBehaviour
     protected void OnDrawGizmosSelected()
     {
         Draw.Ring(transform.position, Vector3.up, playerDetectionRadius);
+        if (moveTarget) Draw.Sphere(moveTarget.position, 0.2f, Color.red);
     }
 }
