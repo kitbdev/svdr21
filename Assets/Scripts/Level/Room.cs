@@ -4,23 +4,29 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    [ReadOnly] [SerializeField] List<LevelComponent> allLevelComponents = new List<LevelComponent>();
-    [ReadOnly] [SerializeField] List<LevelComponent> activeLevelComponents = new List<LevelComponent>();
+    [ReadOnly] public List<LevelComponent> allLevelComponents = new List<LevelComponent>();
+    [ReadOnly] public List<LevelComponent> usedLevelComponents = new List<LevelComponent>();
     [ReadOnly] public List<LevelComponent> allConnectors = new List<LevelComponent>();
     public int uniqueToLevel = -1;
+    public bool isPathRoom = false;
+    [ReadOnly] public List<Room> connectedRooms = new List<Room>();
 
-    public Bounds bounds
+    /// <summary>
+    /// bounds should cover the majority of the level
+    /// only connectors and parts that can intersect with other roomsshould be outside
+    /// </summary>
+    /// <value></value>
+    public Bounds bounds => cacheCol.bounds;
+    Collider _cacheCol;
+    public Collider cacheCol
     {
         get {
-            if (cacheCol == null)
-            {
-                cacheCol = GetComponent<Collider>();
-            }
-            return cacheCol.bounds;
+            if (_cacheCol == null)
+                _cacheCol = GetComponent<Collider>();
+            return _cacheCol;
         }
+        set => _cacheCol = value;
     }
-    Collider cacheCol;
-    // todo disable collider when starting
 
     private void Awake()
     {
@@ -43,7 +49,21 @@ public class Room : MonoBehaviour
             {
                 allConnectors.Add(lc);
             }
+            lc.myRoom = this;
         }
         allLevelComponents.AddRange(lcs);
+    }
+    /// <summary>
+    /// Prepare for the level to start
+    /// </summary>
+    public void LevelStart()
+    {
+        // disable bounds collider
+        cacheCol.enabled = false;
+        foreach (var lc in allLevelComponents)
+        {
+            lc.SetUsing(usedLevelComponents.Contains(lc));
+        }
+        // todo?
     }
 }

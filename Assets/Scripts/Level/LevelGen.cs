@@ -26,6 +26,7 @@ public class LevelGen : Singleton<LevelGen>
     public GameObject startRoomPrefab;
     public GameObject endRoomPrefab;
     public GameObject[] roomPrefabs = new GameObject[0];
+    public int pathPrefabsStartAt = -1;
 
     // debug stuff
     public bool genOnStart = false;
@@ -115,6 +116,11 @@ public class LevelGen : Singleton<LevelGen>
         yield return StartCoroutine(RandomizeRooms());
         yield return null;
         // add loot
+        // finish rooms
+        foreach (Room room in placedRooms)
+        {
+            room.LevelStart();
+        }
         // todo
         // spawn enemies
         /*
@@ -134,7 +140,8 @@ public class LevelGen : Singleton<LevelGen>
         var firstConnector = placedRooms[0].allConnectors[0];
         SpawnRoomFor(firstConnector);
         List<int> checkedFConIs = new List<int>();
-        while (numRooms <= maxRooms)
+        int endRoom = Mathf.Min(curLevelSettings.preferredRooms, maxRooms);
+        while (numRooms <= endRoom)
         {
             if (frontierConnectors.Count == 0)
             {
@@ -150,12 +157,7 @@ public class LevelGen : Singleton<LevelGen>
                     break;
                 }
             }
-            if (numRooms >= curLevelSettings.preferredRooms)
-            {
-                // done
-                break;
-            }
-            bool useEndRoom = numRooms == maxRooms;
+            bool useEndRoom = numRooms == endRoom;
             // try all connections
             int nextConIndex = 0;
             checkedFConIs.Clear();
@@ -178,6 +180,8 @@ public class LevelGen : Singleton<LevelGen>
                 if (useEndRoom ? SpawnRoomFor(nextCon, endRoomPrefab) : SpawnRoomFor(nextCon))
                 {
                     // success
+                    // add to main path
+                    mainPath.Add(placedRooms[placedRooms.Count - 1]);
                     break;
                 } else
                 {
@@ -188,6 +192,12 @@ public class LevelGen : Singleton<LevelGen>
             }
             yield return null;
             // todo add additional rooms with lock and key structure
+            // todo random dead ends?
+        }
+        // use proper connectors
+        foreach (var room in placedRooms)
+        {
+            // room.
         }
         // done with spawning rooms
     }
@@ -246,18 +256,34 @@ public class LevelGen : Singleton<LevelGen>
         {
             tries++;
             // select room randomly
-            var rroomp = GetRandomIn<GameObject>(roomPrefabs, out int rrp, checkedRoomPrefabIs);
-            if (rrp == -1)
-            {
-                // all rooms tried!
-                Debug.LogWarning("Tried all rooms!");
-                // should next try somewhere else
-                break;
-            }
-            checkedRoomPrefabIs.Add(rrp);
+            GameObject rroomp;
             if (forceRoom)
             {
                 rroomp = forceRoom;
+            } else
+            {
+                // todo choose room not completely randomly
+                // ?try preferred, then all
+                bool lastRoomIsPath = false;
+                GetRoomType(lastRoomIsPath, out int minI, out int maxI);
+                rroomp = GetRandomIn<GameObject>(roomPrefabs, out int rrp, checkedRoomPrefabIs, minI, maxI);
+                if (rrp == -1)
+                {
+                    if (pathPrefabsStartAt > 0)
+                    {
+                        // no rooms of that type, try other rooms
+                        GetRoomType(lastRoomIsPath, out minI, out maxI);
+                        rroomp = GetRandomIn<GameObject>(roomPrefabs, out rrp, checkedRoomPrefabIs, minI, maxI);
+                    }
+                    if (rrp == -1)
+                    {
+                        // all rooms tried!
+                        Debug.LogWarning("Tried all rooms!");
+                        // should next try somewhere else
+                        break;
+                    }
+                }
+                checkedRoomPrefabIs.Add(rrp);
             }
             Debug.Log("trying to spawn room " + rroomp.name);
             Room prefabRoom = rroomp.GetComponent<Room>();
@@ -289,8 +315,12 @@ public class LevelGen : Singleton<LevelGen>
                     Debug.Log($"Connecting cons {connector.transform.parent.name}.{connector.name} to {roomName}.{rCon.name}");
                     Debug.Log("room " + roomName + " is valid");
                     Room nroom = SpawnAndAddRoom(rroomp, roomOffset, roomRot);
+                    // setup room
                     nroom.gameObject.name = roomName;
-                    mainPath.Add(nroom); // todo may not be a mainpath room
+                    nroom.connectedRooms.Add(connector.myRoom);
+                    nroom.usedLevelComponents.Add(nroom.allConnectors[selCon]);
+                    connector.myRoom.usedLevelComponents.Add(connector);
+
                     // remove the used connector from frontier
                     frontierConnectors.Remove(connector);
                     // add new connectors, if any
@@ -342,6 +372,21 @@ public class LevelGen : Singleton<LevelGen>
             return true;
         }
     }
+    void GetRoomType(bool isPath, out int minI, out int maxI)
+    {
+        minI = 0;
+        maxI = roomPrefabs.Length;
+        if (pathPrefabsStartAt > 0)
+        {
+            if (isPath)
+            {
+                maxI = pathPrefabsStartAt;
+            } else
+            {
+                minI = pathPrefabsStartAt;
+            }
+        }
+    }
     Room SpawnAndAddRoom(GameObject roomPrefab, Vector3 position, Quaternion rotation)
     {
         var t = SpawnRoomAt(roomPrefab, position, rotation);
@@ -383,13 +428,23 @@ public class LevelGen : Singleton<LevelGen>
     /// <typeparam name="T"></typeparam>
     /// <param name="rIndex">the index out</param>
     /// <param name="ignoreIndices">indeces to ignore</param>
-    /// <returns>random item in list</returns>
-    static T GetRandomIn<T>(T[] array, out int rIndex, List<int> ignoreIndices = null)
+    /// /// <returns>random item in list</returns>
+    static T GetRandomIn<T>(T[] array, out int rIndex, List<int> ignoreIndices = null, int min = -1, int max = -1)
     {
+        int startVal = 0;
+        if (min >= 0)
+        {
+            startVal = Mathf.Max(startVal, min);
+        }
+        int endVal = array.Length;
+        if (max >= 0)
+        {
+            endVal = Mathf.Min(endVal, max);
+        }
         if (ignoreIndices != null && ignoreIndices.Count > 0)
         {
             List<int> possibleIndices = new List<int>();
-            for (int i = 0; i < array.Length; i++)
+            for (int i = startVal; i < endVal; i++)
             {
                 if (!ignoreIndices.Contains(i))
                 {
@@ -407,7 +462,7 @@ public class LevelGen : Singleton<LevelGen>
             }
         } else
         {
-            rIndex = Random.Range(0, array.Length);
+            rIndex = Random.Range(startVal, endVal);
         }
         return array[rIndex];
     }
