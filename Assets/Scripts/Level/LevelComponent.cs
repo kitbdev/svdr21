@@ -9,23 +9,26 @@ public class LevelComponent : MonoBehaviour
     public bool isRequired = false;
     public List<LevelComponent> requireOneOf = new List<LevelComponent>();
     public List<LevelComponent> blocks = new List<LevelComponent>();
-    public List<LevelComponent> onlyIf = new List<LevelComponent>();
-    public GameObject activeGO;
-    public GameObject replacementGO;
+    public List<LevelComponent> forceUse = new List<LevelComponent>();
+    public GameObject[] activeGOs;
+    public GameObject[] replacementGOs;
     [ReadOnly] public bool isInUse = false;
     [ReadOnly] public Room myRoom;
 
     public void SetUsing(bool isUsing)
     {
         isInUse = isUsing;
-        if (activeGO)
+        if (activeGOs.Length > 0)
         {
-            activeGO.SetActive(isUsing);
+            foreach (var activeGO in activeGOs)
+            {
+                activeGO.SetActive(isUsing);
+            }
         } else
         {
             gameObject.SetActive(isUsing);
         }
-        if (replacementGO)
+        foreach (var replacementGO in replacementGOs)
         {
             replacementGO.SetActive(!isUsing);
         }

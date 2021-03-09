@@ -51,8 +51,12 @@ MonoBehaviour:
   requireOneOf: []
   blocks: []
   onlyIf: []
-  activeGO: {fileID: 2945953857974247951}
-  replacementGO: {fileID: 5841323527763625128}
+  activeGOs:
+  - {fileID: 2945953857974247951}
+  replacementGOs:
+  - {fileID: 5841323527763625128}
+  isInUse: 0
+  myRoom: {fileID: 0}
 --- !u!1 &2945953857974247951
 GameObject:
   m_ObjectHideFlags: 0
