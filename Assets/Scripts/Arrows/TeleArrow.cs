@@ -9,6 +9,8 @@ public class TeleArrow : BaseArrowLogic
     [SerializeField] float verticalityThreshold = 0.6f;
     [SerializeField] float wallOffsetDist = 0.5f;
     [SerializeField] float tpDropDist = 2f;
+    [SerializeField] float tpMinHeight = 1.55f;
+    [SerializeField] float tpMinWidth = 0.1f;
     /// <summary>
     /// How to orient the rig after teleportation.
     /// </summary>
@@ -47,9 +49,9 @@ public class TeleArrow : BaseArrowLogic
             // raycast down to find a good spot
             Vector3 startPos = hit.point + hit.normal * wallOffsetDist;
             Debug.DrawRay(startPos, Vector3.down * tpDropDist, Color.magenta, 2);
-            if (Physics.Raycast(startPos, Vector3.down, out var hit1, tpDropDist, collisionMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(startPos, Vector3.down, out var hitDown, tpDropDist, collisionMask, QueryTriggerInteraction.Ignore))
             {
-                if (TryTeleportLocation(hit1))
+                if (TryTeleportLocation(hitDown))
                 {
                     return;
                 }
@@ -66,7 +68,7 @@ public class TeleArrow : BaseArrowLogic
         {
             // check if area is wide enough
             bool areaSizeOk = false;
-            float checkDist = 0.1f;
+            float checkDist = tpMinWidth;
             var cols = Physics.OverlapSphere(hit.point + (checkDist + 0.01f) * Vector3.up, checkDist, collisionMask, QueryTriggerInteraction.Ignore);
             if (cols.Length == 0)
             {
@@ -81,8 +83,17 @@ public class TeleArrow : BaseArrowLogic
             }
             if (areaSizeOk)
             {
-                TeleportTo(hit.point);
-                return true;
+                // height check
+                Debug.DrawRay(hit.point, Vector3.up * tpMinHeight, Color.magenta, 2);
+                //? different mask - playercol
+                if (!Physics.SphereCast(hit.point, tpMinWidth, Vector3.up, out var hitheight, tpMinHeight, collisionMask, QueryTriggerInteraction.Ignore))
+                {
+                    TeleportTo(hit.point);
+                    return true;
+                } else
+                {
+                    VRDebug.Log("TP blocked by height");
+                }
             }
         }
         return false;

@@ -26,6 +26,7 @@ public class BaseArrowLogic : MonoBehaviour
     public bool isSet = false;
     public bool isArmed = false;
     [ReadOnly] [SerializeField] protected Vector3 lastPos = Vector3.zero;
+    [ReadOnly] [SerializeField] protected Vector3 lastVel = Vector3.zero;
     protected float launchPullAmount = 0;
     protected float launchTime = 0;
     protected float groundHitTime = 0;
@@ -126,12 +127,14 @@ public class BaseArrowLogic : MonoBehaviour
                     args.damage = damage;
                     args.attacker = launchBow.ownerName;
                     args.point = hit.point;
-                    args.velocity = rb.velocity;
+                    args.velocity = lastVel;
+                    // Debug.Log("vel: " + rb.velocity);
                     SetHitArgs(ref args);
                     hittable.Hit(args);
                 }
             }
             lastPos = tip.transform.position;
+            lastVel = rb.velocity;
         }
     }
     public virtual void SetPhysicsEnabled(bool enabled)
@@ -159,7 +162,10 @@ public class BaseArrowLogic : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        VRDebug.Log(other.collider.name + " arrow bump", -1, other.collider);
+        if (inFlight)
+        {
+            VRDebug.Log(other.collider.name + " arrow bump", -1, other.collider);
+        }
     }
 
     public virtual void SetBow(Bow bow)
@@ -227,6 +233,7 @@ public class BaseArrowLogic : MonoBehaviour
         launchPullAmount = pullAmount;
         launchTime = Time.time;
         lastPos = tip.transform.position;
+        lastVel = rb.velocity;
         LaunchForce();
     }
     /// <summary>

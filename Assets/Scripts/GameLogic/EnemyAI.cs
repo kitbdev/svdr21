@@ -86,12 +86,13 @@ public class EnemyAI : MonoBehaviour
     [Header("Other")]
     public Transform lookTarget;
     public float lookTargSmoothing = 10;
-    public Vector3 headHeight = Vector3.up * 1.5f;
+    Vector3 headHeight = Vector3.up * 1.5f;
     Transform playerHead;
     public bool alwaysLookAtPlayer = false;
     public GameObject deathGoDetach;
     public float deathGoDetachDestroyDelay = 50;
     public Transform headpos;
+    public float loosePartReconnectDelay = 3;
 
     [Space]
     [ReadOnly] [SerializeField] bool isBeingKnockedBacked = false;
@@ -118,6 +119,7 @@ public class EnemyAI : MonoBehaviour
         playerHead = Camera.main.transform;
         rb.useGravity = moveMode == MoveMode.GROUND;
         createdMoveTarget = new GameObject(name + "_created_move_target").transform;
+        headHeight = headpos.position - transform.position;
 
         // setup attack stuff
         attackIndivCooldowns = new float[allAttacks.Length];
@@ -252,6 +254,7 @@ public class EnemyAI : MonoBehaviour
                         wanderTime = 0;
                         wanderTimeoutTime = Time.time + wanderTimeoutDur;
                     }
+                    MoveTo(moveTarget.position, true);
                 } else
                 {
                     // move to current target
@@ -270,6 +273,9 @@ public class EnemyAI : MonoBehaviour
                 } else if (isTooFarFromTarget)
                 {
                     targPostion = moveTarget.position;
+                } else
+                {
+                    MoveTo(moveTarget.position, true);
                 }
                 switch (moveMode)
                 {
@@ -290,7 +296,7 @@ public class EnemyAI : MonoBehaviour
                 break;
         }
     }
-    void MoveTo(Vector3 targetPos)
+    void MoveTo(Vector3 targetPos, bool onlyRotate = false)
     {
         if (moveTarget == null)
         {
@@ -306,6 +312,7 @@ public class EnemyAI : MonoBehaviour
             return;
         }
         float distToTarg = Vector3.Distance(transform.position, targetPos);
+        bool tooCloseToMove = distToTarg <= 0.01f;
         if (distToTarg <= 0.01f)
         {
             // too close, ignore
@@ -326,11 +333,15 @@ public class EnemyAI : MonoBehaviour
         {
             // rotate freely
             targRot = Quaternion.LookRotation(toTarg.normalized, Vector3.up);
-            // todo target height
         }
         // Quaternion.Slerp
         targRot = Quaternion.RotateTowards(transform.rotation, targRot, rotRate);
         transform.rotation = targRot;
+
+        if (onlyRotate)
+        {
+            return;
+        }
         // move
         switch (moveMode)
         {
@@ -347,8 +358,8 @@ public class EnemyAI : MonoBehaviour
             return;
         }
         var vel = rb.velocity;
-        // wait until facing player
-        float facingAmount = Mathf.Clamp01(Vector3.Dot(transform.forward, toTarg.normalized) + 0.3f);
+        // will only move when facing target by at least 50%
+        float facingAmount = Mathf.Clamp01(Vector3.Dot(transform.forward, toTarg.normalized) * 2 - 0.5f);
         float targSpeed = stopMoving ? 0 : moveSpeed * facingAmount;
         curSpeed = Mathf.Lerp(curSpeed, targSpeed, accelerationRate * Time.deltaTime);
 
@@ -387,8 +398,18 @@ public class EnemyAI : MonoBehaviour
     {
         if (health.lastHitArgs.hit.TryGetComponent<Rigidbody>(out var hitrb))
         {
-            hitrb.isKinematic = false;
-            DOTween.To(() => hitrb.isKinematic.AsInt(), x => hitrb.isKinematic = x >= 1, 1, 5f);
+            if (loosePartReconnectDelay > 0)
+            {
+                // disconnect that rb
+                hitrb.isKinematic = false;
+                DOTween.To(() => hitrb.isKinematic.AsInt(), x => {
+                    if (x >= 1)
+                    {
+                        hitrb.isKinematic = true;
+                        hitrb.transform.DOLocalMove(Vector3.zero, 1);
+                    }
+                }, 1, loosePartReconnectDelay);
+            }
         }
         Knockback(health.lastHitArgs.point, health.lastHitArgs.velocity);
     }
