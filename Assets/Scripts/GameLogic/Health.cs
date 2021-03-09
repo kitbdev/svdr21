@@ -94,6 +94,14 @@ public class Health : MonoBehaviour
     {
         currentHealth += amount;
     }
+    [ContextMenu("TakeDamage")]
+    void TakeDamageEx()
+    {
+        HitArgs args = new HitArgs();
+        args.damage = 1;
+        args.attacker = "editor";
+        TakeDamage(args);
+    }
     public void TakeDamage(HitArgs args)
     {
         VRDebug.Log(name + " hit by " + args.attacker + " for " + args.damage, debugContext: this);

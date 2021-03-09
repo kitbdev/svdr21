@@ -84,6 +84,8 @@ public class EnemyAI : MonoBehaviour
     [Header("Other")]
     public Transform lookTarget;
     public Vector3 headHeight = Vector3.up * 1.5f;
+    public GameObject deathGo;
+    public GameObject deathHideGo;
 
     [Space]
     [ReadOnly] [SerializeField] bool playerDetected = false;
@@ -113,6 +115,8 @@ public class EnemyAI : MonoBehaviour
 
         // setup attack stuff
         attackIndivCooldowns = new float[allAttacks.Length];
+
+        if (deathGo) deathGo.SetActive(false);
     }
     private void OnEnable()
     {
@@ -288,7 +292,10 @@ public class EnemyAI : MonoBehaviour
     protected void Die()
     {
         VRDebug.Log("Enemy " + name + " died");
-        // todo anim
+        // anim
+        if (deathGo) deathGo.SetActive(true);
+        if (deathHideGo) deathHideGo.SetActive(false);
+        // todo detach?
         Destroy(gameObject);
     }
     protected void CheckGrounded()
