@@ -6,6 +6,10 @@ using UnityEngine.XR.Interaction.Toolkit;
 using DG.Tweening;
 using Shapes;
 
+/// <summary>
+/// General AI for all enemies
+/// includes Movement, Attacking, head tracking, multiple states, and death logic
+/// </summary>
 [SelectionBase]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Health))]
@@ -526,23 +530,7 @@ public class EnemyAI : MonoBehaviour
         {
             curMoveBlockDur = attack.moveBlockDur;
         }
-        if (attack.spawnPrefab)
-        {
-            var spawnGo = Instantiate(attack.spawnPrefab);
-            spawnGo.transform.position = attackSpawnPoint.position;
-            spawnGo.transform.rotation = attackSpawnPoint.rotation;
-            if (attack.keepAttached)
-            {
-                spawnGo.transform.SetParent(transform);
-            }
-            // todo launch dist
-        }
-        if (attack.launchEffectPrefab)
-        {
-            var spawnGo = Instantiate(attack.launchEffectPrefab);
-            spawnGo.transform.position = attackSpawnPoint.position;
-            spawnGo.transform.rotation = attackSpawnPoint.rotation;
-        }
+        attack.Trigger(transform, attackSpawnPoint, anim);
         if (attack.cooldown >= 0)
         {
             attackCooldown = attack.cooldown;
@@ -550,10 +538,6 @@ public class EnemyAI : MonoBehaviour
         if (attack.individualCoolDown >= 0)
         {
             attackIndivCooldowns[index] = attack.individualCoolDown;
-        }
-        if (attack.animName.Length > 0)
-        {
-            anim.SetTrigger(attack.animName);
         }
     }
 

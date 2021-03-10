@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// Shows debug logs in VR
+/// </summary>
 [DefaultExecutionOrder(-50)]
 public class VRDebug : Singleton<VRDebug>
 {

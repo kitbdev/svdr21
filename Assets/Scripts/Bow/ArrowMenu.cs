@@ -5,6 +5,11 @@ using Shapes;
 using DG.Tweening;
 using UnityEngine.XR.Interaction.Toolkit;
 
+/// <summary>
+/// Shows menu next to the bow
+/// selection from input
+/// arrows are real and can be taken by player
+/// </summary>
 public class ArrowMenu : MonoBehaviour
 {
     public Vector3 sideOffset = Vector3.right * 0.2f;

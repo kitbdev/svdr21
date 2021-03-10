@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
+/// <summary>
+/// Player management code
+/// respawning
+/// </summary>
 public class Player : MonoBehaviour
 {
     // todo loading

@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// All interactables in the level should be this or inherit
+/// can be interacted with to do a generic action
+/// may be toggleable
+/// </summary>
 public class LevelInteractable : MonoBehaviour
 {
     public bool isToggle = false;

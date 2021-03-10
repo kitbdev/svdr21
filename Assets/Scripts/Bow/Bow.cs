@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
-/// handles two hand rotation stuff
+/// Bow xr interactable
+/// grabbed in either hand
+/// manages arrow menu, bow notch, bow string, and line all together
 /// </summary>
 [SelectionBase]
 public class Bow : XRGrabInteractable

@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// Manages a health system
+/// register all child hitboxes to receive their hit events
+/// regeneration, iframes, invincibility, death, and triggers useful events
+/// </summary>
 [SelectionBase]
 public class Health : MonoBehaviour
 {

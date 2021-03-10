@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Shapes;
 
+/// <summary>
+/// an optional component, part of a room
+/// may be a connector, door, between rooms
+/// used by level gen
+/// </summary>
 public class LevelComponent : MonoBehaviour
 {
     public bool isRoomConnector = false;

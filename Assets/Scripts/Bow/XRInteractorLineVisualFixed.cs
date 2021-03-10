@@ -9,6 +9,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
 /// Interactor helper object aligns a <see cref="LineRenderer"/> with the Interactor.
+/// Fix: array copy issue, but only sometimes
 /// </summary>
 [AddComponentMenu("XR/Helpers/XR Interactor Line Visual Fixed")]
 [DisallowMultipleComponent]

@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Settings LevelGen will use to generate a level
+/// allows for different types of levels to be generated
+/// </summary>
 [System.Serializable]
 public class LevelGenSettings
 {

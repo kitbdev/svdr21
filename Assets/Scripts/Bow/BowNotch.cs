@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
-/// Holds the arrow
+/// Holds the arrow 
+/// takes arrow automatically
+/// releases when told to
 /// </summary>
 public class BowNotch : XRSocketInteractor
 {

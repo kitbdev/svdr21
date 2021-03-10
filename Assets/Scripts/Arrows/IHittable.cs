@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Information about a IHittable Hit
+/// </summary>
 [System.Serializable]
 public class HitArgs : Object
 {
@@ -12,6 +15,9 @@ public class HitArgs : Object
     public Vector3 velocity;
     public GameObject hit;
 }
+/// <summary>
+/// Interface for game objects that can be hit
+/// </summary>
 public interface IHittable
 {
     void Hit(HitArgs args);

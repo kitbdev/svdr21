@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
+/// <summary>
+/// Teleport to hit target
+/// if valid position
+/// </summary>
 public class TeleArrow : BaseArrowLogic
 {
     [Space]

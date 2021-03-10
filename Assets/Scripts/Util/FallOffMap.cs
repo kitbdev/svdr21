@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// trigger event when ypos is below threshold
+/// </summary>
 public class FallOffMap : MonoBehaviour
 {
     public bool justDestroy = false;

@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// Visualize Health using GameObjects
+/// disables a gameobject from the list for every health lost
+/// </summary>
 public class HealthGoVis : MonoBehaviour
 {
     public List<GameObject> visGos = new List<GameObject>();

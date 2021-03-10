@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Generic trigger
+/// Generic trigger for many use cases
 /// </summary>
 public class Trigger : MonoBehaviour
 {

@@ -1,13 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+/// <summary>
+/// Room used by level gen
+/// </summary>
 // [SelectionBase]
 public class Room : MonoBehaviour
 {
     public int uniqueToLevel = -1;
     public bool isPathRoom = false;
-    // updated before level gen
+    // updated before level gen, in prefab
     [ReadOnly] public List<LevelComponent> allLevelComponents = new List<LevelComponent>();
     [ReadOnly] [SerializeField] List<LevelComponent> usedLevelComponents = new List<LevelComponent>();
     [ReadOnly] public List<LevelComponent> allConnectors = new List<LevelComponent>();
@@ -25,24 +29,12 @@ public class Room : MonoBehaviour
     });
     // todo special ones too
 
+    public UnityEvent roomStartEvent;
+
     /// <summary>
     /// bounds should cover the majority of the level
     /// only connectors and parts that can intersect with other roomsshould be outside
     /// </summary>
-    /// <value></value>
-    // public Bounds bounds
-    // {
-    //     get {
-    //         if (cacheCol == null)
-    //         {
-    //             // cacheCol = GetComponent<Collider>();
-    //             // if (cacheCol == null)
-    //             //     cacheCol = GetComponentInChildren<Collider>();
-    //         }
-    //         return cacheCol.bounds;
-    //     }
-    // }
-    BoxCollider cacheCol;
     public Bounds GetBounds()
     {
         CheckCol();
@@ -50,6 +42,7 @@ public class Room : MonoBehaviour
         // Debug.Log("col: " + cacheCol.center.ToString());
         return b;
     }
+    BoxCollider cacheCol;
     void CheckCol()
     {
         if (cacheCol == null)
@@ -60,7 +53,7 @@ public class Room : MonoBehaviour
         }
     }
 
-    private void Awake()
+    protected void Awake()
     {
         FindAllLevelComponents();
     }
@@ -69,6 +62,9 @@ public class Room : MonoBehaviour
     {
         allLevelComponents.Clear();
         allConnectors.Clear();
+        // connectedRooms.Clear();
+        // blockedConnectors.Clear();
+        // hasKey = false;
     }
     [ContextMenu("find components")]
     public void FindAllLevelComponents()
@@ -93,6 +89,7 @@ public class Room : MonoBehaviour
         // disable bounds collider
         CheckCol();
         cacheCol.enabled = false;
+        roomStartEvent.Invoke();
         foreach (var lc in allLevelComponents)
         {
             lc.SetUsing(usedLevelComponents.Contains(lc));

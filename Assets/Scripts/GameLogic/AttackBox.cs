@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 /// <summary>
 /// hurts IHittables in trigger
+/// see hitbox
 /// </summary>
 public class AttackBox : MonoBehaviour
 {

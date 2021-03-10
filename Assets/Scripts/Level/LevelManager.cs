@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// handles level switching, loading, and management
+/// notifies when level is ready
+/// </summary>
 public class LevelManager : Singleton<LevelManager>
 {
     public LevelGenSettings[] levels = new LevelGenSettings[0];

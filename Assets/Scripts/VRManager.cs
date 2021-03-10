@@ -5,6 +5,9 @@ using UnityEngine.Events;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 
+/// <summary>
+/// Manages VR state
+/// </summary>
 [DefaultExecutionOrder(-30)]
 public class VRManager : Singleton<VRManager>
 {
