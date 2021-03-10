@@ -457,6 +457,7 @@ public class EnemyAI : MonoBehaviour
             Destroy(deathGoDetach, deathGoDetachDestroyDelay);
             ActivateRbs(deathGoDetach.transform, true);
         }
+        // todo change eye color
         Destroy(gameObject);
     }
     void ActivateRbs(Transform baseT, bool activate)
