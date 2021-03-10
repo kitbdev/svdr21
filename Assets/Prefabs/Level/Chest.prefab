@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6458470106898259494}
   - component: {fileID: 249018127135422312}
+  - component: {fileID: 5868725188210138616}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Untagged
@@ -48,11 +49,32 @@ MonoBehaviour:
   isRequired: 0
   requireOneOf: []
   blocks: []
-  onlyIf: []
-  activeGO: {fileID: 0}
-  replacementGO: {fileID: 0}
+  forceUse: []
+  activeGOs: []
+  replacementGOs: []
   isInUse: 0
   myRoom: {fileID: 0}
+--- !u!114 &5868725188210138616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5096306557031619638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4863f8e26e979a04aa9b3cf3010c8705, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isToggle: 1
+  lockToOn: 1
+  isToggleOn: 0
+  isLocked: 0
+  interactClip: {fileID: 0}
+  interactEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  interactCooldown: 0.1
 --- !u!1 &5324426291135225190
 GameObject:
   m_ObjectHideFlags: 0
@@ -65,6 +87,7 @@ GameObject:
   - component: {fileID: 9175060560486104238}
   - component: {fileID: 509041295102596405}
   - component: {fileID: 4056615724134489169}
+  - component: {fileID: 3183974634621676172}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -148,3 +171,31 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3183974634621676172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5324426291135225190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89b37c6df5b176948b2797ba6812185a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitScale: 1
+  hitEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5868725188210138616}
+        m_TargetAssemblyTypeName: LevelInteractable, Assembly-CSharp
+        m_MethodName: Interact
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
