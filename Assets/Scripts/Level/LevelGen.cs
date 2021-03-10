@@ -19,6 +19,7 @@ public class LevelGen : Singleton<LevelGen>
     [Header("General gen settings")]
     public int maxTries = 10;
     public int maxRooms = 50;
+    public int overrideSeed = -1;
     // public int minSequentialRooms = 10;
     public LayerMask levelOnlyLayer;
     public bool tryToAlternatePaths = true;
@@ -36,6 +37,7 @@ public class LevelGen : Singleton<LevelGen>
     bool forceRetry = false;
 
     [Header("Dynamic")]
+    [ReadOnly] public int randomSeed = 0;
     [ReadOnly] public int numRooms = 0;
     [ReadOnly] public int numGates = 0;
     [ReadOnly] [SerializeField] List<Room> placedRooms = new List<Room>();
@@ -59,6 +61,7 @@ public class LevelGen : Singleton<LevelGen>
     {
         base.Awake();
         ValidatePrefabs();
+        SetSeed();
     }
     private void Start()
     {
@@ -66,6 +69,24 @@ public class LevelGen : Singleton<LevelGen>
         {
             ReGenerateLevel();
         }
+    }
+    void SetSeed()
+    {
+        if (overrideSeed > 0)
+        {
+            randomSeed = overrideSeed;
+        } else
+        {
+            RandomizeSeed();
+        }
+        // todo set on generate?
+        // maybe
+        // factor in level settings
+        Random.InitState(randomSeed);
+    }
+    void RandomizeSeed()
+    {
+        randomSeed = (int)(Random.value * 100000);
     }
     [ContextMenu("Clear Level")]
     public void ClearLevel()
@@ -239,6 +260,11 @@ public class LevelGen : Singleton<LevelGen>
                     LLog("SpawnRoomFor successful." + nextConMain.name + " endroom:" + useEndRoom);
                     // add to main path
                     mainPath.Add(placedRooms[placedRooms.Count - 1]);
+                    if (useEndRoom)
+                    {
+                        // end room door should not be available in frontier list
+                        frontierConnectors.RemoveAt(frontierConnectors.Count - 1);
+                    }
                     break;
                 } else
                 {
@@ -258,10 +284,12 @@ public class LevelGen : Singleton<LevelGen>
         LLog("Creating gates and branches");
         // choose room location
         // can make a room anywhere from last gate to the end
+        // reverse because we want a gate on the end room more
         int roomToMakeGateBefore = 0;
         int minGateRoom = 3;
         List<LevelComponent> possBranchConns = null;
-        for (int i = minGateRoom; i < mainPath.Count - 1; i++)
+        bool justMadeGate = false;
+        for (int i = mainPath.Count - 1; i >= minGateRoom; i--)
         {
             if (numGates >= curLevelSettings.maxGates)
             {
@@ -269,7 +297,11 @@ public class LevelGen : Singleton<LevelGen>
                 break;
             }
             bool shouldMakeGate = Random.value <= curLevelSettings.gateChance;
-            shouldMakeGate |= (numGates == 0 && i <= mainPath.Count - 1);
+            // dont make a gate just before another one, if it has no other connections 
+            shouldMakeGate &= !justMadeGate || mainPath[i].allConnectors.FindAll(c => c.isInUse).Count > 2;
+            // force gate on end room
+            shouldMakeGate |= (numGates == 0);// && i <= mainPath.Count - 1);
+            justMadeGate = false;
             if (shouldMakeGate)
             {
                 // make a gate on this room
@@ -279,8 +311,6 @@ public class LevelGen : Singleton<LevelGen>
                 LLog("trying to make gate at room " + roomToMakeGateBefore);
                 // start a branch somewhere before here
                 var postgateRoom = mainPath[roomToMakeGateBefore];
-                // todo no branches on end room exit door
-                // todo dont make a gate just before another one with no other connections 
                 possBranchConns = frontierConnectors.FindAll(con => !postgateRoom.allConnectors.Contains(con));
                 lastRoomUnusedCons = possBranchConns;
 
@@ -297,7 +327,7 @@ public class LevelGen : Singleton<LevelGen>
                     if (branchRoomsMade >= branchRoomsToTryToMake)
                     {
                         // success
-                        LLog("made all gates!");
+                        LLog("made all " + branchRoomsMade + "branches for gates " + numGates);
                         break;
                     }
                     // make room
@@ -322,6 +352,7 @@ public class LevelGen : Singleton<LevelGen>
                             // success, breakk to next room
                             LLog("b SpawnRoomFor successful." + nextCon.name);
                             branchRoomsMade++;
+                            if (advancedDebug) yield return null;
                             break;
                         } else
                         {
@@ -338,6 +369,7 @@ public class LevelGen : Singleton<LevelGen>
                 {
                     int newRoomI = numRooms - 1;
                     LLog("making gate and key at rooms " + roomToMakeGateBefore + ", " + newRoomI);
+                    justMadeGate = true;
                     if (advancedDebug) yield return null;
                     // ? is it the first connector
                     // mark gate
@@ -361,6 +393,9 @@ public class LevelGen : Singleton<LevelGen>
         if (numGates == 0 && curLevelSettings.maxGates > 0)
         {
             Debug.LogWarning("Failed to make any gates!");
+        } else
+        {
+            LLog("Made " + numGates + "/" + curLevelSettings.maxGates + " gates!");
         }
         // done with spawning rooms
     }

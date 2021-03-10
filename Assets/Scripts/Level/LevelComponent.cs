@@ -12,6 +12,7 @@ public class LevelComponent : MonoBehaviour
 {
     public bool isRoomConnector = false;
     public bool isRequired = false;
+    public bool onlyAsRequirement = false;
     public List<LevelComponent> requireOneOf = new List<LevelComponent>();
     public List<LevelComponent> blocks = new List<LevelComponent>();
     public List<LevelComponent> forceUse = new List<LevelComponent>();

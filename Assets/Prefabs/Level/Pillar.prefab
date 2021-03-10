@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 701121102837962387}
   - component: {fileID: 8651725426283887774}
   - component: {fileID: 7617440753751707370}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7392529851933817011}
   - component: {fileID: 3210341485509754859}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pillar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,3 +149,4 @@ MonoBehaviour:
   replacementGOs: []
   isInUse: 0
   myRoom: {fileID: 0}
+  connectedComponent: {fileID: 0}

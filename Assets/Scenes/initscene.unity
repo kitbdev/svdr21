@@ -8202,6 +8202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxTries: 10
   maxRooms: 100
+  overrideSeed: -1
   levelOnlyLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -8225,6 +8226,7 @@ MonoBehaviour:
   genOnStart: 0
   advancedDebug: 1
   debugBreak: 0
+  randomSeed: 0
   numRooms: 0
   numGates: 0
   placedRooms: []

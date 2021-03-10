@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 8345110417859926796}
   - component: {fileID: 7313939385826725048}
   - component: {fileID: 6160700482587836010}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1888,6 +1888,14 @@ PrefabInstance:
     - target: {fileID: 5096306557031619638, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
       propertyPath: m_Name
       value: Chest
+      objectReference: {fileID: 0}
+    - target: {fileID: 5096306557031619638, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5324426291135225190, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6458470106898259494, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
       propertyPath: m_RootOrder

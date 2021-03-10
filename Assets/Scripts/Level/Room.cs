@@ -26,7 +26,7 @@ public class Room : MonoBehaviour
     });
     // any non door, and non chest! 
     public List<LevelComponent> normalLevelComponents => allLevelComponents.FindAll(lc => {
-        return !lc.isRoomConnector && !lc.isInUse && !lc.isRequired && !blockedConnectors.Contains(lc);
+        return !lc.isRoomConnector && !lc.isInUse && !lc.isRequired && !lc.onlyAsRequirement && !blockedConnectors.Contains(lc);
     });
     public List<LevelComponent> allUsedLevelComponents => usedLevelComponents;
     // todo special ones too
