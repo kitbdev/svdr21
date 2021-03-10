@@ -43,8 +43,9 @@ public class LevelManager : Singleton<LevelManager>
     {
         if (loadOnStart)
         {
-            LoadMainRoom();
-            // LoadLevel();
+            // LoadMainRoom();
+            mainRoom.SetActive(false);
+            LoadLevel();
         }
     }
     private void OnEnable()

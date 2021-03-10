@@ -92,7 +92,10 @@ public class Room : MonoBehaviour
         roomStartEvent.Invoke();
         foreach (var lc in allLevelComponents)
         {
-            lc.SetUsing(usedLevelComponents.Contains(lc));
+            if (lc != null)
+            {
+                lc.SetUsing(usedLevelComponents.Contains(lc));
+            }
         }
         // todo?
     }
@@ -114,6 +117,11 @@ public class Room : MonoBehaviour
     }
     public void ForceUseLComponent(LevelComponent component)
     {
+        if (component == null)
+        {
+            Debug.Log("null component found " + name + "." + component.name+". ignoring");
+            return;
+        }
         if (component.isInUse)
         {
             return;
@@ -140,9 +148,10 @@ public class Room : MonoBehaviour
     }
     bool CanUseLComponentRec(LevelComponent component)
     {
-        if (checkedCs.Contains(component))
+        if (checkedCs.Contains(component) || component == null)
         {
             // we already checked or are checking this, so say this is valid
+            // null components are ignored
             return true;
         }
         checkedCs.Add(component);
@@ -156,7 +165,7 @@ public class Room : MonoBehaviour
         foreach (var blockC in component.blocks)
         {
             // cant block a component already in use
-            if (blockC.isInUse)
+            if (blockC && blockC.isInUse)
             {
                 return false;
             }
@@ -165,7 +174,7 @@ public class Room : MonoBehaviour
         bool anyAvailable = component.requireOneOf.Count > 0;
         foreach (var reqOne in component.requireOneOf)
         {
-            if (CanUseLComponentRec(reqOne))
+            if (reqOne && CanUseLComponentRec(reqOne))
             {
                 anyAvailable = true;
                 break;
