@@ -42,7 +42,7 @@ public class LevelInteractable : MonoBehaviour
 
     public virtual void Interact()
     {
-        if (Time.time < lastInteractTime + interactCooldown)
+        if (interactCooldown > 0 && Time.time < lastInteractTime + interactCooldown)
         {
             VRDebug.Log(name + " interact in cooldown", default, this);
             return;

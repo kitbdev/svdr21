@@ -4,6 +4,7 @@ using UnityEngine.Events;
 /// <summary>
 /// Generic trigger for many use cases
 /// </summary>
+[AddComponentMenu("_Util/Trigger")]
 public class Trigger : MonoBehaviour
 {
 

@@ -28,7 +28,6 @@ public class LevelGen : Singleton<LevelGen>
     public GameObject startRoomPrefab;
     public GameObject endRoomPrefab;
     public GameObject[] roomPrefabs = new GameObject[0];
-    public int pathPrefabsStartAt = -1;
 
     // debug stuff
     public bool genOnStart = false;
@@ -281,6 +280,7 @@ public class LevelGen : Singleton<LevelGen>
                 // start a branch somewhere before here
                 var postgateRoom = mainPath[roomToMakeGateBefore];
                 // todo no branches on end room exit door
+                // todo dont make a gate just before another one with no other connections 
                 possBranchConns = frontierConnectors.FindAll(con => !postgateRoom.allConnectors.Contains(con));
                 lastRoomUnusedCons = possBranchConns;
 
@@ -343,7 +343,7 @@ public class LevelGen : Singleton<LevelGen>
                     // mark gate
                     // get first door 
                     LevelComponent connectorWithGateEnd = postgateRoom.allUsedLevelComponents[0];
-                    LevelComponent connectorWithGate2 = connectorWithGateEnd.connectedComponent; 
+                    LevelComponent connectorWithGate2 = connectorWithGateEnd.connectedComponent;
                     Door door = connectorWithGate2.GetComponent<Door>();
                     door.MakeIntoGate();
                     // todo somedoors close without needing a key (open when near)
@@ -521,9 +521,14 @@ public class LevelGen : Singleton<LevelGen>
                 }
                 // check room collision
                 // todo check with non standard connectors
-                // rotation connector local rotation, flipped
-                Quaternion roomRot = connector.transform.rotation * Quaternion.Inverse(nCon.transform.rotation);
-                roomRot *= Quaternion.Euler(0, 180, 0);
+                // rotation connector rotation, flipped
+                // connector is start T
+                // nCon is the target T
+                // their positions are the same
+                // need to find the room T - room offset and room rot
+                Quaternion roomRot = connector.transform.rotation *
+                    Quaternion.Inverse(nCon.transform.rotation * Quaternion.Euler(0, 180, 0));
+                // roomRot *= Quaternion.Euler(0, 180, 0);
                 // wanted room postion 
                 Vector3 roomOffset = connector.transform.position - roomRot * nCon.transform.position;
                 if (IsValidRoomCol(prefabRoom.GetBounds(), roomOffset, roomRot))
@@ -572,25 +577,27 @@ public class LevelGen : Singleton<LevelGen>
         // Debug.LogError("SpawnRoomFor failed " + tries + " times!");
     }
 
-    bool IsValidRoomCol(Bounds bounds, Vector3 roomOffset = default, Quaternion roomOrientation = default, List<Collider> ignoreCols = default)
+    bool IsValidRoomCol(Bounds bounds, Vector3 roomOffset, Quaternion roomOrientation, List<Collider> ignoreCols = default)
     {
         // overlap box
         // note: extents is actually half extents
-        // todo y offset problem
-        Vector3 rCenter = bounds.center + roomOffset;
+        // todo y offset problem?
+        // bounds.extents *= 2;
+        Vector3 rCenter = roomOffset + bounds.center;
         var cols = Physics.OverlapBox(rCenter, bounds.extents, roomOrientation, levelOnlyLayer, QueryTriggerInteraction.Ignore);
         if (advancedDebug)
         {
+            Color validColor = cols.Length == 0 ? Color.green : Color.red;
             // Draw.Cuboid(rCenter, roomOrientation, bounds.extents, Color.red);
             Debug.Log(rCenter + " " + bounds.ToString());
-            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.min), Color.red, 30);
-            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.max), Color.red, 30);
+            // Debug.DrawLine(rCenter, rCenter + roomOrientation * (bounds.min), validColor, 30, false);
+            // Debug.DrawLine(rCenter, rCenter + roomOrientation * (bounds.max), validColor, 30, false);
             Vector3 axi = bounds.extents.x * Vector3.right;
-            Debug.DrawLine(roomOrientation * (rCenter - axi), roomOrientation * (rCenter + axi), Color.red, 30);
+            Debug.DrawLine(rCenter + roomOrientation * (-axi), rCenter + roomOrientation * (axi), validColor, 30, false);
             axi = bounds.extents.z * Vector3.forward;
-            Debug.DrawLine(roomOrientation * (rCenter - axi), roomOrientation * (rCenter + axi), Color.red, 30);
+            Debug.DrawLine(rCenter + roomOrientation * (-axi), rCenter + roomOrientation * (axi), validColor, 30, false);
             axi = bounds.extents.y * Vector3.up;
-            Debug.DrawLine(roomOrientation * (rCenter - axi), roomOrientation * (rCenter + axi), Color.red, 30);
+            Debug.DrawLine((rCenter - axi), (rCenter + axi), validColor, 30, false);
 
         }
         // make sure room we are checking can be ignored
@@ -615,21 +622,6 @@ public class LevelGen : Singleton<LevelGen>
         } else
         {
             return true;
-        }
-    }
-    void GetRoomType(bool isPath, out int minI, out int maxI)
-    {
-        minI = 0;
-        maxI = roomPrefabs.Length;
-        if (pathPrefabsStartAt > 0)
-        {
-            if (isPath)
-            {
-                maxI = pathPrefabsStartAt;
-            } else
-            {
-                minI = pathPrefabsStartAt;
-            }
         }
     }
     Room SpawnAndAddRoom(GameObject roomPrefab, Vector3 position, Quaternion rotation)

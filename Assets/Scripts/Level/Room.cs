@@ -16,8 +16,9 @@ public class Room : MonoBehaviour
     [ReadOnly] [SerializeField] List<LevelComponent> usedLevelComponents = new List<LevelComponent>();
     [ReadOnly] public List<LevelComponent> allConnectors = new List<LevelComponent>();
     // updated during level gen
-    [ReadOnly] public List<Room> connectedRooms = new List<Room>();
-    [ReadOnly] public List<LevelComponent> blockedConnectors = new List<LevelComponent>();
+
+    [ReadOnly] [NonReorderable] public List<Room> connectedRooms = new List<Room>();
+    [ReadOnly] [NonReorderable] public List<LevelComponent> blockedConnectors = new List<LevelComponent>();
     [ReadOnly] public bool hasKey = false;
     // dynamic
     public List<LevelComponent> reqLevelComponents => allLevelComponents.FindAll(lc => {
@@ -40,6 +41,11 @@ public class Room : MonoBehaviour
     {
         CheckCol();
         var b = new Bounds(cacheCol.center, cacheCol.size);
+        if (cacheCol.transform != transform)
+        {
+            b.center += cacheCol.transform.localPosition;
+            // note and it better not be scaled
+        }
         // Debug.Log("col: " + cacheCol.center.ToString());
         return b;
     }
@@ -120,7 +126,7 @@ public class Room : MonoBehaviour
     {
         if (component == null)
         {
-            Debug.Log("null component found " + name + "." + component.name+". ignoring");
+            Debug.Log("null component found " + name + "." + component.name + ". ignoring");
             return;
         }
         if (component.isInUse)

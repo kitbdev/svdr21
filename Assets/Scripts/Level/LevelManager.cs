@@ -60,11 +60,16 @@ public class LevelManager : Singleton<LevelManager>
     {
         LevelGen.Instance?.GenCompleteEvent.RemoveListener(OnLevelLoaded);
     }
+    [ContextMenu("Level complete")]
     public void LevelComplete()
     {
         // aka EnteredStairsRoom
         // start loading next level
         LoadNextLevel();
+        // move to 0,0,0 - otherwise can go off to inf and crash
+        // move stairs and move player relatively
+        // todo 
+        // ? make sure player is in a valid area?
     }
     // called by player on death to trigger a respawn
     public void LevelFail()
