@@ -1680,6 +1680,9 @@ MonoBehaviour:
     preferredRooms: 10
     minTotalRooms: 3
     minSequentialRooms: 3
+    maxGates: 3
+    gateChance: 30
+  loadOnStart: 0
   m_curLevel: 0
   levelReadyEvent:
     m_PersistentCalls:
@@ -5236,6 +5239,8 @@ MonoBehaviour:
     preferredRooms: 10
     minTotalRooms: 3
     minSequentialRooms: 3
+    maxGates: 3
+    gateChance: 30
   startRoomPrefab: {fileID: 2619078692840791446, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
   endRoomPrefab: {fileID: 2619078692840791446, guid: 94853b11d35760245ae382de27fd18aa, type: 3}
   roomPrefabs:
@@ -5248,6 +5253,7 @@ MonoBehaviour:
   advancedDebug: 1
   debugBreak: 0
   numRooms: 0
+  numGates: 0
   placedRooms: []
   mainPath: []
   frontierConnectors: []
@@ -5257,6 +5263,8 @@ MonoBehaviour:
     preferredRooms: 10
     minTotalRooms: 3
     minSequentialRooms: 3
+    maxGates: 3
+    gateChance: 30
   GenCompleteEvent:
     m_PersistentCalls:
       m_Calls: []

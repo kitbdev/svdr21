@@ -104,6 +104,7 @@ public class EnemyAI : MonoBehaviour
     protected Transform playerT;
     protected Rigidbody rb;
     protected Animator anim;
+    protected AttackAnimWatcher animWatcher;
 
 
     void Awake()
@@ -123,6 +124,12 @@ public class EnemyAI : MonoBehaviour
 
         // setup attack stuff
         attackIndivCooldowns = new float[allAttacks.Length];
+        if (!attackSpawnPoint)
+        {
+            attackSpawnPoint = transform;
+        }
+        animWatcher = GetComponentInChildren<AttackAnimWatcher>();
+        attackTarget = playerT;
 
         if (deathGoDetach) ActivateRbs(deathGoDetach.transform, false);
     }
@@ -150,6 +157,27 @@ public class EnemyAI : MonoBehaviour
         {
             moveTarget = createdMoveTarget;
         }
+        UpdateLookAt();
+
+        if (moveMode == MoveMode.GROUND)
+        {
+            CheckGrounded();
+        }
+
+        // set movestate based on player
+        if (playerDetected)
+        {
+            moveState = playerDetectedMoveState;
+        } else
+        {
+            moveState = IdleMoveState;
+        }
+        Move();
+        attackCooldown -= Time.deltaTime;
+        TryDoAttack();
+    }
+    void UpdateLookAt()
+    {
         // update looktarget
         Vector3 targLookPos = lookTarget.position;
         if (alwaysLookAtPlayer)
@@ -181,21 +209,6 @@ public class EnemyAI : MonoBehaviour
             lookDir.y = 0;
             lookTarget.position += -lookDir.normalized * 0.5f;
         }
-        if (moveMode == MoveMode.GROUND)
-        {
-            CheckGrounded();
-        }
-
-        // set movestate based on player
-        if (playerDetected)
-        {
-            moveState = playerDetectedMoveState;
-        } else
-        {
-            moveState = IdleMoveState;
-        }
-        Move();
-        TryDoAttack();
     }
     void Move()
     {
@@ -492,7 +505,7 @@ public class EnemyAI : MonoBehaviour
 
     protected void PerformAttack(AttackSO attack, int index)
     {
-        VRDebug.Log("Enemy " + name + " attack w/" + attack.name);
+        VRDebug.Log(name + "is attacking w/" + attack.name);
         // currentActiveAttacks.Add(attack);
         lastAttackTime = Time.time;
         if (attack.moveBlockDur > 0)
@@ -523,6 +536,10 @@ public class EnemyAI : MonoBehaviour
         if (attack.individualCoolDown >= 0)
         {
             attackIndivCooldowns[index] = attack.individualCoolDown;
+        }
+        if (attack.animName.Length > 0)
+        {
+            anim.SetTrigger(attack.animName);
         }
     }
 

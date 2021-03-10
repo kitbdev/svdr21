@@ -12,4 +12,5 @@ public class AttackSO : ScriptableObject
     public float individualCoolDown = 0;
     public float moveBlockDur = 0;
     public bool keepAttached = false;
+    public string animName = "";
 }

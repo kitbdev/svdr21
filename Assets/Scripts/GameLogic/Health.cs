@@ -111,7 +111,7 @@ public class Health : MonoBehaviour
             return;
         } else if (isInvincible)
         {
-            VRDebug.Log(name + " is invincible", debugContext: this);
+            // VRDebug.Log(name + " is invincible", debugContext: this);
             return;
         }
         lastHitArgs = args;

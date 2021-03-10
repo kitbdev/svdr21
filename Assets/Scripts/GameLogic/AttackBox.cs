@@ -8,7 +8,7 @@ using UnityEngine.Events;
 /// </summary>
 public class AttackBox : MonoBehaviour
 {
-    public string owner = "Unknown";
+    public GameObject owner;
     public string checkTag = GameManager.PlayerTag;
     public bool isOn = true;
     // public Vector3 point;
@@ -16,6 +16,7 @@ public class AttackBox : MonoBehaviour
     public float hitDamage = 1;
     public float hitRepeatDelay = 1;
     float lastHitTime = 0;
+    // public string ignoreTag = "";
 
     [ReadOnly] public HitArgs lastHitArgs;
     public UnityEvent hitEvent;
@@ -38,6 +39,10 @@ public class AttackBox : MonoBehaviour
         {
             return;
         }
+        // if (ignoreTag.Length>0) {
+        //     // if (other.tag)
+        // }
+        // todo way to hit other grunts, but not self
         if (checkTag.Length == 0 || other.CompareTag(checkTag))
         {
             if (other.gameObject.TryGetComponent<IHittable>(out var hittable))
@@ -45,7 +50,7 @@ public class AttackBox : MonoBehaviour
                 HitArgs args = new HitArgs();
                 args.isDirect = true;
                 args.damage = hitDamage;
-                args.attacker = owner;
+                args.attacker = owner ? owner.name : name;
                 args.point = transform.position;
                 args.velocity = vel;
                 hittable.Hit(args);

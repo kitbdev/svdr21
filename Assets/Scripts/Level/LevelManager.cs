@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class LevelManager : Singleton<LevelManager>
 {
     public LevelGenSettings[] levels = new LevelGenSettings[0];
+    public bool loadOnStart = true;
     [SerializeField]
     private int m_curLevel = 0;
     public UnityEvent levelReadyEvent;
@@ -31,11 +32,14 @@ public class LevelManager : Singleton<LevelManager>
     protected override void Awake()
     {
         base.Awake();
+        curLevel = 0;
     }
     private void Start()
     {
-        curLevel = 0;
-        LoadLevel();
+        if (loadOnStart)
+        {
+            LoadLevel();
+        }
     }
     private void OnEnable()
     {
