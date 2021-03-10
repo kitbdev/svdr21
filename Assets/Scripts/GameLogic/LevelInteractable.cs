@@ -29,6 +29,17 @@ public class LevelInteractable : MonoBehaviour
         isToggleOn = false;
         lastInteractTime = 0;
     }
+    [ContextMenu("Interact")]
+    void EInteract()
+    {
+        Interact();
+    }
+    [ContextMenu("End Interact")]
+    void EEndInteract()
+    {
+        EndInteract();
+    }
+
     public virtual void Interact()
     {
         if (Time.time < lastInteractTime + interactCooldown)

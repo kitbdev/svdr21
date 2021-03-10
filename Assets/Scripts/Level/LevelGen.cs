@@ -23,8 +23,6 @@ public class LevelGen : Singleton<LevelGen>
     public LayerMask levelOnlyLayer;
     public bool tryToAlternatePaths = true;
     public LevelGenSettings defLevelSettings = new LevelGenSettings();
-    public LevelComponent startDoor;
-    [ReadOnly] public LevelComponent nextLevelDoor;
 
     [Header("Prefabs")]
     public GameObject startRoomPrefab;
@@ -48,12 +46,21 @@ public class LevelGen : Singleton<LevelGen>
     /// <summary>connectors that havent been used</summary>
     [ReadOnly] [SerializeField] List<LevelComponent> frontierConnectors = new List<LevelComponent>();
     [ReadOnly] [SerializeField] List<LevelComponent> lastRoomUnusedCons = new List<LevelComponent>();
-    [ReadOnly] [SerializeField] List<LevelComponent[]> connectorConnections = new List<LevelComponent[]>();
+    // [ReadOnly] [SerializeField] List<LevelComponent[]> connectorConnections = new List<LevelComponent[]>();
+
+    [ReadOnly] public LevelComponent startDoor;
+    [ReadOnly] public LevelComponent nextLevelDoor;
+    [ReadOnly] public Room stairsRoom; // do not clear
     [SerializeField] LevelGenSettings curLevelSettings;
 
     [Header("Events")]
     public UnityEvent GenCompleteEvent;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        ValidatePrefabs();
+    }
     private void Start()
     {
         if (genOnStart)
@@ -64,8 +71,8 @@ public class LevelGen : Singleton<LevelGen>
     [ContextMenu("Clear Level")]
     public void ClearLevel()
     {
-        Debug.ClearDeveloperConsole();
-        Debug.Log("clearing level");
+        if (advancedDebug) Debug.ClearDeveloperConsole();
+        Debug.Log("Clearing level");
         numRooms = 0;
         numGates = 0;
         foreach (var room in placedRooms)
@@ -76,7 +83,7 @@ public class LevelGen : Singleton<LevelGen>
         mainPath.Clear();
         frontierConnectors.Clear();
         lastRoomUnusedCons.Clear();
-        connectorConnections.Clear();
+        // connectorConnections.Clear();
         // remove all children?
         // int numChildren = transform.childCount;
         // for (int i = numChildren - 1; i >= 0; i--)
@@ -102,6 +109,14 @@ public class LevelGen : Singleton<LevelGen>
     {
         startDoor = startingDoor;
         curLevelSettings = settings;
+        if (placedRooms.Contains(startDoor.myRoom))
+        {
+            // remove it so it doesnt get destroyed
+            placedRooms.Remove(startDoor.myRoom);
+            stairsRoom = startDoor.myRoom;
+            // add to placed rooms?
+            // it needs to get cleared next time
+        }
         ReGenerateLevel();
     }
     public void ReGenerateLevel()
@@ -117,10 +132,14 @@ public class LevelGen : Singleton<LevelGen>
     {
         // clear
         ClearLevel();
-        ValidatePrefabs();
         yield return null;
         // start
         Debug.Log("Level Gen start");
+        if (stairsRoom != null)
+        {
+            placedRooms.Add(stairsRoom);
+            stairsRoom = null;
+        }
         // spawn rooms
         yield return StartCoroutine(SpawnAllRooms());
         if (forceRetry)
@@ -129,6 +148,8 @@ public class LevelGen : Singleton<LevelGen>
             yield break;
         }
         nextLevelDoor = mainPath[mainPath.Count - 1].allConnectors[1];
+        // detach stairs room so it doesn't get unloaded here
+        // stairsRoom.transform
         yield return null;
         // randomize individual rooms
         yield return StartCoroutine(RandomizeRooms());
@@ -320,11 +341,12 @@ public class LevelGen : Singleton<LevelGen>
                     if (advancedDebug) yield return null;
                     // ? is it the first connector
                     // mark gate
-                    LevelComponent connectorWithGateEnd = postgateRoom.allConnectors[0];
-                    LevelComponent connectorWithGate2 = connectorConnections.Find(lcs => lcs[0] = connectorWithGateEnd)[1];
+                    // get first door 
+                    LevelComponent connectorWithGateEnd = postgateRoom.allUsedLevelComponents[0];
+                    LevelComponent connectorWithGate2 = connectorWithGateEnd.connectedComponent; 
                     Door door = connectorWithGate2.GetComponent<Door>();
                     door.MakeIntoGate();
-                    // todo somedoors close without needing a key (open when close)
+                    // todo somedoors close without needing a key (open when near)
                     // make key at new room
                     Room newRoom = placedRooms[newRoomI];
                     newRoom.hasKey = true;// todo more on this
@@ -517,8 +539,9 @@ public class LevelGen : Singleton<LevelGen>
                     nroom.connectedRooms.Add(connector.myRoom);
                     nroom.ForceUseLComponent(nroom.allConnectors[selConInd]);
                     connector.myRoom.ForceUseLComponent(connector);
-                    // note: only adding on one direction - reverse
-                    connectorConnections.Add(new LevelComponent[2] { nroom.allConnectors[selConInd], connector });
+                    // mark connection on both
+                    connector.connectedComponent = nroom.allConnectors[selConInd];
+                    nroom.allConnectors[selConInd].connectedComponent = connector;
 
                     // remove the used connector from frontier
                     frontierConnectors.Remove(connector);
@@ -626,6 +649,7 @@ public class LevelGen : Singleton<LevelGen>
     }
     void ValidatePrefabs()
     {
+        LLog("Validating level prefabs");
         // ! be careful, this is editing the actual prefab
         Room startprefabRoom = startRoomPrefab.GetComponent<Room>();
         startprefabRoom.FindAllLevelComponents();

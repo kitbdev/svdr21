@@ -27,6 +27,7 @@ public class Room : MonoBehaviour
     public List<LevelComponent> normalLevelComponents => allLevelComponents.FindAll(lc => {
         return !lc.isRoomConnector && !lc.isInUse && !lc.isRequired && !blockedConnectors.Contains(lc);
     });
+    public List<LevelComponent> allUsedLevelComponents => usedLevelComponents;
     // todo special ones too
 
     public UnityEvent roomStartEvent;

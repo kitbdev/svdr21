@@ -5429,6 +5429,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7197140259603934674, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
+      propertyPath: startsClosed
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7270836316808575712, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_Mesh
       value: 

@@ -19,6 +19,7 @@ public class LevelComponent : MonoBehaviour
     public GameObject[] replacementGOs;
     [ReadOnly] public bool isInUse = false;
     [ReadOnly] public Room myRoom;
+    [ReadOnly] public LevelComponent connectedComponent;
 
     public void SetUsing(bool isUsing)
     {

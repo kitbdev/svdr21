@@ -11136,10 +11136,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6914652625166438190}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e5dcfe329abc284490e3f452cd100c3, type: 3}
+  m_Script: {fileID: 11500000, guid: 18aea0aeca678a541bc52182638537c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  warmUpDur: 0
 --- !u!65 &1984279075012738390
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11172,7 +11171,19 @@ MonoBehaviour:
   latestEnterGO: {fileID: 0}
   triggerEnteredEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6821061133005717041}
+        m_TargetAssemblyTypeName: LevelTrigger, Assembly-CSharp
+        m_MethodName: EnterEndRoom
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   triggerStayEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -11355,6 +11366,10 @@ PrefabInstance:
     - target: {fileID: 6837983733425362433, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7197140259603934674, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
+      propertyPath: startsClosed
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7270836316808575712, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_Mesh

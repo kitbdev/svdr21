@@ -15,8 +15,9 @@ public class LevelManager : Singleton<LevelManager>
     private int m_curLevel = 0;
     public GameObject mainRoom;
     public UnityEvent mainRoomReadyEvent;
-    LevelComponent startDoor;
-    LevelComponent lastEndDoor;
+    [ReadOnly] [SerializeField] LevelComponent startDoor;
+    [ReadOnly] [SerializeField] LevelComponent lastEndDoor;
+    [ReadOnly] [SerializeField] GameObject curStairsRoom;
 
     public int curLevel
     {
@@ -61,7 +62,8 @@ public class LevelManager : Singleton<LevelManager>
     }
     public void LevelComplete()
     {
-        // start loadin next level
+        // aka EnteredStairsRoom
+        // start loading next level
         LoadNextLevel();
     }
     // called by player on death to trigger a respawn
@@ -73,6 +75,18 @@ public class LevelManager : Singleton<LevelManager>
         UnloadLevel();
         // todo intersecting?
         // make sure this will be fine for main room
+    }
+    public void LeftMainRoom()
+    {
+        // close door
+        startDoor.connectedComponent?.GetComponent<Door>()?.EndInteract();
+        UnloadMainRoom();
+    }
+    public void LeftStairsRoom()
+    {
+        // close door
+        lastEndDoor.connectedComponent?.GetComponent<Door>()?.EndInteract();
+        // the stairs room will get unloaded with the next level
     }
     void LoadMainRoom()
     {
@@ -95,6 +109,7 @@ public class LevelManager : Singleton<LevelManager>
             curLevel = levels.Length - 1;
             // todo infinite levels?
         }
+        // todo unload current level except for endroom
         LoadLevel();
     }
     void LoadLevel()

@@ -2186,6 +2186,9 @@ MonoBehaviour:
   mainRoomReadyEvent:
     m_PersistentCalls:
       m_Calls: []
+  startDoor: {fileID: 0}
+  lastEndDoor: {fileID: 0}
+  curStairsRoom: {fileID: 0}
   levelLoading: 0
 --- !u!1 &627099327
 GameObject:
@@ -6770,8 +6773,6 @@ MonoBehaviour:
     numMainRooms: 3
     maxGates: 3
     gateChance: 30
-  startDoor: {fileID: 0}
-  nextLevelDoor: {fileID: 0}
   startRoomPrefab: {fileID: 2619078692840791446, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
   endRoomPrefab: {fileID: 2619078692840791446, guid: 94853b11d35760245ae382de27fd18aa, type: 3}
   roomPrefabs:
@@ -6790,6 +6791,9 @@ MonoBehaviour:
   mainPath: []
   frontierConnectors: []
   lastRoomUnusedCons: []
+  startDoor: {fileID: 0}
+  nextLevelDoor: {fileID: 0}
+  stairsRoom: {fileID: 0}
   curLevelSettings:
     difficulty: 1
     preferredRooms: 10
