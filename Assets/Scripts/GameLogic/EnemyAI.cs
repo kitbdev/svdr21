@@ -99,11 +99,12 @@ public class EnemyAI : MonoBehaviour
     public float loosePartReconnectDelay = 3;
 
     [Space]
+    [ReadOnly] [SerializeField] bool playerDefeated = false;
     [ReadOnly] [SerializeField] bool isBeingKnockedBacked = false;
 
     [ReadOnly] public Transform moveTarget;
-    protected Transform createdMoveTarget;
     [ReadOnly] public Transform attackTarget;
+    protected Transform createdMoveTarget;
     [HideInInspector] public Health health;
     protected Transform playerT;
     protected Rigidbody rb;
@@ -170,6 +171,11 @@ public class EnemyAI : MonoBehaviour
             moveTarget = createdMoveTarget;
         }
         UpdateLookAt();
+        if (playerDefeated)
+        {
+            // no need to move or attack anymore
+            return;
+        }
 
         if (moveMode == MoveMode.GROUND)
         {
@@ -227,6 +233,11 @@ public class EnemyAI : MonoBehaviour
             lookDir.y = 0;
             lookTarget.position += -lookDir.normalized * 0.5f;
         }
+    }
+    public void PlayerDefeated()
+    {
+        playerDefeated = true;
+        anim.SetBool("Laughing", true);
     }
     void Move()
     {
@@ -447,6 +458,7 @@ public class EnemyAI : MonoBehaviour
     protected void Die()
     {
         VRDebug.Log("Enemy " + name + " died");
+        EnemyManager.Instance.EnemyDied(this);
         // anim
         if (deathGoDetach)
         {

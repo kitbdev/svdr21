@@ -10,8 +10,10 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class Player : MonoBehaviour
 {
     // todo loading
-
+    public float deathWaitMinDur = 5;
+    float lastDeathTime = 0;
     Transform spawnPoint;
+    public Bow bow;
     XRRig rig;
     Health health;
 
@@ -42,6 +44,8 @@ public class Player : MonoBehaviour
     public void Respawn()
     {
         VRDebug.Log("Player respawning");
+        bow.canUse = true;
+        health.RestoreHealth();
         if (!spawnPoint)
         {
             FindSpawnPoint();
@@ -64,6 +68,16 @@ public class Player : MonoBehaviour
     void Die()
     {
         VRDebug.Log("Player died");
-
+        lastDeathTime = Time.time;
+        Invoke("StartReloading", deathWaitMinDur);
+        bow.canUse = false;
+        EnemyManager.Instance.PlayerDefeated();
+        // todo death state
+        // cannot fire arrows, time frozen? enemies frozen or something
+    }
+    void StartReloading()
+    {
+        LevelManager.Instance.LoadMainRoom();
+        // respawn will be triggered
     }
 }

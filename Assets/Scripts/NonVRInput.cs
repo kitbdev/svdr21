@@ -10,6 +10,7 @@ public class NonVRInput : MonoBehaviour
     public Bow bow;
     public float camSmoothX = 20;
     public float camSmoothY = 20;
+    public float viewMax = 80;
     public float moveSpeed = 5;
 
     public int curArrowSelection = 0;
@@ -40,6 +41,7 @@ public class NonVRInput : MonoBehaviour
             inputSelect += Mathf.Sign(c.ReadValue<float>());
             inputSelect = Mathf.Clamp(inputSelect, 0, 20);
             curArrowSelection = Mathf.RoundToInt(inputSelect);
+            // bow.arrowMenu.
         };
 
     }
@@ -52,9 +54,19 @@ public class NonVRInput : MonoBehaviour
         Vector3 movement = new Vector3(inputMove.x, 0, inputMove.y);
         transform.Translate(movement * moveSpeed * Time.deltaTime);
         float camYaw = inputCam.x * camSmoothX * Time.deltaTime;
-        float camPitch = inputCam.y * camSmoothY * Time.deltaTime;
+        float camPitch = -inputCam.y * camSmoothY * Time.deltaTime;
         transform.Rotate(0, camYaw, 0);
         cameraT.Rotate(camPitch, 0, 0);
+        // clamp cam rot
+        var sAng = cameraT.localEulerAngles.x;
+        if (sAng > viewMax && sAng < 180)
+        {
+            cameraT.localEulerAngles = new Vector3(viewMax, 0, 0);
+        } else
+        if (sAng < 360 - viewMax && sAng > 180)
+        {
+            cameraT.localEulerAngles = new Vector3(360 - viewMax, 0, 0);
+        }
     }
     void NotchArrow()
     {

@@ -31,6 +31,7 @@ public class ArrowMenu : MonoBehaviour
     [ReadOnly] [SerializeField] protected List<GameObject> menuItems = new List<GameObject>();
     [ReadOnly] [SerializeField] protected List<ArrowInteractable> arrowsSpawned = new List<ArrowInteractable>();
     [ReadOnly] [SerializeField] protected bool arrowsShown = false;
+    [ReadOnly] [SerializeField] protected int curSel = 0;
     public bool isOnRightSide = true;
     [Header("Anim")]
     public float scaleDur = 0.2f;
@@ -54,6 +55,7 @@ public class ArrowMenu : MonoBehaviour
         // todo left/right primary issues
         xrControls.PrimaryHand.SelectMove.performed += c => { inputSelect = c.ReadValue<Vector2>(); UpdateSel(); };
         xrControls.PrimaryHand.SelectMove.canceled += c => { inputSelect = Vector2.zero; UpdateSel(); };
+        curSel = 0;
     }
     public void SetSide(bool right)
     {
@@ -67,7 +69,7 @@ public class ArrowMenu : MonoBehaviour
         if (bow.debugLog) VRDebug.Log("Spawning all arrows");
         for (int i = 0; i < arrowPrefabs.Length; i++)
         {
-            SpawnArrowAt(i);
+            CreateMenuItem(i);
         }
     }
     public void DeSpawnAllArrows()
@@ -92,10 +94,13 @@ public class ArrowMenu : MonoBehaviour
         }
         // ? also scale?
     }
+    // todo set color to disabled when bow canuse is false
     void UpdateSel()
     {
         // GetSelectedArrow();
         int selArrow = selectDirToInt();
+
+        // update scale
         for (int i = 0; i < menuItems.Count; i++)
         {
             GameObject menuitem = menuItems[i];
@@ -107,6 +112,7 @@ public class ArrowMenu : MonoBehaviour
             // menuitem.transform.localScale = scale * Vector3.one;
             menuitem.transform.DOScale(scale, scaleDur);
         }
+        curSel = selArrow;
     }
 
     int selectDirToInt()
@@ -141,14 +147,12 @@ public class ArrowMenu : MonoBehaviour
     }
     public ArrowInteractable GetSelectedArrow()
     {
-        return arrowsSpawned[selectDirToInt()];
+        return arrowsSpawned[curSel];
     }
-    protected void SpawnArrowAt(int i)
+    protected void CreateMenuItem(int i)
     {
         // menu
         var menuItemgo = Instantiate(menuItemPrefab, transform);
-        // menuItemgo.transform.localPosition = DisplayModelPosFor(i);
-        // menuItemgo.transform.localScale = displayModelScale * Vector3.one;
         menuItems.Insert(i, menuItemgo);
         // arrow
         ArrowInteractable arrowPrefab = (ArrowInteractable)arrowPrefabs[i];
@@ -175,7 +179,7 @@ public class ArrowMenu : MonoBehaviour
         Vector3 pos = sideOffset + dir * displaySpacer;
         return pos;
     }
-    public void ShowArrows()
+    public void ShowMenu()
     {
         if (menuItems.Count == 0)
         {
@@ -193,10 +197,10 @@ public class ArrowMenu : MonoBehaviour
     }
     public void HoverArrow(int index)
     {
-        // increase scale of that one
+        // ?increase scale of that one
         // todo use dotween 
     }
-    public void HideArrows()
+    public void HideMenuItems()
     {
         if (bow.debugLog) VRDebug.Log("Hiding Arrows");
         for (int i = 0; i < menuItems.Count; i++)
@@ -219,11 +223,14 @@ public class ArrowMenu : MonoBehaviour
             VRDebug.Log("Arrow taken not unparented!");
             arrowsSpawned[index].transform.SetParent(null);
         }
+        // remove the menu item
         Destroy(menuItems[index]);
         menuItems.RemoveAt(index);
         arrowsSpawned.RemoveAt(index);
-        SpawnArrowAt(index);
-        HideArrows();
+        // recreate it, with a new arrow
+        CreateMenuItem(index);
+        // disable menu for now
+        HideMenuItems();
     }
     private void OnDrawGizmosSelected()
     {

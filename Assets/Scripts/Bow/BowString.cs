@@ -20,6 +20,7 @@ public class BowString : XRBaseInteractable
     public float PullAmount => pullAmount;
 
     public BowNotch bowNotch;
+    public Bow bow;
     XRBaseInteractor pullingInteractor;
 
     // private void LateUpdate()
@@ -32,6 +33,7 @@ public class BowString : XRBaseInteractable
     protected override void Awake()
     {
         if (!bowNotch) bowNotch = GetComponent<BowNotch>();
+        bow = bowNotch.bow;
     }
     void Start()
     {
@@ -46,7 +48,7 @@ public class BowString : XRBaseInteractable
 
     protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
-        if (bowNotch.bow.debugLog) VRDebug.Log("String Grabbed");
+        if (bow.debugLog) VRDebug.Log("String Grabbed");
         // bowstring grabbed by player
         base.OnSelectEntered(args);
         pullingInteractor = args.interactor;
@@ -55,7 +57,7 @@ public class BowString : XRBaseInteractable
     }
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
-        if (bowNotch.bow.debugLog) VRDebug.Log("String released");
+        if (bow.debugLog) VRDebug.Log("String released");
         // bowstring released by player
         base.OnSelectExited(args);
         bowNotch.ReleaseArrow();
@@ -101,7 +103,7 @@ public class BowString : XRBaseInteractable
     public override bool IsSelectableBy(XRBaseInteractor interactor)
     {
         // only be selected by hand's direct interactor
-        return base.IsSelectableBy(interactor) && interactor is XRDirectInteractor;
+        return base.IsSelectableBy(interactor) && interactor is XRDirectInteractor && bow.canUse;
     }
     private void OnDrawGizmosSelected()
     {

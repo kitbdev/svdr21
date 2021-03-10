@@ -13,6 +13,7 @@ public class LevelManager : Singleton<LevelManager>
     public bool loadOnStart = true;
     [SerializeField]
     private int m_curLevel = 0;
+    public GameObject mainRoom;
     public UnityEvent levelReadyEvent;
 
     public int curLevel
@@ -42,7 +43,8 @@ public class LevelManager : Singleton<LevelManager>
     {
         if (loadOnStart)
         {
-            LoadLevel();
+            LoadMainRoom();
+            // LoadLevel();
         }
     }
     private void OnEnable()
@@ -51,13 +53,23 @@ public class LevelManager : Singleton<LevelManager>
     }
     private void OnDisable()
     {
-        LevelGen.Instance.GenCompleteEvent.RemoveListener(OnLevelLoaded);
+        LevelGen.Instance?.GenCompleteEvent.RemoveListener(OnLevelLoaded);
     }
     public void LevelComplete()
     {
         // start next level
         LoadNextLevel();
         // prepare player?
+    }
+    public void LoadMainRoom()
+    {
+        VRDebug.Log("Loading Main Room");
+        mainRoom.SetActive(true);
+        // todo intersecting?
+        // UnloadLevel();
+        // make sure this will be fine for main room
+        levelReadyEvent.Invoke();
+        curLevel = 0;
     }
     void LoadNextLevel()
     {
@@ -85,5 +97,11 @@ public class LevelManager : Singleton<LevelManager>
         levelLoading = false;
         levelReadyEvent.Invoke();
         // todo something
+    }
+    void UnloadLevel()
+    {
+        // todo enemies
+        VRDebug.Log("Level " + curLevel + " unloading...");
+        LevelGen.Instance.ClearLevel();
     }
 }

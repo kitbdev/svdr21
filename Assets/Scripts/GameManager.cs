@@ -7,10 +7,14 @@ using Shapes;
 public class GameManager : Singleton<GameManager>
 {
     public const string PlayerTag = "Player";
+
     public SnapturnSingleHand snapturn;
     public XRRig xrRig;
     public Bow playerBow;
     public Transform player;
+
+    // preferences to load
+    bool isLeftHanded = false;
 
     public enum SnapTurnOptions
     {
@@ -29,13 +33,27 @@ public class GameManager : Singleton<GameManager>
         base.Awake();
         if (!playerBow) playerBow = GameObject.FindObjectOfType<Bow>();
         if (!snapturn) snapturn = GameObject.FindObjectOfType<SnapturnSingleHand>();
+    }
+    private void Start()
+    {
+        TryLoadSettings();
         SetSnapTurn(snapTurnOptions);
     }
-
-    public void StartNewLevel()
+    public void SettingsUpdated()
     {
-        // LevelGen.Instance
+        SaveSettings();
     }
+
+    void TryLoadSettings()
+    {
+        VRDebug.Log("Loading Settings...");
+
+    }
+    void SaveSettings()
+    {
+        VRDebug.Log("Saving Settings...");
+    }
+
     private void UpdateSnapTurn(SnapTurnOptions options)
     {
         if (!snapturn)

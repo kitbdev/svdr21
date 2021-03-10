@@ -9,6 +9,7 @@ using TMPro;
 [DefaultExecutionOrder(-50)]
 public class VRDebug : Singleton<VRDebug>
 {
+    public bool canLog = true;
     public int maxMsgs = 10;
     TMP_Text textEl;
     List<string> msgs = new List<string>();
@@ -88,6 +89,10 @@ public class VRDebug : Singleton<VRDebug>
     // }
     void ILog(string msg, float timeout = -1, bool alsoDebug = true, Object debugContext = null)
     {
+        if (!canLog)
+        {
+            return;
+        }
         msgs.Add(msg);
         if (alsoDebug)
         {

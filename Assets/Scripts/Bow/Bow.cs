@@ -13,13 +13,25 @@ public class Bow : XRGrabInteractable
 {
     [Header("Bow")]
     public string ownerName = GameManager.PlayerTag;
+    [SerializeField]
+    private bool _canUse = true;
+    public bool canUse
+    {
+        get => _canUse;
+        set {
+            _canUse = value;
+            // arrowMenu
+        }
+    }
+
+    [SerializeField]
+    bool m_showLine = false;
+    public bool showLine { get { return m_showLine; } set { m_showLine = value; line.lineActive = value; } }
+    [Header("References")]
     public BowString bowString;
     public BowNotch bowNotch;
     public ArrowMenu arrowMenu;
     public ProjectileLine line;
-    [SerializeField]
-    bool m_showLine = false;
-    public bool showLine { get { return m_showLine; } set { m_showLine = value; line.lineActive = value; } }
     [Header("Hands")]
     public XRBaseInteractor leftHand;
     public XRBaseInteractor rightHand;
@@ -27,6 +39,7 @@ public class Bow : XRGrabInteractable
     [ReadOnly] public bool primaryLeftHand = true;
     public XRBaseInteractor bowHand { get; protected set; }
     public XRBaseInteractor offHand { get; protected set; }
+
     public bool debugLog = false;
 
     protected override void Awake()
@@ -40,7 +53,7 @@ public class Bow : XRGrabInteractable
     private void Start()
     {
         SetBowHand(defaultToLeftHand);
-        arrowMenu.ShowArrows();
+        arrowMenu.ShowMenu();
     }
     [ContextMenu("Set bow hand")]
     void SetDefBow()
@@ -117,7 +130,7 @@ public class Bow : XRGrabInteractable
     /// </summary>
     public void ArrowReleased()
     {
-        arrowMenu.ShowArrows();
+        arrowMenu.ShowMenu();
     }
     /// <summary>
     /// the arrow was set in the bow

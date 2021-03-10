@@ -683,6 +683,7 @@ MonoBehaviour:
   deathGoDetachDestroyDelay: 50
   headpos: {fileID: 0}
   loosePartReconnectDelay: 5
+  playerDefeated: 0
   isBeingKnockedBacked: 0
   moveTarget: {fileID: 0}
   attackTarget: {fileID: 0}
@@ -1136,6 +1137,7 @@ MonoBehaviour:
   deathGoDetachDestroyDelay: 50
   headpos: {fileID: 0}
   loosePartReconnectDelay: 3
+  playerDefeated: 0
   isBeingKnockedBacked: 0
   moveTarget: {fileID: 0}
   attackTarget: {fileID: 0}
@@ -1765,7 +1767,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5416703718807672, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5416703718807672, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_LocalPosition.x
