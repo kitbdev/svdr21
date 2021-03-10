@@ -7,7 +7,7 @@ using UnityEngine;
 public class LevelTrigger : MonoBehaviour
 {
     Trigger trigger;
- 
+
     private void Awake()
     {
         trigger = GetComponentInChildren<Trigger>();
@@ -16,11 +16,13 @@ public class LevelTrigger : MonoBehaviour
     {
         LevelManager.Instance.LevelComplete();
     }
-    public void LeaveEndRoom() {
-
+    public void LeaveEndRoom()
+    {
+        LevelManager.Instance.LeftStairsRoom();
     }
-    public void LeaveMainRoom() {
-
+    public void LeaveMainRoom()
+    {
+        LevelManager.Instance.LeftMainRoom();
     }
 
 }

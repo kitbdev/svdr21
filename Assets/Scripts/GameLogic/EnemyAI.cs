@@ -198,7 +198,10 @@ public class EnemyAI : MonoBehaviour
         {
             attackIndivCooldowns[i] -= Time.deltaTime;
         }
-        TryDoAttack();
+        if (playerDetected)
+        {
+            TryDoAttack();
+        }
     }
     void UpdateLookAt()
     {

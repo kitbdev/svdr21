@@ -81,8 +81,8 @@ public class LevelGen : Singleton<LevelGen>
             RandomizeSeed();
         }
         // todo set on generate?
-        // maybe
-        // factor in level settings
+        // maybe. nah
+        // ?factor in level settings
         Random.InitState(randomSeed);
     }
     void RandomizeSeed()
