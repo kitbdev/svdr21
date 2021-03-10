@@ -38,6 +38,7 @@ public class LevelGen : Singleton<LevelGen>
 
     [Header("Dynamic")]
     [ReadOnly] public int numRooms = 0;
+    [ReadOnly] public int numGates = 0;
     [ReadOnly] [SerializeField] List<Room> placedRooms = new List<Room>();
     [ReadOnly] [SerializeField] List<Room> mainPath = new List<Room>();
     // gates
@@ -45,6 +46,7 @@ public class LevelGen : Singleton<LevelGen>
     /// <summary>connectors that havent been used</summary>
     [ReadOnly] [SerializeField] List<LevelComponent> frontierConnectors = new List<LevelComponent>();
     [ReadOnly] [SerializeField] List<LevelComponent> lastRoomUnusedCons = new List<LevelComponent>();
+    [ReadOnly] [SerializeField] List<LevelComponent[]> connectorConnections = new List<LevelComponent[]>();
     [SerializeField] LevelGenSettings curLevelSettings;
 
     [Header("Events")]
@@ -63,6 +65,7 @@ public class LevelGen : Singleton<LevelGen>
         Debug.ClearDeveloperConsole();
         Debug.Log("clearing level");
         numRooms = 0;
+        numGates = 0;
         foreach (var room in placedRooms)
         {
             SafeDestroy(room.gameObject);
@@ -71,6 +74,7 @@ public class LevelGen : Singleton<LevelGen>
         mainPath.Clear();
         frontierConnectors.Clear();
         lastRoomUnusedCons.Clear();
+        connectorConnections.Clear();
         // remove all children?
         // int numChildren = transform.childCount;
         // for (int i = numChildren - 1; i >= 0; i--)
@@ -162,10 +166,14 @@ public class LevelGen : Singleton<LevelGen>
         List<int> checkedFConIs = new List<int>();
         while (numRooms <= endRoom)
         {
+            // check if we failed
             if (frontierConnectors.Count == 0)
             {
-                Debug.LogWarning("Out of all frontierConnectors!");
-                break;
+                // retry
+                Debug.LogError("Out of all frontierConnectors!");
+                // need the end room so retry
+                forceRetry = true;
+                yield break;
             }
             if (lastRoomUnusedCons.Count == 0)
             {
@@ -178,18 +186,21 @@ public class LevelGen : Singleton<LevelGen>
                     yield break;
                 }
             }
+            // make a new room
+            // what kind of room should we make?
             if (advancedDebug) Debug.Log("Creating room " + numRooms);
             bool useEndRoom = numRooms == endRoom;
-            // try all connections
+
+            // try all connections to spawn a room off of
             int nextConIndex = 0;
             checkedFConIs.Clear();
             while (nextConIndex >= 0)
             {
                 // continue linearly, so use an unused connector on the last room
-                var nextCon = GetRandomIn<LevelComponent>(lastRoomUnusedCons.ToArray(), out nextConIndex, checkedFConIs);
+                LevelComponent nextConMain = GetRandomIn<LevelComponent>(lastRoomUnusedCons.ToArray(), out nextConIndex, checkedFConIs);
                 if (nextConIndex == -1)
                 {
-                    // tried all of these connectors
+                    // tried all of these connectors, go back a room
                     Debug.Log("Tried all connectors in lastRoomUnusedCons: " + lastRoomUnusedCons.Count);
                     if (!FillUnusedCons())
                     {
@@ -197,32 +208,135 @@ public class LevelGen : Singleton<LevelGen>
                         forceRetry = true;
                         yield break;
                     }
+                    // todo dead end reward stuff (if really the dead end)
                     continue;
                 }
                 checkedFConIs.Add(nextConIndex);
-                if (useEndRoom ? SpawnRoomFor(nextCon, endRoomPrefab) : SpawnRoomFor(nextCon))
+                if (useEndRoom ? SpawnRoomFor(nextConMain, endRoomPrefab) : SpawnRoomFor(nextConMain))
                 {
                     // success
-                    if (advancedDebug) Debug.Log("SpawnRoomFor successful." + nextCon.name + " endroom:" + useEndRoom);
+                    if (advancedDebug) Debug.Log("SpawnRoomFor successful." + nextConMain.name + " endroom:" + useEndRoom);
                     // add to main path
                     mainPath.Add(placedRooms[placedRooms.Count - 1]);
                     break;
                 } else
                 {
                     // continue to try another connector
-                    if (advancedDebug) Debug.Log("SpawnRoomFor failed." + nextCon.name + " endroom:" + useEndRoom);
+                    if (advancedDebug) Debug.Log("SpawnRoomFor failed." + nextConMain.name + " endroom:" + useEndRoom);
                     if (advancedDebug) yield return null;
                     continue;
                 }
             }
             yield return null;
-            // todo add additional rooms with lock and key structure
+
             // todo random dead ends?
         }
-        // use proper connectors?
-        foreach (var room in placedRooms)
+
+        // make gates
+        // lock and key structure
+        Debug.Log("Creating gates and branches");
+        // choose room location
+        // can make a room anywhere from last gate to the end
+        int roomToMakeGateBefore = 0;
+        int minGateRoom = 3;
+        List<LevelComponent> possBranchConns = null;
+        for (int i = minGateRoom; i < mainPath.Count - 1; i++)
         {
-            // room.
+            if (numGates >= curLevelSettings.maxGates)
+            {
+                // success
+                break;
+            }
+            bool shouldMakeGate = Random.value <= curLevelSettings.gateChance;
+            shouldMakeGate |= (numGates == 0 && i <= mainPath.Count - 1);
+            if (shouldMakeGate)
+            {
+                // make a gate on this room
+                roomToMakeGateBefore = i;
+                numGates++;
+                int branchRoomsToTryToMake = Random.Range(1, 4);
+                if (advancedDebug) Debug.Log("trying to make gate at room " + roomToMakeGateBefore);
+                // start a branch somewhere before here
+                var postgateRoom = mainPath[roomToMakeGateBefore];
+                possBranchConns = frontierConnectors.FindAll(con => !postgateRoom.allConnectors.Contains(con));
+                lastRoomUnusedCons = possBranchConns;
+
+                // make a branch
+                int branchRoomsMade = 0;
+                while (numRooms <= maxRooms)
+                {
+                    if (lastRoomUnusedCons.Count == 0)
+                    {
+                        if (advancedDebug) Debug.Log("Dead end! out of lastRoomUnusedCons");
+                        // close enough
+                        break;
+                    }
+                    if (branchRoomsMade >= branchRoomsToTryToMake)
+                    {
+                        // success
+                        if (advancedDebug) Debug.Log("made all gates!");
+                        break;
+                    }
+                    // make room
+                    if (advancedDebug) Debug.Log("Creating room " + numRooms);
+                    // try all connections to spawn a room off of
+                    int nextConIndex = 0;
+                    checkedFConIs.Clear();
+                    while (nextConIndex >= 0)
+                    {
+                        // continue linearly, so use an unused connector on the last room
+                        LevelComponent nextCon = GetRandomIn<LevelComponent>(lastRoomUnusedCons.ToArray(), out nextConIndex, checkedFConIs);
+                        if (nextConIndex == -1)
+                        {
+                            // tried all of these connectors, go back a room
+                            if (advancedDebug) Debug.Log("Tried all connectors in lastRoomUnusedCons: " + lastRoomUnusedCons.Count);
+                            // close enough
+                            break;
+                        }
+                        checkedFConIs.Add(nextConIndex);
+                        if (SpawnRoomFor(nextCon))
+                        {
+                            // success, breakk to next room
+                            if (advancedDebug) Debug.Log("b SpawnRoomFor successful." + nextCon.name);
+                            branchRoomsMade++;
+                            break;
+                        } else
+                        {
+                            // continue to try another connector
+                            if (advancedDebug) Debug.Log("b SpawnRoomFor failed." + nextCon.name);
+                            if (advancedDebug) yield return null;
+                            continue;
+                        }
+                    }
+                    yield return null;
+                }
+
+                if (branchRoomsMade > 0)
+                {
+                    int newRoomI = numRooms - 1;
+                    if (advancedDebug) Debug.Log("making gate and key at rooms " + roomToMakeGateBefore + ", " + newRoomI);
+                    if (advancedDebug) yield return null;
+                    // ? is it the first connector
+                    // mark gate
+                    LevelComponent connectorWithGateEnd = postgateRoom.allConnectors[0];
+                    LevelComponent connectorWithGate2 = connectorConnections.Find(lcs => lcs[0] = connectorWithGateEnd)[1];
+                    Door door = connectorWithGate2.GetComponent<Door>();
+                    door.MakeIntoGate();
+                    // todo somedoors close without needing a key (open when close)
+                    // make key at new room
+                    Room newRoom = placedRooms[newRoomI];
+                    newRoom.hasKey = true;// todo more on this
+                } else
+                {
+                    numGates--;
+                    // cannot make a gate here
+                    if (advancedDebug) Debug.Log("failed to make gate at room " + roomToMakeGateBefore);
+                }
+            }
+        }
+        if (numGates == 0 && curLevelSettings.maxGates > 0)
+        {
+            Debug.LogWarning("Failed to make any gates!");
         }
         // done with spawning rooms
     }
@@ -395,19 +509,21 @@ public class LevelGen : Singleton<LevelGen>
                     if (advancedDebug) Debug.Log("room " + roomName + " is valid");
                     if (advancedDebug) Debug.Log($"Connecting cons {connector.transform.parent.name}.{connector.name} to {roomName}.{nCon.name}");
                     Room nroom = SpawnAndAddRoom(rroomp, roomOffset, roomRot);
-                    if (advancedDebug) Debug.Log("room " + nroom.name + " spawned");
                     // setup room
                     nroom.gameObject.name = roomName;
+                    if (advancedDebug) Debug.Log("room " + nroom.name + " spawned");
                     nroom.connectedRooms.Add(connector.myRoom);
                     nroom.ForceUseLComponent(nroom.allConnectors[selConInd]);
                     connector.myRoom.ForceUseLComponent(connector);
+                    // note: only adding on one direction - reverse
+                    connectorConnections.Add(new LevelComponent[2] { nroom.allConnectors[selConInd], connector });
 
                     // remove the used connector from frontier
                     frontierConnectors.Remove(connector);
                     // add new connectors, if any
                     lastRoomUnusedCons.Clear();
-                    lastRoomUnusedCons.AddRange(nroom.allConnectors);
-                    lastRoomUnusedCons.RemoveAt(selConInd);
+                    lastRoomUnusedCons.AddRange(nroom.allConnectors.FindAll(c => !c.isInUse));
+                    // lastRoomUnusedCons.RemoveAt(selConInd);
                     if (debugBreak) Debug.Break();
                     if (lastRoomUnusedCons.Count > 0)
                     {
@@ -434,15 +550,23 @@ public class LevelGen : Singleton<LevelGen>
     bool IsValidRoomCol(Bounds bounds, Vector3 roomOffset = default, Quaternion roomOrientation = default, List<Collider> ignoreCols = default)
     {
         // overlap box
-        //? extents is half extents?
+        // note: extents is actually half extents
+        // todo y offset problem
         Vector3 rCenter = bounds.center + roomOffset;
         var cols = Physics.OverlapBox(rCenter, bounds.extents, roomOrientation, levelOnlyLayer, QueryTriggerInteraction.Ignore);
         if (advancedDebug)
         {
             // Draw.Cuboid(rCenter, roomOrientation, bounds.extents, Color.red);
             Debug.Log(rCenter + " " + bounds.ToString());
-            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.max), Color.red, 30);
             Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.min), Color.red, 30);
+            Debug.DrawLine(roomOrientation * rCenter, roomOrientation * (rCenter + bounds.max), Color.red, 30);
+            Vector3 axi = bounds.extents.x * Vector3.right;
+            Debug.DrawLine(roomOrientation * (rCenter - axi), roomOrientation * (rCenter + axi), Color.red, 30);
+            axi = bounds.extents.z * Vector3.forward;
+            Debug.DrawLine(roomOrientation * (rCenter - axi), roomOrientation * (rCenter + axi), Color.red, 30);
+            axi = bounds.extents.y * Vector3.up;
+            Debug.DrawLine(roomOrientation * (rCenter - axi), roomOrientation * (rCenter + axi), Color.red, 30);
+
         }
         // make sure room we are checking can be ignored
         if (ignoreCols != null && ignoreCols.Count > 0)
@@ -458,7 +582,7 @@ public class LevelGen : Singleton<LevelGen>
                 string logText = "intersecting ";
                 for (int i = 0; i < cols.Length; i++)
                 {
-                    logText += cols[i].name;
+                    logText += cols[i].name + ", ";
                 }
                 Debug.Log(logText);
             }

@@ -14,6 +14,7 @@ public class Room : MonoBehaviour
     // updated during level gen
     [ReadOnly] public List<Room> connectedRooms = new List<Room>();
     [ReadOnly] public List<LevelComponent> blockedConnectors = new List<LevelComponent>();
+    [ReadOnly] public bool hasKey = false;
     // dynamic
     public List<LevelComponent> reqLevelComponents => allLevelComponents.FindAll(lc => {
         return !lc.isRoomConnector && !lc.isInUse && lc.isRequired;

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5416703718807672}
   - component: {fileID: 5416703718807673}
+  - component: {fileID: 7197140259603934674}
   m_Layer: 8
   m_Name: door
   m_TagString: Untagged
@@ -50,13 +51,34 @@ MonoBehaviour:
   isRequired: 0
   requireOneOf: []
   blocks: []
-  onlyIf: []
+  forceUse: []
   activeGOs:
   - {fileID: 2945953857974247951}
   replacementGOs:
   - {fileID: 5841323527763625128}
   isInUse: 0
   myRoom: {fileID: 0}
+--- !u!114 &7197140259603934674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5416703718807679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baf909f9543037f4791dcf4064afff05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isToggle: 0
+  lockToOn: 0
+  isToggleOn: 0
+  isLocked: 0
+  interactClip: {fileID: 0}
+  interactEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  interactCooldown: 0.1
 --- !u!1 &2945953857974247951
 GameObject:
   m_ObjectHideFlags: 0
