@@ -8221,10 +8221,10 @@ MonoBehaviour:
   - {fileID: 3566360456250664069, guid: 5559fde395f181047be0420798b5cd0a, type: 3}
   - {fileID: 3566360456250664069, guid: ac51b4cea9c492c4487b30bef447877e, type: 3}
   - {fileID: 3566360456250664069, guid: e2f6738476fee534ea14567ce30c3fe3, type: 3}
-  pathPrefabsStartAt: -1
+  - {fileID: 3566360456250664069, guid: 027f6e166590bac4fb1b004610c0aaf5, type: 3}
   genOnStart: 0
   advancedDebug: 1
-  debugBreak: 1
+  debugBreak: 0
   numRooms: 0
   numGates: 0
   placedRooms: []

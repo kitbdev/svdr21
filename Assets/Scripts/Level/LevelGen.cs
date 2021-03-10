@@ -530,7 +530,9 @@ public class LevelGen : Singleton<LevelGen>
                     Quaternion.Inverse(nCon.transform.rotation * Quaternion.Euler(0, 180, 0));
                 // roomRot *= Quaternion.Euler(0, 180, 0);
                 // wanted room postion 
-                Vector3 roomOffset = connector.transform.position - roomRot * nCon.transform.position;
+                //old roomRot * nCon.transform.position;
+                Vector3 nConRotatedPos = roomRot * nCon.transform.position;
+                Vector3 roomOffset = connector.transform.position - nConRotatedPos;
                 if (IsValidRoomCol(prefabRoom.GetBounds(), roomOffset, roomRot))
                 {
                     // spawn the room
@@ -583,7 +585,7 @@ public class LevelGen : Singleton<LevelGen>
         // note: extents is actually half extents
         // todo y offset problem?
         // bounds.extents *= 2;
-        Vector3 rCenter = roomOffset + bounds.center;
+        Vector3 rCenter = roomOffset + roomOrientation * bounds.center;
         var cols = Physics.OverlapBox(rCenter, bounds.extents, roomOrientation, levelOnlyLayer, QueryTriggerInteraction.Ignore);
         if (advancedDebug)
         {
@@ -592,11 +594,13 @@ public class LevelGen : Singleton<LevelGen>
             Debug.Log(rCenter + " " + bounds.ToString());
             // Debug.DrawLine(rCenter, rCenter + roomOrientation * (bounds.min), validColor, 30, false);
             // Debug.DrawLine(rCenter, rCenter + roomOrientation * (bounds.max), validColor, 30, false);
-            Vector3 axi = bounds.extents.x * Vector3.right;
-            Debug.DrawLine(rCenter + roomOrientation * (-axi), rCenter + roomOrientation * (axi), validColor, 30, false);
-            axi = bounds.extents.z * Vector3.forward;
-            Debug.DrawLine(rCenter + roomOrientation * (-axi), rCenter + roomOrientation * (axi), validColor, 30, false);
-            axi = bounds.extents.y * Vector3.up;
+            var fDir = roomOrientation * Vector3.forward;
+            Debug.DrawLine(rCenter + Vector3.one, rCenter + Vector3.one + fDir, Color.magenta, 30, false);
+            Vector3 axi = roomOrientation * (bounds.extents.x * Vector3.right);
+            Debug.DrawLine(rCenter + (-axi), rCenter + (axi), validColor, 30, false);
+            axi = roomOrientation * (bounds.extents.z * Vector3.forward);
+            Debug.DrawLine(rCenter + (-axi), rCenter + (axi), validColor, 30, false);
+            axi = roomOrientation * (bounds.extents.y * Vector3.up);
             Debug.DrawLine((rCenter - axi), (rCenter + axi), validColor, 30, false);
 
         }
@@ -666,6 +670,13 @@ public class LevelGen : Singleton<LevelGen>
 
 
     // utility stuff
+    static Vector3 RotateAroundPivot(Vector3 point, Vector3 pivot, Quaternion rotation)
+    {
+        Vector3 dir = point - pivot;
+        dir = rotation * dir;
+        Vector3 npoint = dir + pivot;
+        return npoint;
+    }
     /// <summary>
     /// Gets random item in the list or array
     /// </summary>
