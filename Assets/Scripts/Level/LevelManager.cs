@@ -66,8 +66,8 @@ public class LevelManager : Singleton<LevelManager>
         // aka EnteredStairsRoom
         // start loading next level
         LoadNextLevel();
-        Vector3 initialPos = curStairsRoom.transform.position;
         // todo everything in there needs to move seamlessly
+        // Vector3 initialPos = curStairsRoom.transform.position;
         // curStairsRoom.transform.position -= initialPos;
         // GameManager.Instance.player.transform.position -= initialPos;
         // move to 0,0,0 - otherwise can go off to inf and crash

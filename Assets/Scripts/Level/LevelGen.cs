@@ -49,9 +49,10 @@ public class LevelGen : Singleton<LevelGen>
     [ReadOnly] [SerializeField] List<LevelComponent> lastRoomUnusedCons = new List<LevelComponent>();
     // [ReadOnly] [SerializeField] List<LevelComponent[]> connectorConnections = new List<LevelComponent[]>();
 
+    // do not clear these
     [ReadOnly] public LevelComponent startDoor;
     [ReadOnly] public LevelComponent nextLevelDoor;
-    [ReadOnly] public Room stairsRoom; // do not clear
+    [ReadOnly] public Room stairsRoom; 
     [SerializeField] LevelGenSettings curLevelSettings;
 
     [Header("Events")]
@@ -257,7 +258,7 @@ public class LevelGen : Singleton<LevelGen>
                 if (useEndRoom ? SpawnRoomFor(nextConMain, endRoomPrefab) : SpawnRoomFor(nextConMain))
                 {
                     // success
-                    LLog("SpawnRoomFor successful." + nextConMain.name + " endroom:" + useEndRoom);
+                    LLog("SpawnRoomFor successful. " + nextConMain.name + " endroom:" + useEndRoom);
                     // add to main path
                     mainPath.Add(placedRooms[placedRooms.Count - 1]);
                     if (useEndRoom)
@@ -269,7 +270,7 @@ public class LevelGen : Singleton<LevelGen>
                 } else
                 {
                     // continue to try another connector
-                    LLog("SpawnRoomFor failed." + nextConMain.name + " endroom:" + useEndRoom);
+                    LLog("SpawnRoomFor failed. " + nextConMain.name + " endroom:" + useEndRoom);
                     if (advancedDebug) yield return null;
                     continue;
                 }
@@ -343,6 +344,7 @@ public class LevelGen : Singleton<LevelGen>
                         {
                             // tried all of these connectors, go back a room
                             LLog("Tried all connectors in lastRoomUnusedCons: " + lastRoomUnusedCons.Count);
+                            lastRoomUnusedCons.Clear();
                             // close enough
                             break;
                         }
@@ -521,14 +523,14 @@ public class LevelGen : Singleton<LevelGen>
                     if (rrp == -1)
                     {
                         // all rooms tried!
-                        Debug.LogWarning("Tried all rooms!");
+                        LLog("Tried all rooms!");
                         // should next try somewhere else
                         break;
                     }
                 }
                 checkedRoomPrefabIs.Add(rrp);
             }
-            Debug.Log("trying to spawn room " + rroomp.name);
+            LLog("trying to spawn room " + rroomp.name);
             Room prefabRoom = rroomp.GetComponent<Room>();
             // try all connectors on the room
             checkedConnectorIs.Clear();
