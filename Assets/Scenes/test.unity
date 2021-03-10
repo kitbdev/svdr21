@@ -2183,11 +2183,6 @@ MonoBehaviour:
   hitEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!1 &1365184444 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5459412202073855945, guid: f9ba71ef30e6002448aac404dd51ae5e, type: 3}
-  m_PrefabInstance: {fileID: 5459412200719685749}
-  m_PrefabAsset: {fileID: 0}
 --- !u!850595691 &1377661115
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -6924,10 +6919,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1919781036667747276, guid: f9ba71ef30e6002448aac404dd51ae5e, type: 3}
-      propertyPath: owner
-      value: 
-      objectReference: {fileID: 1365184444}
     - target: {fileID: 5459412202073855925, guid: f9ba71ef30e6002448aac404dd51ae5e, type: 3}
       propertyPath: m_RootOrder
       value: 10

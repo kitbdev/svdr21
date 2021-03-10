@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df52daa0d7d5b5546b380ede4c3c60af, type: 3}
-  m_Name: swipeAttack
+  m_Name: spinAttack
   m_EditorClassIdentifier: 
   spawnPrefab: {fileID: 0}
   launchEffectPrefab: {fileID: 0}
   launchVel: 0
   minDist: -1
-  maxDist: 3
-  cooldown: 1
-  individualCoolDown: 0
+  maxDist: 6
+  cooldown: 2
+  individualCoolDown: 7
   moveBlockDur: 0
   keepAttached: 0
-  animName: AttackSwipe
+  animName: AttackSpin

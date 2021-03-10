@@ -316,8 +316,8 @@ MonoBehaviour:
   moveState: 0
   playerDetectionRadius: 20
   playerForgetRadius: 21
-  targetMinDist: 2
-  targetMaxDist: 3.5
+  targetMinDist: 1.4
+  targetMaxDist: 3
   preferedHeight: 10
   wanderMaxDistance: 5
   wanderTimeoutDur: 8
@@ -333,6 +333,7 @@ MonoBehaviour:
   attackRate: 1
   attackSpawnPoint: {fileID: 0}
   allAttacks:
+  - {fileID: 11400000, guid: 66e3478f638215740af81cb1c39b8d9d, type: 2}
   - {fileID: 11400000, guid: 7866596c207548a43b52ffa42d4bd7ad, type: 2}
   currentActiveAttacks: []
   attackCooldown: 0
@@ -437,6 +438,22 @@ PrefabInstance:
     - target: {fileID: 1228565057154238041, guid: 1bb3ee5deb345174f9f777586dd2ae5f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3963801505391742788, guid: 1bb3ee5deb345174f9f777586dd2ae5f, type: 3}
+      propertyPath: owner
+      value: 
+      objectReference: {fileID: 5459412202073855945}
+    - target: {fileID: 5865891057576532866, guid: 1bb3ee5deb345174f9f777586dd2ae5f, type: 3}
+      propertyPath: owner
+      value: 
+      objectReference: {fileID: 5459412202073855945}
+    - target: {fileID: 5865891057576532867, guid: 1bb3ee5deb345174f9f777586dd2ae5f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.3616323
+      objectReference: {fileID: 0}
+    - target: {fileID: 5865891057576532867, guid: 1bb3ee5deb345174f9f777586dd2ae5f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.3891792
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1bb3ee5deb345174f9f777586dd2ae5f, type: 3}

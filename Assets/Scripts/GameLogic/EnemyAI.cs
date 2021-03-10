@@ -138,6 +138,14 @@ public class EnemyAI : MonoBehaviour
         health.dieEvent.AddListener(Die);
         health.damageEvent.AddListener(OnHit);
     }
+    void ResetAttackCooldowns()
+    {
+        attackCooldown = 0;
+        for (int i = 0; i < attackIndivCooldowns.Length; i++)
+        {
+            attackIndivCooldowns[i] = 0;
+        }
+    }
 
     void Update()
     {
@@ -173,7 +181,13 @@ public class EnemyAI : MonoBehaviour
             moveState = IdleMoveState;
         }
         Move();
+
+        // reduce attack cooldowns
         attackCooldown -= Time.deltaTime;
+        for (int i = 0; i < attackIndivCooldowns.Length; i++)
+        {
+            attackIndivCooldowns[i] -= Time.deltaTime;
+        }
         TryDoAttack();
     }
     void UpdateLookAt()
