@@ -10,9 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3566360456250664071}
   - component: {fileID: 3566360456250664070}
-  - component: {fileID: 8454520075444908177}
   m_Layer: 8
-  m_Name: RoomHall
+  m_Name: RoomHallsm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,9 +28,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 2009625708439957830}
   - {fileID: 3566360457635815364}
   - {fileID: 3228403903847654017}
-  - {fileID: 2009625708439957830}
   - {fileID: 961047626532155274}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -48,6 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ef04e5cbd1c2c4fb4f8d671863f2db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueToLevel: -1
+  isPathRoom: 1
   allLevelComponents:
   - {fileID: 0}
   - {fileID: 3566360457635815365}
@@ -60,22 +61,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 3228403903847654016}
   - {fileID: 0}
-  uniqueToLevel: -1
-  isPathRoom: 1
   connectedRooms: []
---- !u!65 &8454520075444908177
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3566360456250664069}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 6.7, y: 1.29, z: 9.5}
-  m_Center: {x: 0, y: 0, z: 0}
+  blockedConnectors: []
+  hasKey: 0
+  roomStartEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6924242124279333568
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,6 +80,7 @@ GameObject:
   - component: {fileID: 5501033740443534727}
   - component: {fileID: 4253069686347580400}
   - component: {fileID: 7157775913029753300}
+  - component: {fileID: 6585075949729521058}
   m_Layer: 0
   m_Name: room
   m_TagString: Untagged
@@ -108,7 +100,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3566360456250664071}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7893478948708576123
 MonoBehaviour:
@@ -1146,6 +1138,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!65 &6585075949729521058
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6924242124279333568}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 6.5, y: 10.000006, z: 9.76}
+  m_Center: {x: 5, y: 5.000003, z: -5.000003}
 --- !u!1 &9189858596183806867
 GameObject:
   m_ObjectHideFlags: 0
@@ -1563,7 +1568,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5416703718807672, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5416703718807672, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1680,7 +1685,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5416703718807672, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5416703718807672, guid: 31dfe0acb955bf147b45257e60c4d23f, type: 3}
       propertyPath: m_LocalPosition.x

@@ -14,7 +14,9 @@ public class LevelManager : Singleton<LevelManager>
     [SerializeField]
     private int m_curLevel = 0;
     public GameObject mainRoom;
-    public UnityEvent levelReadyEvent;
+    public UnityEvent mainRoomReadyEvent;
+    LevelComponent startDoor;
+    LevelComponent lastEndDoor;
 
     public int curLevel
     {
@@ -38,14 +40,15 @@ public class LevelManager : Singleton<LevelManager>
     {
         base.Awake();
         curLevel = 0;
+        startDoor = mainRoom.GetComponent<Room>().allConnectors[0];
     }
     private void Start()
     {
         if (loadOnStart)
         {
-            // LoadMainRoom();
-            mainRoom.SetActive(false);
-            LoadLevel();
+            LoadMainRoom();
+            // mainRoom.SetActive(false);
+            // LoadLevel();
         }
     }
     private void OnEnable()
@@ -58,19 +61,30 @@ public class LevelManager : Singleton<LevelManager>
     }
     public void LevelComplete()
     {
-        // start next level
+        // start loadin next level
         LoadNextLevel();
-        // prepare player?
     }
-    public void LoadMainRoom()
+    // called by player on death to trigger a respawn
+    public void LevelFail()
+    {
+        LoadMainRoom();
+        // respawn player
+        mainRoomReadyEvent.Invoke();
+        UnloadLevel();
+        // todo intersecting?
+        // make sure this will be fine for main room
+    }
+    void LoadMainRoom()
     {
         VRDebug.Log("Loading Main Room");
         mainRoom.SetActive(true);
-        // todo intersecting?
-        // UnloadLevel();
-        // make sure this will be fine for main room
-        levelReadyEvent.Invoke();
+        // once in main room, start loading first level
         curLevel = 0;
+        LoadLevel();
+    }
+    void UnloadMainRoom()
+    {
+        mainRoom.SetActive(false);
     }
     void LoadNextLevel()
     {
@@ -78,6 +92,8 @@ public class LevelManager : Singleton<LevelManager>
         if (curLevel >= levels.Length)
         {
             VRDebug.Log("Reached last level!");
+            curLevel = levels.Length - 1;
+            // todo infinite levels?
         }
         LoadLevel();
     }
@@ -90,14 +106,22 @@ public class LevelManager : Singleton<LevelManager>
         }
         levelLoading = true;
         VRDebug.Log("Level " + curLevel + " loading...");
-        LevelGen.Instance.GenerateLevel(levels[curLevel]);
+        LevelGen.Instance.GenerateLevel(levels[curLevel], curLevel == 0 ? startDoor : lastEndDoor);
     }
     void OnLevelLoaded()
     {
         VRDebug.Log("Level " + curLevel + " finished loading");
         levelLoading = false;
-        levelReadyEvent.Invoke();
+
+        // get the end door for the next level
+        // there is no regenerating of cur level, so its fine to set here
+        lastEndDoor = LevelGen.Instance.nextLevelDoor;
         // todo something
+        // open main/end room door
+        if (curLevel == 0)
+        {
+            startDoor.GetComponent<Door>().Interact();
+        }
     }
     void UnloadLevel()
     {

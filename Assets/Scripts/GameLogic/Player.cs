@@ -26,11 +26,11 @@ public class Player : MonoBehaviour
     }
     private void OnEnable()
     {
-        LevelManager.Instance.levelReadyEvent.AddListener(Respawn);
+        LevelManager.Instance.mainRoomReadyEvent.AddListener(Respawn);
     }
     private void OnDisable()
     {
-        LevelManager.Instance.levelReadyEvent.RemoveListener(Respawn);
+        LevelManager.Instance.mainRoomReadyEvent.RemoveListener(Respawn);
     }
     void Damaged()
     {
@@ -77,7 +77,7 @@ public class Player : MonoBehaviour
     }
     void StartReloading()
     {
-        LevelManager.Instance.LoadMainRoom();
+        LevelManager.Instance.LevelFail();
         // respawn will be triggered
     }
 }

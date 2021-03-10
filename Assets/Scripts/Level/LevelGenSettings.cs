@@ -12,7 +12,8 @@ public class LevelGenSettings
     public int difficulty = 1;
     public int preferredRooms = 10;
     public int minTotalRooms = 3;
-    public int minSequentialRooms = 3;
+    // ignoring gates, the shortest path
+    public int numMainRooms = 3;
     public int maxGates = 3;
     public float gateChance = 30;
 
@@ -21,7 +22,7 @@ public class LevelGenSettings
         difficulty = 1;
         preferredRooms = 10;
         minTotalRooms = 3;
-        minSequentialRooms = 3;
+        numMainRooms = 3;
         maxGates = 3;
         gateChance = 30;
     }
