@@ -33,6 +33,7 @@ public class LevelManager : Singleton<LevelManager>
             }
         }
     }
+    LevelComponent curDoor => curLevel == 0 ? startDoor : lastEndDoor;
 
     public int maxLevel => levels.Length - 1;
 
@@ -133,7 +134,7 @@ public class LevelManager : Singleton<LevelManager>
         }
         levelLoading = true;
         VRDebug.Log("Level " + curLevel + " loading...");
-        LevelGen.Instance.GenerateLevel(levels[curLevel], curLevel == 0 ? startDoor : lastEndDoor);
+        LevelGen.Instance.GenerateLevel(levels[curLevel], curDoor);
     }
     void OnLevelLoaded()
     {
@@ -145,10 +146,9 @@ public class LevelManager : Singleton<LevelManager>
         lastEndDoor = LevelGen.Instance.nextLevelDoor;
         // todo something
         // open main/end room door
-        if (curLevel == 0)
-        {
-            startDoor.GetComponent<Door>().Interact();
-        }
+        VRDebug.Log("Opening door");
+        curDoor.GetComponent<Door>().OpenDoor();
+        levelReadyEvent.Invoke();
     }
     void UnloadLevel()
     {

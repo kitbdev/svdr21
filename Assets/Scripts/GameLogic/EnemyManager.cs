@@ -17,10 +17,12 @@ public class EnemyManager : Singleton<EnemyManager>
     private void OnEnable()
     {
         LevelManager.Instance.levelCompleteEvent.AddListener(DespawnAllEnemies);
+        LevelManager.Instance.levelReadyEvent.AddListener(SpawnAllEnemies);
     }
     private void OnDisable()
     {
         LevelManager.Instance?.levelCompleteEvent.RemoveListener(DespawnAllEnemies);
+        LevelManager.Instance?.levelReadyEvent.RemoveListener(SpawnAllEnemies);
     }
     public void DespawnAllEnemies()
     {
@@ -30,10 +32,24 @@ public class EnemyManager : Singleton<EnemyManager>
         }
         activeEnemies.Clear();
     }
-    public void SpawnEnemy(GameObject enemyPrefab)
+    public void SpawnAllEnemies()
     {
-        // todo pooling
+        // find all spawnlocations
+        VRDebug.Log("Spawning Enemies");
+        string spawnLocString = "EnemySpawnPoint";
+        var splocs = GameObject.FindGameObjectsWithTag(spawnLocString);
+        // just spawn one at each
+        foreach (var sploc in splocs)
+        {
+            SpawnEnemy(allEnemyPrefabs[0], sploc.transform);
+        }
+    }
+    public void SpawnEnemy(GameObject enemyPrefab, Transform location)
+    {
+        // todo pooling?
         GameObject eGo = Instantiate(enemyPrefab, transform);
+        eGo.transform.position = location.position;
+        eGo.transform.rotation = location.rotation;
         EnemyAI eAi = eGo.GetComponent<EnemyAI>();
         activeEnemies.Add(eAi);
     }

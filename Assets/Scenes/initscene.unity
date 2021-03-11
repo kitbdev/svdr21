@@ -7074,6 +7074,14 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1121499710}
+    - target: {fileID: 9078158620362448836, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
+      propertyPath: m_SelectedEdges.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9078158620362448836, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
+      propertyPath: m_SelectedVertices.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
 --- !u!1 &1449115400
@@ -9509,6 +9517,9 @@ MonoBehaviour:
   - {fileID: 3566360456250664069, guid: ac51b4cea9c492c4487b30bef447877e, type: 3}
   - {fileID: 3566360456250664069, guid: e2f6738476fee534ea14567ce30c3fe3, type: 3}
   - {fileID: 3566360456250664069, guid: 027f6e166590bac4fb1b004610c0aaf5, type: 3}
+  - {fileID: 3566360456250664069, guid: 36e4a3494199e684690f1a8edeae0568, type: 3}
+  - {fileID: 3566360456250664069, guid: 8f803986c2109bb4eb7961672713f963, type: 3}
+  - {fileID: 3566360456250664069, guid: a9f3a2133b026cc4eb37eb9de9095742, type: 3}
   genOnStart: 0
   advancedDebug: 1
   debugBreak: 0

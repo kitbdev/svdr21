@@ -200,6 +200,12 @@ public class EnemyAI : MonoBehaviour
         }
         if (playerDetected)
         {
+            // dont attack if player is not looking
+            float forwardThreshold = -0.1f;
+            if (Vector3.Dot(playerHead.forward, (transform.position - playerHead.position).normalized) < forwardThreshold)
+            {
+                return;
+            }
             TryDoAttack();
         }
     }
@@ -351,9 +357,11 @@ public class EnemyAI : MonoBehaviour
         {
             return;
         }
+        // Debug.Log("mmg" + moveMode == MoveMode.GROUND + " g" + isGrounded);
         if (moveMode == MoveMode.GROUND && !isGrounded)
         {
             // cannot move in air
+            // Debug.Log("In air!");
             return;
         }
         float distToTarg = Vector3.Distance(transform.position, targetPos);
@@ -387,6 +395,19 @@ public class EnemyAI : MonoBehaviour
         {
             return;
         }
+        // if there is a pit in front of us, stop
+        // ! ? not working at all
+        // float forwardCheckDist = 0.1f;
+        // Vector3 startGroundCheck = transform.position + Vector3.up * 0.05f + transform.forward * forwardCheckDist;
+        // Debug.DrawRay(startGroundCheck, Vector3.down * 200f, Color.blue, 3);
+        // if (Physics.Raycast(startGroundCheck, Vector3.down, out var hit, 0.1f, groundLayer, QueryTriggerInteraction.Ignore))
+        // {
+        // } else
+        // {
+        //     Debug.Log("didnt hit!");
+        //     // did not hit anything in front of us
+        //     return;
+        // }
         // move
         switch (moveMode)
         {
@@ -487,7 +508,7 @@ public class EnemyAI : MonoBehaviour
     {
         float maxDist = 0.1f;
         Vector3 startPos = transform.position + Vector3.up * maxDist / 2;
-        // Debug.DrawRay(startPos, Vector3.down * maxDist, Color.green);
+        Debug.DrawRay(startPos, Vector3.down * maxDist, Color.green);
         if (Physics.Raycast(startPos, Vector3.down, out var hit, maxDist, groundLayer))
         {
             isGrounded = true;
