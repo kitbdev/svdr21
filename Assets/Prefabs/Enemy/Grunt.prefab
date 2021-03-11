@@ -309,7 +309,7 @@ MonoBehaviour:
   turnSpeed: 100
   groundLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 257
   IdleMoveState: 2
   playerDetectedMoveState: 1
   moveMode: 1
@@ -345,6 +345,7 @@ MonoBehaviour:
   deathGoDetachDestroyDelay: 10
   headpos: {fileID: 2747285946176697551}
   loosePartReconnectDelay: 3
+  playerDefeated: 0
   isBeingKnockedBacked: 0
   moveTarget: {fileID: 0}
   attackTarget: {fileID: 0}
@@ -368,6 +369,7 @@ MonoBehaviour:
   deactivateOnLow: 1
   disableKinematicOnLow: 0
   visRbs: []
+  health: {fileID: 0}
 --- !u!114 &5459412202073855927
 MonoBehaviour:
   m_ObjectHideFlags: 0

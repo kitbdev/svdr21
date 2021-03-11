@@ -35,9 +35,9 @@ public class EnemyManager : Singleton<EnemyManager>
     public void SpawnAllEnemies()
     {
         // find all spawnlocations
-        VRDebug.Log("Spawning Enemies");
         string spawnLocString = "EnemySpawnPoint";
         var splocs = GameObject.FindGameObjectsWithTag(spawnLocString);
+        VRDebug.Log("Spawning " + splocs.Length + " Enemies");
         // just spawn one at each
         foreach (var sploc in splocs)
         {
@@ -50,6 +50,7 @@ public class EnemyManager : Singleton<EnemyManager>
         GameObject eGo = Instantiate(enemyPrefab, transform);
         eGo.transform.position = location.position;
         eGo.transform.rotation = location.rotation;
+        eGo.name = enemyPrefab.name + "_" + activeEnemies.Count;
         EnemyAI eAi = eGo.GetComponent<EnemyAI>();
         activeEnemies.Add(eAi);
     }

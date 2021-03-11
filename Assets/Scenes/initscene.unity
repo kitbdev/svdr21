@@ -3715,7 +3715,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e367ac7fe21730f46941c3aa589c8f0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allEnemyPrefabs: []
+  allEnemyPrefabs:
+  - {fileID: 5459412202073855945, guid: f9ba71ef30e6002448aac404dd51ae5e, type: 3}
   activeEnemies: []
 --- !u!4 &696861680
 Transform:

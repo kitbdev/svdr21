@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [AddComponentMenu("_Util/HoverTween")]
 public class HoverTween : MonoBehaviour
@@ -34,14 +37,23 @@ public class HoverTween : MonoBehaviour
     }
     void ResetPos()
     {
+#if UNITY_EDITOR
+        Undo.RecordObject(this, "change value");
+#endif
         localTargetPos = Vector3.zero;
     }
     void ResetScale()
     {
+#if UNITY_EDITOR
+        Undo.RecordObject(this, "change value");
+#endif
         localTargetScale = Vector3.one;
     }
     void ResetRot()
     {
+#if UNITY_EDITOR
+        Undo.RecordObject(this, "change value");
+#endif
         localTargetRotateEuler = Vector3.zero;
     }
     public void StartMoving()

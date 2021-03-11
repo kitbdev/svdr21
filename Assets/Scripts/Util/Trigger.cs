@@ -1,5 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// Generic trigger for many use cases
@@ -31,11 +34,17 @@ public class Trigger : MonoBehaviour
     [ContextMenu("Clear tag")]
     void ClearTag()
     {
+#if UNITY_EDITOR
+        Undo.RecordObject(this, "change value");
+#endif
         checkTag = "";
     }
     [ContextMenu("Set to player tag")]
     void SetTagToPlayer()
     {
+#if UNITY_EDITOR
+        Undo.RecordObject(this, "change value");
+#endif
         checkTag = GameManager.PlayerTag;
     }
     private void Awake()
