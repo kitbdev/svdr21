@@ -12,6 +12,7 @@ public class GameManager : Singleton<GameManager>
     public XRRig xrRig;
     public Bow playerBow;
     public Transform player;
+    public Inventory playerInventory;
 
     // preferences to load
     bool isLeftHanded = false;

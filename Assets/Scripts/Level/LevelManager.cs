@@ -14,7 +14,9 @@ public class LevelManager : Singleton<LevelManager>
     [SerializeField]
     private int m_curLevel = 0;
     public GameObject mainRoom;
-    public UnityEvent mainRoomReadyEvent;
+    public UnityEvent restartReadyEvent;
+    public UnityEvent levelCompleteEvent;
+    public UnityEvent levelReadyEvent;
     [ReadOnly] [SerializeField] LevelComponent startDoor;
     [ReadOnly] [SerializeField] LevelComponent lastEndDoor;
     [ReadOnly] [SerializeField] GameObject curStairsRoom;
@@ -64,6 +66,7 @@ public class LevelManager : Singleton<LevelManager>
     public void LevelComplete()
     {
         // aka EnteredStairsRoom
+        levelCompleteEvent.Invoke();
         // start loading next level
         LoadNextLevel();
         // todo everything in there needs to move seamlessly
@@ -80,7 +83,7 @@ public class LevelManager : Singleton<LevelManager>
     {
         LoadMainRoom();
         // respawn player
-        mainRoomReadyEvent.Invoke();
+        restartReadyEvent.Invoke();
         UnloadLevel();
         // todo intersecting?
         // make sure this will be fine for main room

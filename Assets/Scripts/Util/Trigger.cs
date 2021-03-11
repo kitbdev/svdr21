@@ -45,9 +45,9 @@ public class Trigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger enter " + other);
         if (IsValidTrig(other))
         {
+            Debug.Log("Trigger enter " + name + " o:" + other);
             triggerEnteredEvent.Invoke();
             numInTrigger++;
             lastTriggerEnterTime = Time.time;

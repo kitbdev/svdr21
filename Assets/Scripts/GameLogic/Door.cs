@@ -14,6 +14,7 @@ public class Door : LevelInteractable
     */
 
     public bool startsClosed = false;
+    public bool isClosed => isToggleOn;
     // gates are locked until a 'key' is gotten
     public bool isGate = false;
     // public bool isKeyLocked = false;
@@ -37,7 +38,8 @@ public class Door : LevelInteractable
     public void MakeIntoGate()
     {
         isGate = true;
-        // todo
+        // todo start closed, not closing
+        //? difference between closed and locked
         if (isGate)
         {
             startsClosed = true;
@@ -48,12 +50,12 @@ public class Door : LevelInteractable
     {
         startsClosed = true;
     }
-    // public void OpenDoor() {
-
-    // }
-    // public void CloseDoor() {
-
-    // }
+    public void OpenDoor() {
+        Interact();
+    }
+    public void CloseDoor() {
+        EndInteract();
+    }
     // public void LockDoor() {
     //     CloseDoor();
     //     // lock
@@ -74,5 +76,19 @@ public class Door : LevelInteractable
         // close
         block.SetActive(true);
         // todo
+    }
+    public void TryUseKey()
+    {
+        if (isGate && isClosed)
+        {
+            // needs a key
+            if (GameManager.Instance.playerInventory.numKeys > 0)
+            {
+                // has a key 
+                // use one 
+                Interact();
+                GameManager.Instance.playerInventory.RemoveKey();
+            }
+        }
     }
 }

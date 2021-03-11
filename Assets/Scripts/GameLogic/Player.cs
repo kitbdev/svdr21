@@ -26,11 +26,15 @@ public class Player : MonoBehaviour
     }
     private void OnEnable()
     {
-        LevelManager.Instance.mainRoomReadyEvent.AddListener(Respawn);
+        LevelManager.Instance.restartReadyEvent.AddListener(Respawn);
+        // heal on level complete
+        LevelManager.Instance.levelCompleteEvent.AddListener(health.RestoreHealth);
     }
     private void OnDisable()
     {
-        LevelManager.Instance.mainRoomReadyEvent.RemoveListener(Respawn);
+        // instance may be null if unloaded before us
+        LevelManager.Instance?.restartReadyEvent.RemoveListener(Respawn);
+        LevelManager.Instance?.levelCompleteEvent.RemoveListener(health.RestoreHealth);
     }
     void Damaged()
     {

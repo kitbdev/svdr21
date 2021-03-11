@@ -14,7 +14,14 @@ public class EnemyManager : Singleton<EnemyManager>
     [Space]
     [ReadOnly] public List<EnemyAI> activeEnemies = new List<EnemyAI>();
     // [ReadOnly] public List<Trap> allTraps = new List<Trap>();
-
+    private void OnEnable()
+    {
+        LevelManager.Instance.levelCompleteEvent.AddListener(DespawnAllEnemies);
+    }
+    private void OnDisable()
+    {
+        LevelManager.Instance?.levelCompleteEvent.RemoveListener(DespawnAllEnemies);
+    }
     public void DespawnAllEnemies()
     {
         for (int i = 0; i < activeEnemies.Count; i++)
