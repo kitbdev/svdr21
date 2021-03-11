@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c49f380ccc3a99844a37bf3cfe80abc3, type: 2}
+  - {fileID: 2100000, guid: 9218b6d9d8a1aae4cb2e7153e6e67f1f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -142,6 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isRoomConnector: 0
   isRequired: 0
+  onlyAsRequirement: 0
   requireOneOf: []
   blocks: []
   forceUse: []
