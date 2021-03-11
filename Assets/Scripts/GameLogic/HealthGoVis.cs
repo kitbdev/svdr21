@@ -14,11 +14,11 @@ public class HealthGoVis : MonoBehaviour
     public bool deactivateOnLow = true;
     public bool disableKinematicOnLow = false;
     [HideInInspector] [SerializeField] List<Rigidbody> visRbs = new List<Rigidbody>();
-    Health health;
+    public Health health;
 
     private void OnEnable()
     {
-        health = GetComponent<Health>();
+        if (!health) health = GetComponent<Health>();
         health.healthUpdateEvent.AddListener(HealthUpdate);
         // todo also destroy it in a second?
         // get rbs
