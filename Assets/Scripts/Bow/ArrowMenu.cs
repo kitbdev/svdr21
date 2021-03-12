@@ -99,6 +99,13 @@ public class ArrowMenu : MonoBehaviour
     {
         // GetSelectedArrow();
         int selArrow = selectDirToInt();
+        if (selArrow == curSel)
+        {
+            // already selecting that
+            return;
+        }
+        Debug.Log("UpdatingSel");
+        // todo change arrow immediately
 
         // update scale
         for (int i = 0; i < menuItems.Count; i++)
@@ -205,6 +212,7 @@ public class ArrowMenu : MonoBehaviour
         if (bow.debugLog) VRDebug.Log("Hiding Arrows");
         for (int i = 0; i < menuItems.Count; i++)
         {
+            menuItems[i].transform.DOKill();
             menuItems[i].gameObject.SetActive(false);
             // menuItems[i].transform.localScale = 0.1f * Vector3.one;
         }
@@ -213,7 +221,8 @@ public class ArrowMenu : MonoBehaviour
     {
         if (bow.debugLog) VRDebug.Log("Arrow taken " + index);
         arrowsSpawned[index].transform.localScale = Vector3.one;
-        int killed = DOTween.Kill(menuItems[index]);
+        int killed = menuItems[index].transform.DOKill();
+        killed += DOTween.Kill(menuItems[index]);
         if (bow.debugLog) Debug.Log("select killed " + killed);
         // ? todo dont remove all listeners
         arrowsSpawned[index].selectEntered.RemoveAllListeners();

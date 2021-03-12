@@ -242,6 +242,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -674,6 +675,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 0
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -1191,6 +1193,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 0
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -4123,7 +4126,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 50.6, y: 24.4, z: 59.7}
+  m_Size: {x: 50.63, y: 25.167812, z: 58.6}
   m_Center: {x: 13.642647, y: -5.083906, z: 18.11919}
 --- !u!1 &6275300433528479373
 GameObject:
@@ -4367,6 +4370,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -4708,6 +4712,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -4958,6 +4963,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -5390,6 +5396,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 0
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -9041,7 +9048,7 @@ BoxCollider:
   m_GameObject: {fileID: 8518940095182856319}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 23, y: 25.167812, z: 23}
   m_Center: {x: 0, y: -5.083906, z: -0.005809784}
@@ -11968,7 +11975,7 @@ BoxCollider:
   m_GameObject: {fileID: 9033937448211595562}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 23, y: 25.167812, z: 23}
   m_Center: {x: 0, y: -5.083906, z: -0.005809784}

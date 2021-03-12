@@ -161,6 +161,10 @@ public class EnemyAI : MonoBehaviour
         // check if player is not detected
         if (playerDetected)
         {
+            if (LevelManager.Instance.playerIsSafe)
+            {
+                playerDetected = false;
+            }
             float playerDist = Vector3.Distance(playerT.position, transform.position);
             if (playerDist >= playerForgetRadius)
             {
@@ -447,7 +451,7 @@ public class EnemyAI : MonoBehaviour
         {
             // check los
             Vector3 toDir = other.transform.position - transform.position;
-            if (Physics.Raycast(transform.position + Vector3.up * 1.5f, toDir, out var hit, playerDetectionRadius, groundLayer))
+            if (Physics.Raycast(transform.position + Vector3.up * 1.5f, toDir, out var hit, playerDetectionRadius, groundLayer, QueryTriggerInteraction.Ignore))
             {
                 // collided with something
                 if (!hit.collider.CompareTag(playerTag))
@@ -467,6 +471,7 @@ public class EnemyAI : MonoBehaviour
         VRDebug.Log("Knockback " + mag);
         rb.AddExplosionForce(mag, point, 1, 1.5f);
     }
+    List<Tween> myTweens = new List<Tween>();
     void OnHit()
     {
         if (health.lastHitArgs.hit.TryGetComponent<Rigidbody>(out var hitrb))
@@ -475,20 +480,31 @@ public class EnemyAI : MonoBehaviour
             {
                 // disconnect that rb
                 hitrb.isKinematic = false;
-                DOTween.To(() => hitrb.isKinematic.AsInt(), x => {
+                Tween dt = DOTween.To(() => hitrb.isKinematic.AsInt(), x => {
                     if (x >= 1)
                     {
                         hitrb.isKinematic = true;
                         hitrb.transform.DOLocalMove(Vector3.zero, 1);
                     }
                 }, 1, loosePartReconnectDelay);
+                myTweens.Add(dt);
             }
+        }
+        if (!playerDetected)
+        {
+            moveTarget = playerT;
+            playerDetected = true;
         }
         Knockback(health.lastHitArgs.point, health.lastHitArgs.velocity);
     }
     protected void Die()
     {
         VRDebug.Log("Enemy " + name + " died");
+        foreach (var tween in myTweens)
+        {
+            // stop all tweening 
+            tween.Kill();
+        }
         EnemyManager.Instance.EnemyDied(this);
         // anim
         if (deathGoDetach)

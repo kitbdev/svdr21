@@ -38,6 +38,7 @@ public class LevelManager : Singleton<LevelManager>
     public int maxLevel => levels.Length - 1;
 
     [ReadOnly] public bool levelLoading = false;
+    [ReadOnly] public bool playerIsSafe = false;
     // float levelLoadStartTime = 0;
 
     protected override void Awake()
@@ -54,6 +55,7 @@ public class LevelManager : Singleton<LevelManager>
             // mainRoom.SetActive(false);
             // LoadLevel();
         }
+        playerIsSafe = true;
     }
     private void OnEnable()
     {
@@ -70,6 +72,7 @@ public class LevelManager : Singleton<LevelManager>
         levelCompleteEvent.Invoke();
         // start loading next level
         LoadNextLevel();
+        playerIsSafe = true;
         // todo everything in there needs to move seamlessly
         // Vector3 initialPos = curStairsRoom.transform.position;
         // curStairsRoom.transform.position -= initialPos;
@@ -94,17 +97,20 @@ public class LevelManager : Singleton<LevelManager>
         // close door
         startDoor.connectedComponent?.GetComponent<Door>()?.EndInteract();
         UnloadMainRoom();
+        playerIsSafe = false;
     }
     public void LeftStairsRoom()
     {
         // close door
         lastEndDoor.connectedComponent?.GetComponent<Door>()?.EndInteract();
+        playerIsSafe = false;
         // the stairs room will get unloaded with the next level
     }
     void LoadMainRoom()
     {
         VRDebug.Log("Loading Main Room");
         mainRoom.SetActive(true);
+        playerIsSafe = true;
         // once in main room, start loading first level
         curLevel = 0;
         LoadLevel();
