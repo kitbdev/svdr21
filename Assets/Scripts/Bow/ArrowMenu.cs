@@ -55,7 +55,7 @@ public class ArrowMenu : MonoBehaviour
         // todo left/right primary issues
         xrControls.PrimaryHand.SelectMove.performed += c => { inputSelect = c.ReadValue<Vector2>(); UpdateSel(); };
         xrControls.PrimaryHand.SelectMove.canceled += c => { inputSelect = Vector2.zero; UpdateSel(); };
-        curSel = 0;
+        curSel = -1;
     }
     public void SetSide(bool right)
     {
@@ -71,6 +71,8 @@ public class ArrowMenu : MonoBehaviour
         {
             CreateMenuItem(i);
         }
+        // curSel = -1;// force update
+        UpdateSel();
     }
     public void DeSpawnAllArrows()
     {
@@ -99,12 +101,7 @@ public class ArrowMenu : MonoBehaviour
     {
         // GetSelectedArrow();
         int selArrow = selectDirToInt();
-        if (selArrow == curSel)
-        {
-            // already selecting that
-            return;
-        }
-        Debug.Log("UpdatingSel");
+        // Debug.Log("UpdatingSel");
         // todo change arrow immediately
 
         // update scale
@@ -116,10 +113,24 @@ public class ArrowMenu : MonoBehaviour
             {
                 scale *= displaySelectedScaleMod;
             }
-            // menuitem.transform.localScale = scale * Vector3.one;
+            menuitem.transform.localScale = displayModelScale * Vector3.one;
             menuitem.transform.DOScale(scale, scaleDur);
         }
+        if (selArrow == curSel)
+        {
+            // already selecting that
+            return;
+        }
         curSel = selArrow;
+        if (bow.bowNotch.currentArrow != null)
+        {
+            Debug.Log("Swapping arrow types!");
+            // note this is kind of hacky, should redo bownotch so arrow is easiably changeable
+            // heck, should just have an arrow always notched maybe
+            // Destroy(bow.bowNotch.currentArrow.gameObject);
+            // var narrow = GetSelectedArrow();
+            // bow.interactionManager.ForceSelect(bow.bowNotch, narrow);
+        }
     }
 
     int selectDirToInt()

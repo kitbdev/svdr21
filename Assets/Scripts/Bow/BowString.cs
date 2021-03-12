@@ -64,7 +64,7 @@ public class BowString : XRBaseInteractable
         SetPullAmount(0);
         pullingInteractor = null;
         // todo snap animation?
-        // todo there is some problem when firing arrows quickly
+        // todo when grabbing arrows quickly, they are being placed into the world
     }
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {

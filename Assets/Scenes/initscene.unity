@@ -2718,6 +2718,7 @@ MonoBehaviour:
   lastEndDoor: {fileID: 0}
   curStairsRoom: {fileID: 0}
   levelLoading: 0
+  playerIsSafe: 0
 --- !u!1001 &588730639
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7693,7 +7694,7 @@ MonoBehaviour:
   rightHand: {fileID: 248091810}
   defaultToLeftHand: 1
   primaryLeftHand: 1
-  debugLog: 0
+  debugLog: 1
 --- !u!54 &1480992647
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9428,7 +9429,7 @@ MonoBehaviour:
   displayLength: {x: 0, y: 0.4, z: 0}
   displayModelScale: 0.05
   displayModelArrowScale: 0.2
-  displayRotation: {x: 90, y: 45, z: 0}
+  displayRotation: {x: 90, y: 0, z: 45}
   displaySpacer: 0.1
   displaySelectedScaleMod: 1.4
   arrowPrefabs:

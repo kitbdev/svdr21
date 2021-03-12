@@ -233,7 +233,7 @@ MonoBehaviour:
   tip: {fileID: 979804440848849560}
   collisionMask:
     serializedVersion: 2
-    m_Bits: 307
+    m_Bits: 819
   flightDestroyDelay: 100
   groundDestroyDelay: 600
   damage: 1
