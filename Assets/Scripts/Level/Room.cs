@@ -26,7 +26,12 @@ public class Room : MonoBehaviour
     });
     // any non door, and non chest! 
     public List<LevelComponent> normalLevelComponents => allLevelComponents.FindAll(lc => {
-        return !lc.isRoomConnector && !lc.isInUse && !lc.isRequired && !lc.onlyAsRequirement && !blockedConnectors.Contains(lc);
+        return !lc.isRoomConnector && !lc.isInUse && !lc.isRequired && !lc.onlyAsRequirement
+        && !blockedConnectors.Contains(lc) && !lc.isAKey;
+    });
+    // as long as its not blocked, the possible key is valid
+    public List<LevelComponent> keyLevelComponents => allLevelComponents.FindAll(lc => {
+        return !lc.isRoomConnector && !blockedConnectors.Contains(lc) && lc.isAKey;
     });
     public List<LevelComponent> allUsedLevelComponents => usedLevelComponents;
     // todo special ones too
@@ -103,6 +108,20 @@ public class Room : MonoBehaviour
             {
                 lc.SetUsing(usedLevelComponents.Contains(lc));
             }
+        }
+        // keys
+        foreach (var lckey in keyLevelComponents)
+        {
+            lckey.SetUsing(false);//haskey
+        }
+        if (hasKey)
+        {
+            if (keyLevelComponents.Count == 0)
+            {
+                Debug.LogError("no key in " + name + " but is needed");
+            }
+            // todo other things in chests
+            LevelGen.GetRandomIn<LevelComponent>(keyLevelComponents.ToArray()).SetUsing(true);
         }
         // todo?
     }

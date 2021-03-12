@@ -242,6 +242,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -3488,6 +3489,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -3738,6 +3740,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -3988,6 +3991,7 @@ MonoBehaviour:
   isRoomConnector: 0
   isRequired: 0
   onlyAsRequirement: 1
+  isAKey: 0
   requireOneOf: []
   blocks: []
   forceUse: []
@@ -4897,7 +4901,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 249018127135422312, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
       propertyPath: blocks.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 249018127135422312, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
       propertyPath: blocks.Array.data[0]
@@ -4929,7 +4933,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6458470106898259494, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -2.1
       objectReference: {fileID: 0}
     - target: {fileID: 6458470106898259494, guid: 7850cc89d288f284e874e773677f33a2, type: 3}
       propertyPath: m_LocalRotation.w

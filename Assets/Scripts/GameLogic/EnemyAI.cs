@@ -127,6 +127,7 @@ public class EnemyAI : MonoBehaviour
         createdMoveTarget = new GameObject(name + "_created_move_target").transform;
         createdMoveTarget.position = transform.position;
         headHeight = headpos.position - transform.position;
+        rb.centerOfMass = Vector3.zero;
 
         // setup attack stuff
         attackIndivCooldowns = new float[allAttacks.Length];
@@ -345,6 +346,7 @@ public class EnemyAI : MonoBehaviour
                 break;
             case MoveState.IDLE:
                 rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
                 MoveTo(transform.position);
                 break;
             default:
@@ -375,7 +377,7 @@ public class EnemyAI : MonoBehaviour
             // too close, ignore
             return;
         }
-        Debug.Log("moving somewhere! " + targetPos);
+        // Debug.Log("moving somewhere! " + targetPos);
 
         // rotate towards target
         float rotRate = turnSpeed * Time.deltaTime;
