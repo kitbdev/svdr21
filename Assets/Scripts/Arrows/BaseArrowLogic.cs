@@ -156,7 +156,7 @@ public class BaseArrowLogic : MonoBehaviour
     {
         SetPhysicsEnabled(true);
         float forceAmount = GetLaunchForce(launchPullAmount);
-        // VRDebug.Log("Launching at " + forceAmount + " force", debugContext: this);
+        VRDebug.Log("Launching at " + forceAmount + " force", debugContext: this);
         rb.AddForce(transform.forward * forceAmount, ForceMode.Impulse);
     }
 

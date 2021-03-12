@@ -43,7 +43,7 @@ public class VRDebug : Singleton<VRDebug>
     /// <param name="debugContext">debug log context object</param>
     public static void LogFrame(string msg, Object debugContext = null)
     {
-        LogP(msg, 0.01f, true, debugContext);
+        LogP(msg, 0.01f, false, debugContext);
     }
     /// <summary>
     /// Log a message to the VR canvas

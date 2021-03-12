@@ -1258,7 +1258,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-3570
+  m_Name: pb_Mesh-1288
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5579,7 +5579,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-3542
+  m_Name: pb_Mesh-1260
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6813,6 +6813,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 44289222080531530, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 277301102176827194, guid: 51b4d32f9a4423f4caf1abb5c5413ca5, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -7559,7 +7563,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1480992644}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.211, y: 1.329, z: 0.335}
+  m_LocalPosition: {x: -0.211, y: 1.329, z: 0.574}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1032024462}
@@ -9606,7 +9610,7 @@ MonoBehaviour:
   - {fileID: 3566360456250664069, guid: 8f803986c2109bb4eb7961672713f963, type: 3}
   - {fileID: 3566360456250664069, guid: a9f3a2133b026cc4eb37eb9de9095742, type: 3}
   genOnStart: 0
-  advancedDebug: 1
+  advancedDebug: 0
   debugBreak: 0
   randomSeed: 0
   numRooms: 0
@@ -9971,7 +9975,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-3582
+  m_Name: pb_Mesh-1300
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -10324,7 +10328,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6107721865268957164, guid: 066837a6182f1244c8a84c0aec955bb2, type: 3}
       propertyPath: disableVR
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6107721865268957164, guid: 066837a6182f1244c8a84c0aec955bb2, type: 3}
+      propertyPath: vrTimeout
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6107721865268957164, guid: 066837a6182f1244c8a84c0aec955bb2, type: 3}
       propertyPath: nonvrOnlyGOs.Array.data[0]

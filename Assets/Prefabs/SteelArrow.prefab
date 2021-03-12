@@ -104,7 +104,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4430166367292301323}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
@@ -232,7 +232,7 @@ MonoBehaviour:
   tip: {fileID: 979804440848849560}
   collisionMask:
     serializedVersion: 2
-    m_Bits: 51
+    m_Bits: 307
   flightDestroyDelay: 100
   groundDestroyDelay: 600
   damage: 1
@@ -240,6 +240,9 @@ MonoBehaviour:
   stopped: 0
   isSet: 0
   isArmed: 0
+  lastPos: {x: 0, y: 0, z: 0}
+  lastVel: {x: 0, y: 0, z: 0}
+  launchBow: {fileID: 0}
 --- !u!1 &7801010339732151608
 GameObject:
   m_ObjectHideFlags: 0
