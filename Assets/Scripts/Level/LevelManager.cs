@@ -147,6 +147,10 @@ public class LevelManager : Singleton<LevelManager>
         // todo something
         // open main/end room door
         VRDebug.Log("Opening door");
+        if (curLevel == 0)
+        {
+            startDoor.myRoom.LevelStart();
+        }
         curDoor.GetComponent<Door>().OpenDoor();
         levelReadyEvent.Invoke();
     }

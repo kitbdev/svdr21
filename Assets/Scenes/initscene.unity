@@ -197,7 +197,7 @@ GameObject:
   - component: {fileID: 17157080}
   - component: {fileID: 17157079}
   - component: {fileID: 17157081}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LeftHandDirect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2016,7 +2016,7 @@ GameObject:
   m_Component:
   - component: {fileID: 434791931}
   - component: {fileID: 434791932}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LeftHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2399,7 +2399,7 @@ GameObject:
   - component: {fileID: 531302633}
   - component: {fileID: 531302632}
   - component: {fileID: 531302631}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5950,7 +5950,7 @@ GameObject:
   - component: {fileID: 1313260207}
   - component: {fileID: 1313260206}
   - component: {fileID: 1313260205}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ray Interactor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7598,7 +7598,7 @@ MonoBehaviour:
   - {fileID: 1966765408}
   m_InteractionLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
   m_CustomReticle: {fileID: 0}
   m_FirstHoverEntered:
     m_PersistentCalls:
@@ -8091,7 +8091,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1522141348}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: handmodel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8860,7 +8860,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1806077790}
   - component: {fileID: 1806077791}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: handpres
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10328,7 +10328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6107721865268957164, guid: 066837a6182f1244c8a84c0aec955bb2, type: 3}
       propertyPath: disableVR
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6107721865268957164, guid: 066837a6182f1244c8a84c0aec955bb2, type: 3}
       propertyPath: vrTimeout

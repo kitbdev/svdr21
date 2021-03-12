@@ -162,9 +162,9 @@ public class BaseArrowLogic : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        VRDebug.Log(other.collider.name + " arrow bump", -1, other.collider);
         if (inFlight)
         {
-            VRDebug.Log(other.collider.name + " arrow bump", -1, other.collider);
         }
     }
 

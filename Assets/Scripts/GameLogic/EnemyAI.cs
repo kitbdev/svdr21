@@ -125,6 +125,7 @@ public class EnemyAI : MonoBehaviour
         playerHead = Camera.main.transform;
         rb.useGravity = moveMode == MoveMode.GROUND;
         createdMoveTarget = new GameObject(name + "_created_move_target").transform;
+        createdMoveTarget.position = transform.position;
         headHeight = headpos.position - transform.position;
 
         // setup attack stuff
@@ -343,6 +344,9 @@ public class EnemyAI : MonoBehaviour
             case MoveState.CHARGING:
                 break;
             case MoveState.IDLE:
+                rb.velocity = Vector3.zero;
+                MoveTo(transform.position);
+                break;
             default:
                 break;
         }
@@ -371,6 +375,7 @@ public class EnemyAI : MonoBehaviour
             // too close, ignore
             return;
         }
+        Debug.Log("moving somewhere! " + targetPos);
 
         // rotate towards target
         float rotRate = turnSpeed * Time.deltaTime;

@@ -43,6 +43,7 @@ public class EnemyManager : Singleton<EnemyManager>
         {
             SpawnEnemy(allEnemyPrefabs[0], sploc.transform);
         }
+        // Debug.Break();
     }
     public void SpawnEnemy(GameObject enemyPrefab, Transform location)
     {
